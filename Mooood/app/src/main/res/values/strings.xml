@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Mooood</string>
+
+<!--    activity_main-->
+    <string name="username_hint">Username</string>
+    <string name="password_hint">Password</string>
+    <string name="no_account">Don\'t have an account?</string>
+    <string name="sign_up"><u>Sign Up.</u></string>
+    <string name="submit">&#160;&#160;SUBMIT&#160;&#160;</string>
+    <string name="signUpBtn">&#160;&#160;SIGN UP&#160;&#160;</string>
+    <string name="goBackBtn">&#160;&#160;GO BACK&#160;&#160;</string>
+    <string name="alreadyExist">Already have an account?</string>
+    <string name="sign_in"><u>Sign In.</u></string>
+    <string name="empty">Username or password can not be empty</string>
+    <string name="wrongAccount">Username or password is incorrect</string>
+    <string name="dneAccount">Account does not exists</string>
+    <string name="existAccount">Account already exists</string>
+
+
+</resources>
