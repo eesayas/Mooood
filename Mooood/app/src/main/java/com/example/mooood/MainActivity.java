@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -111,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Checks if the account exists or not
-    public void CheckLogIn(String accountName, final String inputtedpassword){
+    public void CheckLogIn(final String accountName, final String inputtedpassword){
         Log.d("debugging", "mainActivity- Check account");
         final FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
@@ -130,6 +131,9 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("debugging", "mainActivity- Logged In");
                             errorMsg.setVisibility(View.INVISIBLE);
                             errorMsg.setText("");
+                            Intent intent = new Intent(MainActivity.this, UserAndFeedActivity.class);
+                            intent.putExtra("key", accountName);
+                            startActivity(intent);
                         }
                         // if inputted password is wrong, set the password field empty and
                         // show error message
