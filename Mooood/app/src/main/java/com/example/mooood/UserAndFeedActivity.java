@@ -75,7 +75,7 @@ public class UserAndFeedActivity extends AppCompatActivity implements AddMoodFra
         userButton = findViewById(R.id.userButton);
         floatingActionButton = findViewById(R.id.floating_button);
 
-        collectionRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        documentRef.collection("MoodActivities").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 MoodList.clear();
@@ -150,11 +150,11 @@ public class UserAndFeedActivity extends AppCompatActivity implements AddMoodFra
         data.put(KEY_REASON, reason);
         data.put(KEY_SOCIAL_SITUATION, socialSituation);
 
-        documentRef.set(data)
+        documentRef.collection("MoodActivities").document().set(data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Toast.makeText(UserAndFeedActivity.this, "Added", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UserAndFeedActivity.this, "Note saved", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -164,8 +164,6 @@ public class UserAndFeedActivity extends AppCompatActivity implements AddMoodFra
                         Log.d(TAG, e.toString());
                     }
                 });
-
-
 
     }
 
