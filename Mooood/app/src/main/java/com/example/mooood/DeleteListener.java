@@ -1,8 +1,14 @@
 package com.example.mooood;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 
 //activity_main_btn_delete listener, as the name implies it basically deletes a mood from the view.
@@ -33,7 +39,7 @@ public class DeleteListener implements View.OnClickListener {
     }
     //Sets mood to delete
     public void setToDelete(Mood toDelete) {
-        this.toDelete = toDelete;
+                this.toDelete = toDelete;
     }
 }
 

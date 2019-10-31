@@ -15,11 +15,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -52,7 +55,7 @@ public class UserAndFeedActivity extends AppCompatActivity implements AddMoodFra
     private ArrayAdapter<Mood> moodListAdapter;
     public ArrayList<Mood> MoodList = new ArrayList<Mood>();
 
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference documentRef;
     private CollectionReference collectionRef;
     private Button deleteMoodButton;
@@ -65,7 +68,8 @@ public class UserAndFeedActivity extends AppCompatActivity implements AddMoodFra
         setContentView(R.layout.activity_user_and_feed);
 
         Intent intent = getIntent();
-        String accountName = intent.getStringExtra("key");
+        final String accountName = intent.getStringExtra("key");
+
         documentRef = db.collection("Mood").document(accountName);
         collectionRef = db.collection("Mood");
         deleteMoodButton=findViewById(R.id.activity_main_btn_delete);
@@ -80,18 +84,21 @@ public class UserAndFeedActivity extends AppCompatActivity implements AddMoodFra
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 MoodList.clear();
                 for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                    String accountName = doc.getId();
-                    String date = (String) doc.getData().get(KEY_DATE);
-                    String time = (String) doc.getData().get(KEY_TIME);
-                    String emotionalState = (String) doc.getData().get(KEY_EMOTIONAL_STATE);
-                    String reason = (String) doc.getData().get(KEY_REASON);
-                    String socialSituation = (String) doc.getData().get(KEY_SOCIAL_SITUATION);
+                    Mood mood = doc.toObject(Mood.class);
+                    mood.setDocumentID(doc.getId());
+
+                    //String documentId = mood.getDocumentID();
+                    //String accountName = doc.getId();
+                    String date = mood.getDate();
+                    String time = mood.getTime();
+                    String emotionalState = mood.getEmotionalState();
+                    String reason = mood.getReason();
+                    String socialSituation = mood.getSocialSituation();
                     MoodList.add(new Mood(date, time, emotionalState, reason, socialSituation));
                 }
                 moodListAdapter.notifyDataSetChanged();
             }
         });
-
 
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,27 +107,66 @@ public class UserAndFeedActivity extends AppCompatActivity implements AddMoodFra
 
             }
         });
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                deleteMoodButton.setVisibility(View.VISIBLE);
+                listView.setSelection(i);
+                //Show and hide button based on:https://stackoverflow.com/questions/21899825/show-hide-button-when-focus-the-list-item-in-android-listview
+                view.setSelected(true);
+  /*              String moodToDelete= MoodList.get(i).getDocumentID();
+                Log.d(TAG, "ID" + moodToDelete);*/
 
-        moodListAdapter = new MoodListAdapter(this, MoodList);
-        listView.setAdapter(moodListAdapter);
+                db.collection("Mood").document(MoodList.get(i).getDocumentID())
+                        .delete();
+                //String docID= moodToDelete.getDocumentID();
+                //documentRef.collection("MoodActivities").document(moodToDelete).delete();
 
+                setToDelete(MoodList.get(i));
+                //Calls the delete listener when clicking the delete mood button
+                DeleteListener listener= new DeleteListener(getToDelete(), moodListAdapter);
+                deleteMoodButton.setOnClickListener(listener);
+            }
+        });
 
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+/*        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+                deleteMoodButton.setVisibility(View.VISIBLE);
+
+
                 listView.setSelection(position);
                 //Show and hide button based on:https://stackoverflow.com/questions/21899825/show-hide-button-when-focus-the-list-item-in-android-listview
-                deleteMoodButton.setVisibility(View.VISIBLE);
+
                 view.setSelected(true);
                 setToDelete(MoodList.get(position));
                 //Calls the delete listener when clicking the delete mood button
                 DeleteListener listener= new DeleteListener(getToDelete(), moodListAdapter);
                 deleteMoodButton.setOnClickListener(listener);
 
+                Mood mood = MoodList.get(position);
+                String docID= mood.getDocumentID();
+                documentRef.collection("MoodActivities").document(docID)
+                        .delete()
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error deleting document", e);
+                            }
+                        });
+
                 return true;
             }
 
-        });
+        });*/
+
         moodListAdapter = new MoodListAdapter(this, MoodList);
         listView.setAdapter(moodListAdapter);
 
@@ -143,14 +189,16 @@ public class UserAndFeedActivity extends AppCompatActivity implements AddMoodFra
         String reason = mood.getReason();
         String socialSituation = mood.getSocialSituation();
 
-        Map<String, String> data = new HashMap<>();
-        data.put(KEY_DATE, date);
+        //Map<String, String> data = new HashMap<>();
+        Mood mood1= new Mood(date, time, emotionalState, reason, socialSituation);
+
+        /*data.put(KEY_DATE, date);
         data.put(KEY_TIME, time);
         data.put(KEY_EMOTIONAL_STATE, emotionalState);
         data.put(KEY_REASON, reason);
-        data.put(KEY_SOCIAL_SITUATION, socialSituation);
+        data.put(KEY_SOCIAL_SITUATION, socialSituation);*/
 
-        documentRef.collection("MoodActivities").document().set(data)
+        documentRef.collection("MoodActivities").document().set(mood1)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -164,7 +212,8 @@ public class UserAndFeedActivity extends AppCompatActivity implements AddMoodFra
                         Log.d(TAG, e.toString());
                     }
                 });
-
+/*        moodListAdapter.add(mood);
+        moodListAdapter.notifyDataSetChanged();*/
     }
 
     //Sets mood to delete

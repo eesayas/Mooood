@@ -1,9 +1,12 @@
 package com.example.mooood;
 
+import com.google.firebase.firestore.Exclude;
+
 import java.io.Serializable;
 
 public class Mood implements Serializable {
     //TODO:Add a color field, or maybe that can be part of whatever view we choose to display our moods in -Max
+    private String documentID;
     private String date;
     private String time;
     private String emotionalState;
@@ -14,13 +17,26 @@ public class Mood implements Serializable {
     //TODO: We need a location field for a mood as well
     //Something like "private Location location" perhaps? -Max
 
-    public Mood(String date, String time, String emotionalState, String reason, String socialSituation) {
+    public Mood(){
+    }
+
+    public Mood( String date, String time, String emotionalState, String reason, String socialSituation) {
         this.date = date;
         this.time = time;
         this.emotionalState = emotionalState;
         this.reason = reason;
         this.socialSituation = socialSituation;
     }
+
+    @Exclude
+    public String getDocumentID() {
+        return documentID;
+    }
+
+    public void setDocumentID(String documentID) {
+        this.documentID = documentID;
+    }
+
 
     public String getDate() {
         return date;
