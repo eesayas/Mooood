@@ -4,9 +4,10 @@ import com.google.firebase.firestore.Exclude;
 
 import java.io.Serializable;
 
-public class Mood implements Serializable {
+public class Mood extends documentID implements Serializable {
     //TODO:Add a color field, or maybe that can be part of whatever view we choose to display our moods in -Max
-    private String documentID;
+
+    private String documentid;
     private String date;
     private String time;
     private String emotionalState;
@@ -28,13 +29,14 @@ public class Mood implements Serializable {
         this.socialSituation = socialSituation;
     }
 
+
     @Exclude
     public String getDocumentID() {
-        return documentID;
+        return documentid;
     }
 
     public void setDocumentID(String documentID) {
-        this.documentID = documentID;
+        this.documentid = documentID;
     }
 
 
@@ -77,5 +79,12 @@ public class Mood implements Serializable {
     public void setSocialSituation(String socialSituation) {
         this.socialSituation = socialSituation;
     }
+
+
+
+/*    @Override
+    public void settingID(String docID) {
+        super.settingID(docID);
+    }*/
 }
 

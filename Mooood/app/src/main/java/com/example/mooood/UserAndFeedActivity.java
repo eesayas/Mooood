@@ -87,8 +87,10 @@ public class UserAndFeedActivity extends AppCompatActivity implements AddMoodFra
                     Mood mood = doc.toObject(Mood.class);
                     mood.setDocumentID(doc.getId());
 
-                    //String documentId = mood.getDocumentID();
-                    //String accountName = doc.getId();
+
+                    String documentId = mood.getSource();
+                    Log.d(TAG, "DOCUMENT IDDDDDD:     " + documentId);
+
                     String date = mood.getDate();
                     String time = mood.getTime();
                     String emotionalState = mood.getEmotionalState();
@@ -114,13 +116,9 @@ public class UserAndFeedActivity extends AppCompatActivity implements AddMoodFra
                 listView.setSelection(i);
                 //Show and hide button based on:https://stackoverflow.com/questions/21899825/show-hide-button-when-focus-the-list-item-in-android-listview
                 view.setSelected(true);
-  /*              String moodToDelete= MoodList.get(i).getDocumentID();
-                Log.d(TAG, "ID" + moodToDelete);*/
-
-                db.collection("Mood").document(MoodList.get(i).getDocumentID())
-                        .delete();
-                //String docID= moodToDelete.getDocumentID();
-                //documentRef.collection("MoodActivities").document(moodToDelete).delete();
+                Mood moodToDelete= MoodList.get(i);
+                String docID = moodToDelete.getDocumentID();
+                //documentRef.collection("MoodActivities").document(docID).delete();
 
                 setToDelete(MoodList.get(i));
                 //Calls the delete listener when clicking the delete mood button
@@ -129,43 +127,6 @@ public class UserAndFeedActivity extends AppCompatActivity implements AddMoodFra
             }
         });
 
-/*        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-
-                deleteMoodButton.setVisibility(View.VISIBLE);
-
-
-                listView.setSelection(position);
-                //Show and hide button based on:https://stackoverflow.com/questions/21899825/show-hide-button-when-focus-the-list-item-in-android-listview
-
-                view.setSelected(true);
-                setToDelete(MoodList.get(position));
-                //Calls the delete listener when clicking the delete mood button
-                DeleteListener listener= new DeleteListener(getToDelete(), moodListAdapter);
-                deleteMoodButton.setOnClickListener(listener);
-
-                Mood mood = MoodList.get(position);
-                String docID= mood.getDocumentID();
-                documentRef.collection("MoodActivities").document(docID)
-                        .delete()
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Log.d(TAG, "DocumentSnapshot successfully deleted!");
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.w(TAG, "Error deleting document", e);
-                            }
-                        });
-
-                return true;
-            }
-
-        });*/
 
         moodListAdapter = new MoodListAdapter(this, MoodList);
         listView.setAdapter(moodListAdapter);
