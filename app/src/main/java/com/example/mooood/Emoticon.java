@@ -1,11 +1,11 @@
 package com.example.mooood;
 
-public class Mood{
+public class Emoticon{
 
     private String emotionalState;
     private int imageLink;
 
-    public Mood(String emotionalState, int imageLink){
+    public Emoticon(String emotionalState, int imageLink){
         this.emotionalState = emotionalState;
         this.imageLink = imageLink;
     }

@@ -17,14 +17,14 @@ import java.util.List;
 public class SwipeMoodsAdapter extends PagerAdapter {
 
     //params
-    private List<Integer> moodImages;
+    private List<Emoticon> moodImages;
     private Context context;
 
     //for later use
     private LayoutInflater layoutInflater;
 
     //constructor
-    public SwipeMoodsAdapter(List<Integer> moodImages, Context context){
+    public SwipeMoodsAdapter(List<Emoticon> moodImages, Context context){
         this.moodImages = moodImages;
         this.context = context;
     }
@@ -48,7 +48,7 @@ public class SwipeMoodsAdapter extends PagerAdapter {
 
         ImageView imageView;
         imageView = view.findViewById(R.id.image);
-        imageView.setImageResource(moodImages.get(position));
+        imageView.setImageResource(moodImages.get(position).getImageLink());
 
         container.addView(view, 0);
         return view;

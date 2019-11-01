@@ -10,7 +10,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".CreatePostActivity"
+            android:name=".CreateEventActivity"
+            android:label="CreateEventActivity"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".UserFeedActivity"
