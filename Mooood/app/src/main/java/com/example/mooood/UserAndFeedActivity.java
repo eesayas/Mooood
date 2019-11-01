@@ -51,7 +51,7 @@ public class UserAndFeedActivity extends AppCompatActivity implements AddMoodFra
     private Button userButton;
 
     private FloatingActionButton floatingActionButton;
-   // private Button floatingActionButton;
+    // private Button floatingActionButton;
     private ArrayAdapter<Mood> moodListAdapter;
     public ArrayList<Mood> MoodList = new ArrayList<Mood>();
 
@@ -87,17 +87,16 @@ public class UserAndFeedActivity extends AppCompatActivity implements AddMoodFra
                     Mood mood = doc.toObject(Mood.class);
                     mood.setDocumentid(doc.getId());
 
-
-                    //String documentId = mood.getSource();
-                   // Log.d(TAG, "DOCUMENT IDDDDDD:     " + documentId);
                     String documentId = mood.getDocumentid();
-                    String accountName = doc.getId();
+
                     String date = (String) doc.getData().get(KEY_DATE);
                     String time = (String) doc.getData().get(KEY_TIME);
                     String emotionalState = (String) doc.getData().get(KEY_EMOTIONAL_STATE);
                     String reason = (String) doc.getData().get(KEY_REASON);
                     String socialSituation = (String) doc.getData().get(KEY_SOCIAL_SITUATION);
-                    MoodList.add(new Mood(date, time, emotionalState, reason, socialSituation));
+                    Mood newMood = new Mood(date, time, emotionalState, reason, socialSituation);
+                    newMood.setDocumentid(documentId);
+                    MoodList.add(newMood);
 
 
                    /* String date = mood.getDate();
@@ -126,13 +125,24 @@ public class UserAndFeedActivity extends AppCompatActivity implements AddMoodFra
                 //Show and hide button based on:https://stackoverflow.com/questions/21899825/show-hide-button-when-focus-the-list-item-in-android-listview
                 view.setSelected(true);
                 Mood moodToDelete= MoodList.get(i);
-                String docID = moodToDelete.getDocumentid();
-                //documentRef.collection("MoodActivities").document(docID).delete();
+                final String docID = moodToDelete.getDocumentid();
+
 
                 setToDelete(MoodList.get(i));
                 //Calls the delete listener when clicking the delete mood button
-                DeleteListener listener= new DeleteListener(getToDelete(), moodListAdapter);
-                deleteMoodButton.setOnClickListener(listener);
+                //DeleteListener listener= new DeleteListener(getToDelete(), moodListAdapter);
+                deleteMoodButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+  /*                      DeleteListener listener= new DeleteListener(getToDelete(), moodListAdapter);
+                        deleteMoodButton.setOnClickListener(listener);*/
+                        documentRef.collection("MoodActivities").document(docID).delete();
+                        deleteMoodButton.setVisibility(View.INVISIBLE);
+                    }
+                });
+                //deleteMoodButton.setOnClickListener(listener))
+                //documentRef.collection("MoodActivities").document(docID).delete();
+
             }
         });
 
@@ -160,7 +170,7 @@ public class UserAndFeedActivity extends AppCompatActivity implements AddMoodFra
         String socialSituation = mood.getSocialSituation();
 
         Map<String, String> data = new HashMap<>();
-        //Mood mood1= new Mood(date, time, emotionalState, reason, socialSituation);
+        Mood mood1= new Mood(date, time, emotionalState, reason, socialSituation);
 
         data.put(KEY_DATE, date);
         data.put(KEY_TIME, time);

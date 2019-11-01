@@ -4,7 +4,7 @@ import com.google.firebase.firestore.Exclude;
 
 import java.io.Serializable;
 
-public class Mood extends documentID implements Serializable {
+public class Mood implements Serializable {
     //TODO:Add a color field, or maybe that can be part of whatever view we choose to display our moods in -Max
 
     private String documentid;
