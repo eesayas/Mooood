@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    tools:context=".CreateEventActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!--SELECT MOOD INSTRUCTION TEXT-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select a mooood"
+            android:textSize="20sp">
+        </TextView>
+
+        <!--MOOD ROSTER-->
+        <androidx.viewpager.widget.ViewPager
+            android:foregroundGravity="center"
+            android:id="@+id/mood_roster"
+            android:layout_centerInParent="true"
+            android:overScrollMode="never"
+            android:layout_width="match_parent"
+            android:layout_height="200dp">
+        </androidx.viewpager.widget.ViewPager>
+
+        <!--REASON-->
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:padding="20dp"
+            android:gravity="start|top"
+            android:inputType="textMultiLine"
+            android:hint="Reason"
+            android:background="@drawable/edit_text_border"/>
+
+        <!--SITUATION-->
+        <TextView
+            android:id="@+id/social_situation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Social Situation"
+            android:textSize="20sp"
+            android:padding="20dp"
+            android:background="@drawable/edit_text_border"
+            android:clickable="true">
+        </TextView>
+
+        <!--IMAGE UPLOAD-->
+        <ImageView
+            android:id="@+id/image_reason"
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+            android:src="@drawable/temp_image_upload">
+        </ImageView>
+
+        <!--SET DATE AND TIME-->
+        <TextView
+            android:id="@+id/date_and_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Set Date/Time"
+            android:textSize="20sp"
+            android:padding="20dp"
+            android:background="@drawable/edit_text_border"
+            android:clickable="true">
+        </TextView>
+
+    </LinearLayout>
+</ScrollView>

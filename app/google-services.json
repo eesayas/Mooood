@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "415906764410",
+    "firebase_url": "https://mooood-db.firebaseio.com",
+    "project_id": "mooood-db",
+    "storage_bucket": "mooood-db.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:415906764410:android:bafcc6ef8344e6b477cdc3",
+        "android_client_info": {
+          "package_name": "com.example.mooood"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "415906764410-6des5bt4sfjbv9hqvu6466mrufg6orcc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHmje9vUTKDmFQqprfwc2mvLwf81fD6zA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "415906764410-6des5bt4sfjbv9hqvu6466mrufg6orcc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
