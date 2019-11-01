@@ -21,7 +21,7 @@ public class Mood extends documentID implements Serializable {
     public Mood(){
     }
 
-    public Mood( String date, String time, String emotionalState, String reason, String socialSituation) {
+    public Mood(String date, String time, String emotionalState, String reason, String socialSituation) {
         this.date = date;
         this.time = time;
         this.emotionalState = emotionalState;
@@ -29,15 +29,16 @@ public class Mood extends documentID implements Serializable {
         this.socialSituation = socialSituation;
     }
 
-
     @Exclude
-    public String getDocumentID() {
+    public String getDocumentid() {
         return documentid;
     }
 
-    public void setDocumentID(String documentID) {
-        this.documentid = documentID;
+    public void setDocumentid(String documentid) {
+        this.documentid = documentid;
     }
+
+
 
 
     public String getDate() {
@@ -82,9 +83,5 @@ public class Mood extends documentID implements Serializable {
 
 
 
-/*    @Override
-    public void settingID(String docID) {
-        super.settingID(docID);
-    }*/
 }
 

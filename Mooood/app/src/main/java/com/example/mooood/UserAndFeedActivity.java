@@ -85,18 +85,27 @@ public class UserAndFeedActivity extends AppCompatActivity implements AddMoodFra
                 MoodList.clear();
                 for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                     Mood mood = doc.toObject(Mood.class);
-                    mood.setDocumentID(doc.getId());
+                    mood.setDocumentid(doc.getId());
 
 
-                    String documentId = mood.getSource();
-                    Log.d(TAG, "DOCUMENT IDDDDDD:     " + documentId);
+                    //String documentId = mood.getSource();
+                   // Log.d(TAG, "DOCUMENT IDDDDDD:     " + documentId);
+                    String documentId = mood.getDocumentid();
+                    String accountName = doc.getId();
+                    String date = (String) doc.getData().get(KEY_DATE);
+                    String time = (String) doc.getData().get(KEY_TIME);
+                    String emotionalState = (String) doc.getData().get(KEY_EMOTIONAL_STATE);
+                    String reason = (String) doc.getData().get(KEY_REASON);
+                    String socialSituation = (String) doc.getData().get(KEY_SOCIAL_SITUATION);
+                    MoodList.add(new Mood(date, time, emotionalState, reason, socialSituation));
 
-                    String date = mood.getDate();
+
+                   /* String date = mood.getDate();
                     String time = mood.getTime();
                     String emotionalState = mood.getEmotionalState();
                     String reason = mood.getReason();
                     String socialSituation = mood.getSocialSituation();
-                    MoodList.add(new Mood(date, time, emotionalState, reason, socialSituation));
+                    MoodList.add(new Mood(date, time, emotionalState, reason, socialSituation));*/
                 }
                 moodListAdapter.notifyDataSetChanged();
             }
@@ -117,7 +126,7 @@ public class UserAndFeedActivity extends AppCompatActivity implements AddMoodFra
                 //Show and hide button based on:https://stackoverflow.com/questions/21899825/show-hide-button-when-focus-the-list-item-in-android-listview
                 view.setSelected(true);
                 Mood moodToDelete= MoodList.get(i);
-                String docID = moodToDelete.getDocumentID();
+                String docID = moodToDelete.getDocumentid();
                 //documentRef.collection("MoodActivities").document(docID).delete();
 
                 setToDelete(MoodList.get(i));
@@ -150,16 +159,16 @@ public class UserAndFeedActivity extends AppCompatActivity implements AddMoodFra
         String reason = mood.getReason();
         String socialSituation = mood.getSocialSituation();
 
-        //Map<String, String> data = new HashMap<>();
-        Mood mood1= new Mood(date, time, emotionalState, reason, socialSituation);
+        Map<String, String> data = new HashMap<>();
+        //Mood mood1= new Mood(date, time, emotionalState, reason, socialSituation);
 
-        /*data.put(KEY_DATE, date);
+        data.put(KEY_DATE, date);
         data.put(KEY_TIME, time);
         data.put(KEY_EMOTIONAL_STATE, emotionalState);
         data.put(KEY_REASON, reason);
-        data.put(KEY_SOCIAL_SITUATION, socialSituation);*/
+        data.put(KEY_SOCIAL_SITUATION, socialSituation);
 
-        documentRef.collection("MoodActivities").document().set(mood1)
+        documentRef.collection("MoodActivities").document().set(data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
