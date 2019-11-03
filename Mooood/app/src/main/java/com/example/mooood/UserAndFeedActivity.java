@@ -26,6 +26,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -79,7 +80,9 @@ public class UserAndFeedActivity extends AppCompatActivity implements AddMoodFra
         userButton = findViewById(R.id.userButton);
         floatingActionButton = findViewById(R.id.floating_button);
 
-        documentRef.collection("MoodActivities").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        documentRef.collection("MoodActivities").orderBy("Date", Query.Direction.DESCENDING)
+                .orderBy("Time", Query.Direction.DESCENDING)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 MoodList.clear();
@@ -106,6 +109,7 @@ public class UserAndFeedActivity extends AppCompatActivity implements AddMoodFra
                     String socialSituation = mood.getSocialSituation();
                     MoodList.add(new Mood(date, time, emotionalState, reason, socialSituation));*/
                 }
+
                 moodListAdapter.notifyDataSetChanged();
             }
         });
