@@ -9,6 +9,7 @@ public class MoodEvent{
     private String time;
     private String emotionalState;
 
+    private String imageUrl;
     private String reason;
     private String socialSituation;
 
@@ -25,10 +26,11 @@ public class MoodEvent{
         this.documentId = documentId;
     }
 
-    public MoodEvent(String date, String time, String emotionalState, String reason, String socialSituation){
+    public MoodEvent(String date, String time, String emotionalState, String imageReason, String reason, String socialSituation){
         this.date = date;
         this.time = time;
         this.emotionalState = emotionalState;
+        this.imageUrl = imageReason;
         this.reason = reason;
         this.socialSituation = socialSituation;
     }
@@ -71,5 +73,13 @@ public class MoodEvent{
 
     public void setSocialSituation(String socialSituation) {
         this.socialSituation = socialSituation;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageReason) {
+        this.imageUrl = imageReason;
     }
 }

@@ -2,11 +2,14 @@ package com.example.mooood;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -20,8 +23,17 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageTask;
+import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -43,10 +55,16 @@ public class CreateEventActivity extends AppCompatActivity{
     //Firebase setup!
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final CollectionReference collectionReference = db.collection("MoodEvents");
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     TextView socialSituation;
+
+    //for image upload
     ImageView imageUpload;
     Uri imageUri;
+    private StorageReference storageReference;
+    private DatabaseReference databaseReference;
+    private StorageTask uploadTask;
 
     SimpleDateFormat simpleDateFormat;
     Calendar calendar;
@@ -57,6 +75,7 @@ public class CreateEventActivity extends AppCompatActivity{
     String moodDate;
     String moodTime;
     String moodEmotionalState;
+    String moodImageUrl;
     String moodReason;
     String moodSocialSituation;
 
@@ -115,8 +134,12 @@ public class CreateEventActivity extends AppCompatActivity{
             }
         });
 
-        //upload image for reason
-        //Resource: https://codinginflow.com/tutorials/android/firebase-storage-upload-and-retrieve-images/part-2-image-chooser
+        //==============================================================================================
+        // IMAGE UPLOAD SETUP
+        // Resource: https://codinginflow.com/tutorials/android/firebase-storage-upload-and-retrieve-images/part-2-image-chooser
+        //==============================================================================================
+
+        // click listener for Image Upload
         imageUpload = findViewById(R.id.image_reason);
         imageUpload.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,6 +147,15 @@ public class CreateEventActivity extends AppCompatActivity{
                 openFileChooser();
             }
         });
+
+        //
+        storageReference = FirebaseStorage.getInstance().getReference("reason_image");
+        databaseReference = FirebaseDatabase.getInstance().getReference("reason_image");
+
+
+        //==============================================================================================
+        // DATE AND TIME PICKER DIALOG FRAGMENT click listener
+        //==============================================================================================
 
         //access date and time picker fragments
         //Resource: https://github.com/Kiarasht/Android-Templates/tree/master/Templates/DatePickerDialog
@@ -137,7 +169,10 @@ public class CreateEventActivity extends AppCompatActivity{
             }
         });
 
-        //click listener for submit button
+        //==============================================================================================
+        // SUBMISSION
+        //==============================================================================================
+
         submitButton = findViewById(R.id.submit_button);
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,18 +185,29 @@ public class CreateEventActivity extends AppCompatActivity{
                 TextView socialSituationText = findViewById(R.id.social_situation);
                 moodSocialSituation = socialSituationText.getText().toString();
 
-                MoodEvent moodEvent = createMoodEventObject(moodDate, moodTime, moodEmotionalState, moodReason, moodSocialSituation);
-                addMoodEventToDB(collectionReference, moodEvent);
 
-                Intent intent = new Intent(getApplicationContext(), UserFeedActivity.class);
-                startActivity(intent);
+//                //upload image
+                if(uploadTask != null && uploadTask.isInProgress()){
+                    Log.d(TAG, "uploading in progress");
+                } else{
+                    uploadImage();
+                }
+
+//                MoodEvent moodEvent = new MoodEvent(moodDate, moodTime, moodEmotionalState, moodImageUrl, moodReason, moodSocialSituation);
+//                addMoodEventToDB(collectionReference, moodEvent);
+//
+//                Intent intent = new Intent(getApplicationContext(), UserFeedActivity.class);
+//                startActivity(intent);
 
             }
         });
 
     } //end of onCreate
 
-    //methods for image upload
+    //==============================================================================================
+    // IMAGE UPLOAD METHODS
+    //==============================================================================================
+
     private void openFileChooser(){
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -180,7 +226,51 @@ public class CreateEventActivity extends AppCompatActivity{
         }
     }
 
-    //Date and Time Picker Dialog methods
+    private String getFileExtension(Uri uri) {
+        ContentResolver cR = getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(cR.getType(uri));
+    }
+
+    private void uploadImage(){
+        if(imageUri != null){
+            final StorageReference fileReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
+
+            uploadTask = fileReference.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            //set up progress bar on later dev
+                        }
+                    }, 500);
+
+                    //Add Toast message here for upload success
+                    UploadImage uploadImage = new UploadImage(fileReference.getDownloadUrl().toString());
+                    moodImageUrl = uploadImage.getImageUrl();
+                    String uploadId = databaseReference.push().getKey();
+                    databaseReference.child(uploadId).setValue(uploadImage);
+
+                    //submit to db
+                    submitMoodEventToDB();
+
+
+                }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d(TAG, "failed to upload image");
+                }
+            });
+        }
+    }
+
+    //==============================================================================================
+    // DATE AND TIME PICKER DIALOG FRAGMENT
+    //==============================================================================================
 
     /* After user decided on a date, store those in our calendar variable and then start the TimePickerDialog immediately */
     private final DatePickerDialog.OnDateSetListener DateDataSet = new DatePickerDialog.OnDateSetListener() {
@@ -214,7 +304,7 @@ public class CreateEventActivity extends AppCompatActivity{
 
     //creates the object MoodEvent
     private MoodEvent createMoodEventObject(String moodDate, String moodTime, String moodEmotionalState, String moodReason, String moodSocialSituation){
-        return new MoodEvent(moodDate, moodTime, moodEmotionalState, moodReason, moodSocialSituation);
+        return new MoodEvent(moodDate, moodTime, moodEmotionalState, moodImageUrl, moodReason, moodSocialSituation);
     }
 
     //adds MoodEvent object to db
@@ -236,6 +326,14 @@ public class CreateEventActivity extends AppCompatActivity{
                         Log.d(TAG, "Data addition failed" + e.toString());
                     }
                 });
+    }
+
+    private void submitMoodEventToDB(){
+        MoodEvent moodEvent = new MoodEvent(moodDate, moodTime, moodEmotionalState, moodImageUrl, moodReason, moodSocialSituation);
+        addMoodEventToDB(collectionReference, moodEvent);
+
+        Intent intent = new Intent(getApplicationContext(), UserFeedActivity.class);
+        startActivity(intent);
     }
 
 }

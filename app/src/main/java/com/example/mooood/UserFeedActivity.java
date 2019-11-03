@@ -23,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import java.util.ArrayList;
 
@@ -31,11 +32,12 @@ import static com.google.firebase.firestore.FieldValue.delete;
 public class UserFeedActivity extends AppCompatActivity{
 
     private static final String TAG = "For Testing";
+    public static final String DOC_ID = "Doc Id";
 
     //Declare the variables for reference later
     SwipeMenuListView postList;
-    ArrayAdapter<MoodEvent> postAdapter; //<String> for now
-    ArrayList<MoodEvent> postDataList; //<String> for now
+    ArrayAdapter<MoodEvent> postAdapter;
+    ArrayList<MoodEvent> postDataList;
 
     //Firebase setup!
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -99,6 +101,17 @@ public class UserFeedActivity extends AppCompatActivity{
             }
         });
 
+//        //click listener for each item -> ShowEventActivity
+//        postList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//
+//                Intent intent = new Intent(getApplicationContext(), ShowEventActivity.class);
+//                intent.putExtra(DOC_ID, postDataList.get(i).getDocumentId());
+//                startActivity(intent);
+//            }
+//        });
+
     } //end of onCreate
 
     @Override
@@ -115,10 +128,11 @@ public class UserFeedActivity extends AppCompatActivity{
                     String date = documentSnapshot.getData().get("date").toString();
                     String time = documentSnapshot.getData().get("time").toString();
                     String emotionalState = documentSnapshot.getData().get("emotionalState").toString();
+                    String imageURl = "";
                     String reason = documentSnapshot.getData().get("reason").toString();
                     String socialSituation = documentSnapshot.getData().get("socialSituation").toString();
 
-                    MoodEvent moodEvent = new MoodEvent(date, time, emotionalState, reason, socialSituation);
+                    MoodEvent moodEvent = new MoodEvent(date, time, emotionalState, imageURl, reason, socialSituation);
                     moodEvent.setDocumentId(documentSnapshot.getId());
 
                     postDataList.add(moodEvent); //add to datalist
