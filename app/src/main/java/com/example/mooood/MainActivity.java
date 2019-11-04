@@ -112,11 +112,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Checks if the account exists or not
-    public void CheckLogIn(String accountName, final String inputtedpassword){
+    public void CheckLogIn(final String accountName, final String inputtedpassword){
         Log.d("debugging", "mainActivity- Check account");
         final FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
-        DocumentReference docRef = db.collection("account").document(accountName);
+        DocumentReference docRef = db.collection("participant").document(accountName);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -131,7 +131,9 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("debugging", "mainActivity- Logged In");
                             errorMsg.setVisibility(View.INVISIBLE);
                             errorMsg.setText("");
+
                             Intent intent = new Intent(getApplicationContext(), UserFeedActivity.class);
+                            intent.putExtra("accountKey", accountName);
                             startActivity(intent);
                         }
                         // if inputted password is wrong, set the password field empty and
@@ -166,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         // Checking if the account exists or not
-        DocumentReference docRef = db.collection("account").document(accountName);
+        DocumentReference docRef = db.collection("participant").document(accountName);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -184,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("debugging", "mainActivity- Account does not exists");
                         HashMap<String, String> account = new HashMap<>();
                         account.put("password", inputtedPassword);
-                        final CollectionReference collectionReference = db.collection("account");
+                        final CollectionReference collectionReference = db.collection("participant");
                         collectionReference
                                 .document(accountName)
                                 .set(account)

@@ -29,6 +29,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -52,9 +53,12 @@ public class CreateEventActivity extends AppCompatActivity{
     SwipeMoodsAdapter moodRosterAdapter;
     List<Emoticon> moodImages;
 
+
+
     //Firebase setup!
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final CollectionReference collectionReference = db.collection("MoodEvents");
+    private DocumentReference documentReference;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     TextView socialSituation;
@@ -83,6 +87,12 @@ public class CreateEventActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_event);
+
+        //Accessing acountName
+        Intent intent = getIntent();
+        String accountName = intent.getStringExtra("key");
+
+        documentReference = db.collection("MoodEvents").document(accountName);
 
         //Creating a mood roster
         moodImages = new ArrayList<>();
@@ -308,8 +318,8 @@ public class CreateEventActivity extends AppCompatActivity{
     }
 
     //adds MoodEvent object to db
-    private void addMoodEventToDB(CollectionReference collectionReference, MoodEvent moodEvent){
-        collectionReference
+    private void addMoodEventToDB(DocumentReference documentReference, MoodEvent moodEvent){
+        documentReference.collection("MoodActivities")
                 .document()
                 .set(moodEvent)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -330,7 +340,7 @@ public class CreateEventActivity extends AppCompatActivity{
 
     private void submitMoodEventToDB(){
         MoodEvent moodEvent = new MoodEvent(moodDate, moodTime, moodEmotionalState, moodImageUrl, moodReason, moodSocialSituation);
-        addMoodEventToDB(collectionReference, moodEvent);
+        addMoodEventToDB(documentReference, moodEvent);
 
         Intent intent = new Intent(getApplicationContext(), UserFeedActivity.class);
         startActivity(intent);
