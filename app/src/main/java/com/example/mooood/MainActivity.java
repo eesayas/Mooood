@@ -32,6 +32,10 @@ import org.w3c.dom.Document;
 
 import java.util.HashMap;
 
+
+/**
+ * This is where the program starts (Login/Sign up)
+ */
 public class MainActivity extends AppCompatActivity {
     private EditText userName;
     private EditText password;
@@ -57,7 +61,9 @@ public class MainActivity extends AppCompatActivity {
         errorMsg = findViewById(R.id.activity_main_tv_incorrect);
     }
 
-    // takes the user to the sign up page
+    /**
+     * takes the user to the sign up page or the login page depending on where they were
+     */
     public void userSignUpORSignIn(View view) {
         Log.d("debugging","mainActivity- |" + signUp.getText().toString());
         // hiding error message textview
@@ -89,10 +95,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // checks if the user inputted the user name to sign up or log in
+    /**
+     * Checks to make sure the username or password is not empty when an user tries to login/sign up
+     */
     public void CheckEmpty(View view) {
         Log.d("debugging","mainActivity- |"+ prompt.getText().toString()+"|");
-        String userNameInput = userName.getText().toString();
+        String userNameInput = userName.getText().toString().toLowerCase();
         String passwordInput = password.getText().toString();
         // if either username or password is empty it will show a message saying that they can not be empty
         if ((userName.getText().toString().isEmpty()) || password.getText().toString().isEmpty()){
@@ -111,7 +119,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Checks if the account exists or not
+    /**
+     * Checks if the account exists or not to validate log in
+     * @param accountName
+     *     This is the account name user enters
+     * @param inputtedpassword
+     *     This is the password user enters
+     */
     public void CheckLogIn(final String accountName, final String inputtedpassword){
         Log.d("debugging", "mainActivity- Check account");
         final FirebaseFirestore db;
@@ -159,9 +173,18 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     // checks if the inputted username already exists or not, if it does, it takes the user back to
     // log in page, if not, lets the user sign up
-    // https://firebase.google.com/docs/firestore/query-data/get-data
+    /**
+     * Checks if the account exists or not to let user make an account
+     * If successful, logs in user automatically
+     * @param accountName
+     *     This is the account name user enters
+     * @param inputtedPassword
+     *     This is the password user enters
+     */
+
     public void MakeAccount(final String accountName, final String inputtedPassword){
         Log.d("debugging", "mainActivity- Adding account to FB");
         final FirebaseFirestore db;
@@ -194,6 +217,8 @@ public class MainActivity extends AppCompatActivity {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         Log.d("debugging", "mainActivity- User added");
+                                        CheckLogIn(accountName, inputtedPassword);
+
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {
@@ -210,6 +235,5 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-
 
 }

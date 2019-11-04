@@ -16,5 +16,6 @@
     <string name="wrongAccount">Username or password is incorrect</string>
     <string name="dneAccount">Account does not exists</string>
     <string name="existAccount">Account already exists</string>
+    <string name="accountCreated">Account created</string>
 
 </resources>
