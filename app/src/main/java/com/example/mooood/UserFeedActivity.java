@@ -12,13 +12,16 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
@@ -39,14 +42,24 @@ public class UserFeedActivity extends AppCompatActivity{
     ArrayAdapter<MoodEvent> postAdapter;
     ArrayList<MoodEvent> postDataList;
 
+    //Accessing account name
+
+
+
     //Firebase setup!
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final CollectionReference collectionReference = db.collection("MoodEvents");
+    private DocumentReference documentReference;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_feed);
+
+        Intent intent = getIntent();
+        final String accountName = intent.getStringExtra("accountKey");
+        documentReference = db.collection("MoodEvents").document(accountName);
 
         //basic ArrayAdapter init
         postDataList = new ArrayList<>();
@@ -82,7 +95,7 @@ public class UserFeedActivity extends AppCompatActivity{
             public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
                 switch (index){
                     case 0:
-                        deleteMoodEventFromDB(collectionReference, position);
+                        deleteMoodEventFromDB(documentReference, position);
                         break;
                 }
                 return false;
@@ -96,6 +109,7 @@ public class UserFeedActivity extends AppCompatActivity{
             public void onClick(View view) {
 
                 Intent intent = new Intent(getApplicationContext(), CreateEventActivity.class);
+                intent.putExtra("key", accountName);
                 startActivity(intent);
 
             }
@@ -115,9 +129,38 @@ public class UserFeedActivity extends AppCompatActivity{
     } //end of onCreate
 
     @Override
-    protected void onStart(){
+    protected void onStart() {
         super.onStart();
-        collectionReference.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+        documentReference.collection("MoodActivities")
+                .orderBy("date", Query.Direction.DESCENDING)
+                .orderBy("time", Query.Direction.DESCENDING)
+                .addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                        postDataList.clear();
+
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            MoodEvent mood =documentSnapshot.toObject(MoodEvent.class);
+                            String date = documentSnapshot.getData().get("date").toString();
+                            String time = documentSnapshot.getData().get("time").toString();
+                            String emotionalState = documentSnapshot.getData().get("emotionalState").toString();
+                            String imageURl = "";
+                            String reason = documentSnapshot.getData().get("reason").toString();
+                            String socialSituation = documentSnapshot.getData().get("socialSituation").toString();
+
+                            MoodEvent moodEvent = new MoodEvent(date, time, emotionalState, imageURl, reason, socialSituation);
+                            moodEvent.setDocumentId(documentSnapshot.getId());
+
+                            postDataList.add(moodEvent); //add to datalist
+                        }
+
+                        postAdapter.notifyDataSetChanged();
+                    }
+
+
+                });
+    }
+/*        collectionReference.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot queryDocumentSnapshots, FirebaseFirestoreException e) {
 
@@ -141,23 +184,23 @@ public class UserFeedActivity extends AppCompatActivity{
                 postAdapter.notifyDataSetChanged();
             }
         });
-    }
+    }*/
 
     //delete from database
-    public void deleteMoodEventFromDB(CollectionReference collectionReference, int position){
-        collectionReference
+    public void deleteMoodEventFromDB(DocumentReference documentReference, int position){
+        documentReference.collection("MoodActivities")
                 .document(postDataList.get(position).getDocumentId())
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "City and Province was successfully deleted");
+                        Log.d(TAG, "Mood was successfully deleted");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "City and Province were not deleted", e);
+                        Log.d(TAG, "Mood was not deleted", e);
                     }
                 });
 
