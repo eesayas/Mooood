@@ -1,3 +1,11 @@
 # Mooood
 
-No need to merge this to any branch yet. `git clone -b <branch> <repo>` to clone the branch in a different folder in your local machine. Alternatively, do a git pull from master then checkout this branch WITHOUT using the "git checkout -b" command. Git will automatically generate a branch with this branch's name on your machine and track it from origin. 
+## This is the pseudo master branch we are going to use for Project 3
+
+| Members        | Responsibilities| 
+| ------------- |:-------------:| 
+|  Maaz    | Fix database structure|
+| Max    | Geo Location      |  
+| Hyeon    | Login Screen & Test Case + javadoc |
+| Fahad | EditEventActivity & Test Case + javadoc |
+| Isaias | ShowEventActivity & Test Case + javadoc | 
