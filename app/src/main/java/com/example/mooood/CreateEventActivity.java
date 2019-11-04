@@ -319,6 +319,8 @@ public class CreateEventActivity extends AppCompatActivity{
 
     //adds MoodEvent object to db
     private void addMoodEventToDB(DocumentReference documentReference, MoodEvent moodEvent){
+        Log.d("debugging", "here");
+
         documentReference.collection("MoodActivities")
                 .document()
                 .set(moodEvent)
@@ -336,14 +338,17 @@ public class CreateEventActivity extends AppCompatActivity{
                         Log.d(TAG, "Data addition failed" + e.toString());
                     }
                 });
+        Log.d("debugging", "done");
+
     }
 
     private void submitMoodEventToDB(){
         MoodEvent moodEvent = new MoodEvent(moodDate, moodTime, moodEmotionalState, moodImageUrl, moodReason, moodSocialSituation);
         addMoodEventToDB(documentReference, moodEvent);
+        Log.d("debugging", "back to feed");
 
-        Intent intent = new Intent(getApplicationContext(), UserFeedActivity.class);
-        startActivity(intent);
+
+        finish();
     }
 
 }

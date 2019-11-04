@@ -131,6 +131,7 @@ public class UserFeedActivity extends AppCompatActivity{
     @Override
     protected void onStart() {
         super.onStart();
+
         documentReference.collection("MoodActivities")
                 .orderBy("date", Query.Direction.DESCENDING)
                 .orderBy("time", Query.Direction.DESCENDING)
@@ -207,5 +208,6 @@ public class UserFeedActivity extends AppCompatActivity{
         postDataList.remove(position);
         postAdapter.notifyDataSetChanged();
     }
+
 
 }
