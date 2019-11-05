@@ -149,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
                             Intent intent = new Intent(getApplicationContext(), UserFeedActivity.class);
                             intent.putExtra("accountKey", accountName);
                             startActivity(intent);
+                            finish();
                         }
                         // if inputted password is wrong, set the password field empty and
                         // show error message
