@@ -74,6 +74,7 @@ public class CreateEventActivity extends AppCompatActivity{
     Calendar calendar;
     TextView dateAndTimeMood;
     Button submitButton;
+    Button locationButton;
 
     //needed for creating MoodEvent later
     String moodDate;
@@ -178,6 +179,20 @@ public class CreateEventActivity extends AppCompatActivity{
                 new DatePickerDialog(CreateEventActivity.this, DateDataSet, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(calendar.DAY_OF_MONTH)).show();
             }
         });
+
+        //==============================================================================================
+        // LOCATION BUTTON click listener
+        //==============================================================================================
+        locationButton=findViewById(R.id.location_button);
+        locationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openMaps();
+            }
+        });
+
+
+
 
         //==============================================================================================
         // SUBMISSION
@@ -311,6 +326,15 @@ public class CreateEventActivity extends AppCompatActivity{
             dateAndTimeMood.setText(simpleDateFormat.format(calendar.getTime()));
         }
     };
+    //==============================================================================================
+    // GOOGLE MAPS LOCATION ACCESS
+    //==============================================================================================
+    private void openMaps(){
+        Intent intent = new Intent(CreateEventActivity.this,MapsActivity.class);
+        CreateEventActivity.this.startActivity(intent);
+    }
+
+
 
     //creates the object MoodEvent
     private MoodEvent createMoodEventObject(String moodDate, String moodTime, String moodEmotionalState, String moodReason, String moodSocialSituation){
