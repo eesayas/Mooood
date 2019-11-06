@@ -23,6 +23,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -53,8 +54,6 @@ public class CreateEventActivity extends AppCompatActivity{
     SwipeMoodsAdapter moodRosterAdapter;
     List<Emoticon> moodImages;
 
-
-
     //Firebase setup!
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final CollectionReference collectionReference = db.collection("MoodEvents");
@@ -76,6 +75,7 @@ public class CreateEventActivity extends AppCompatActivity{
     Button submitButton;
 
     //needed for creating MoodEvent later
+    String moodAuthor;
     String moodDate;
     String moodTime;
     String moodEmotionalState;
@@ -90,19 +90,19 @@ public class CreateEventActivity extends AppCompatActivity{
 
         //Accessing acountName
         Intent intent = getIntent();
-        String accountName = intent.getStringExtra("key");
+        final String accountName = intent.getStringExtra("key");
 
         documentReference = db.collection("MoodEvents").document(accountName);
 
         //Creating a mood roster
         moodImages = new ArrayList<>();
-        moodImages.add(new Emoticon("HAPPY", R.drawable.happy_cow_v2));
-        moodImages.add(new Emoticon("SAD", R.drawable.sad_cow_v2));
-        moodImages.add(new Emoticon("LAUGHING", R.drawable.laughing_cow_v2));
-        moodImages.add(new Emoticon("IN LOVE", R.drawable.inlove_cow_v2));
-        moodImages.add(new Emoticon("ANGRY" , R.drawable.angry_cow_v2));
-        moodImages.add(new Emoticon("SICK" , R.drawable.sick_cow_v2));
-        moodImages.add(new Emoticon("AFRAID", R.drawable.afraid_cow_v2));
+        moodImages.add(new Emoticon("HAPPY", 2));
+        moodImages.add(new Emoticon("SAD", 2));
+        moodImages.add(new Emoticon("LAUGHING", 2));
+        moodImages.add(new Emoticon("IN LOVE", 2));
+        moodImages.add(new Emoticon("ANGRY", 2));
+        moodImages.add(new Emoticon("SICK", 2));
+        moodImages.add(new Emoticon("AFRAID", 2));
 
         //adapter for mood roster
         moodRosterAdapter = new SwipeMoodsAdapter(moodImages, this);
@@ -188,13 +188,14 @@ public class CreateEventActivity extends AppCompatActivity{
             @Override
             public void onClick(View view) {
 
-                //retreive remaining needed for Mood Event
+                //retrieve remaining needed for Mood Event
                 EditText reasonText = findViewById(R.id.reason);
                 moodReason = reasonText.getText().toString();
 
                 TextView socialSituationText = findViewById(R.id.social_situation);
                 moodSocialSituation = socialSituationText.getText().toString();
 
+                moodAuthor = accountName;
 
 //                //upload image
                 if(uploadTask != null && uploadTask.isInProgress()){
@@ -258,7 +259,12 @@ public class CreateEventActivity extends AppCompatActivity{
                     }, 500);
 
                     //Add Toast message here for upload success
-                    UploadImage uploadImage = new UploadImage(fileReference.getDownloadUrl().toString());
+
+                    Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
+                    while(!urlTask.isSuccessful());
+                    Uri downloadUrl = urlTask.getResult();
+
+                    UploadImage uploadImage = new UploadImage(downloadUrl.toString());
                     moodImageUrl = uploadImage.getImageUrl();
                     String uploadId = databaseReference.push().getKey();
                     databaseReference.child(uploadId).setValue(uploadImage);
@@ -305,17 +311,12 @@ public class CreateEventActivity extends AppCompatActivity{
             calendar.set(Calendar.MINUTE, minute);
 
             //get Time
-            moodTime = new SimpleDateFormat("h mm a", Locale.getDefault()).format(calendar.getTime());
+            moodTime = new SimpleDateFormat("h:mm:ss a", Locale.getDefault()).format(calendar.getTime());
 
             //set TexView to correspond with input data
             dateAndTimeMood.setText(simpleDateFormat.format(calendar.getTime()));
         }
     };
-
-    //creates the object MoodEvent
-    private MoodEvent createMoodEventObject(String moodDate, String moodTime, String moodEmotionalState, String moodReason, String moodSocialSituation){
-        return new MoodEvent(moodDate, moodTime, moodEmotionalState, moodImageUrl, moodReason, moodSocialSituation);
-    }
 
     //adds MoodEvent object to db
     private void addMoodEventToDB(DocumentReference documentReference, MoodEvent moodEvent){
@@ -343,10 +344,11 @@ public class CreateEventActivity extends AppCompatActivity{
     }
 
     private void submitMoodEventToDB(){
-        MoodEvent moodEvent = new MoodEvent(moodDate, moodTime, moodEmotionalState, moodImageUrl, moodReason, moodSocialSituation);
+
+        Log.d(TAG, "whatsup " + moodAuthor);
+        MoodEvent moodEvent = new MoodEvent(moodAuthor, moodDate, moodTime, moodEmotionalState, moodImageUrl, moodReason, moodSocialSituation);
         addMoodEventToDB(documentReference, moodEvent);
         Log.d("debugging", "back to feed");
-
 
         finish();
     }
