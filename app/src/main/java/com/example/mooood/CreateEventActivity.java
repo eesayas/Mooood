@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -38,11 +39,13 @@ import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Date;
 
 public class CreateEventActivity extends AppCompatActivity{
 
@@ -78,6 +81,7 @@ public class CreateEventActivity extends AppCompatActivity{
     String moodAuthor;
     String moodDate;
     String moodTime;
+    Date moodTimeStamp;
     String moodEmotionalState;
     String moodImageUrl;
     String moodReason;
@@ -196,6 +200,16 @@ public class CreateEventActivity extends AppCompatActivity{
                 moodSocialSituation = socialSituationText.getText().toString();
 
                 moodAuthor = accountName;
+
+                //create timestamp
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm:ss a");
+
+                try {
+                    moodTimeStamp = simpleDateFormat.parse(moodDate + ' ' + moodTime);
+
+                } catch (ParseException e){
+                    e.printStackTrace();
+                }
 
 //                //upload image
                 if(uploadTask != null && uploadTask.isInProgress()){
@@ -347,6 +361,7 @@ public class CreateEventActivity extends AppCompatActivity{
 
         Log.d(TAG, "whatsup " + moodAuthor);
         MoodEvent moodEvent = new MoodEvent(moodAuthor, moodDate, moodTime, moodEmotionalState, moodImageUrl, moodReason, moodSocialSituation);
+        moodEvent.setTimeStamp(moodTimeStamp);
         addMoodEventToDB(documentReference, moodEvent);
         Log.d("debugging", "back to feed");
 
