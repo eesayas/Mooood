@@ -87,6 +87,9 @@ public class EditEventActivity extends AppCompatActivity{
     String moodImageUrl;
     String moodReason;
     String moodSocialSituation;
+    String moodDocID;
+    String moodAuthor;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,13 +113,15 @@ public class EditEventActivity extends AppCompatActivity{
         moodImageUrl = moodEvent.getImageUrl();
         moodReason = moodEvent.getReason();
         moodSocialSituation = moodEvent.getSocialSituation();
+        moodDocID = moodEvent.getDocumentId();
+        moodAuthor = moodEvent.getAuthor();
 
         socialSituation.setText(moodSocialSituation);
         reason.setText(moodReason);
-        dateAndTimeMood.setText(moodDate);
+        dateAndTimeMood.setText(moodDate +" "+ moodTime);
         Picasso.get().load(moodImageUrl).into(imageUpload);     // set the image according to the given URL
 
-
+        documentReference = db.collection("MoodEvents").document(moodAuthor);
 
 
 
@@ -141,6 +146,8 @@ public class EditEventActivity extends AppCompatActivity{
         moodRoster.setPageMargin(50);
         // make the moodEmotionalState the mood given by showEvent
         //moodEmotionalState = "HAPPY";
+        moodEmotionalState = moodEvent.getEmotionalState();
+
         moodRoster.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -158,6 +165,189 @@ public class EditEventActivity extends AppCompatActivity{
             }
         });
 
+        socialSituation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new SocialSituationFragment().show(getSupportFragmentManager(), "ADD_SOCIAL_SITUATON");
+            }
+        });
+
+        //==============================================================================================
+        // DATE AND TIME PICKER DIALOG FRAGMENT click listener
+        //==============================================================================================
+
+        //access date and time picker fragments
+        //Resource: https://github.com/Kiarasht/Android-Templates/tree/master/Templates/DatePickerDialog
+        simpleDateFormat = new SimpleDateFormat("MMM/dd/yyyy h:mm a", Locale.getDefault());
+        dateAndTimeMood.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                calendar = Calendar.getInstance();
+                new DatePickerDialog(EditEventActivity.this, DateDataSet, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
+        //==============================================================================================
+        // IMAGE UPLOAD SETUP
+        // Resource: https://codinginflow.com/tutorials/android/firebase-storage-upload-and-retrieve-images/part-2-image-chooser
+        //==============================================================================================
+
+        // click listener for Image Upload
+        imageUpload = findViewById(R.id.image_reason);
+        imageUpload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openFileChooser();
+            }
+        });
+
+        //
+        storageReference = FirebaseStorage.getInstance().getReference("reason_image");
+        databaseReference = FirebaseDatabase.getInstance().getReference("reason_image");
+
+
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                moodDate = ;
+//                moodTime = ;
+//                moodEmotionalState = ;
+                //moodImageUrl = moodEvent.getImageUrl();
+                moodReason = reason.getText().toString();
+                moodSocialSituation = socialSituation.getText().toString();
+
+                moodEvent.setEmotionalState(moodEmotionalState);
+                moodEvent.setDate(moodDate);
+                moodEvent.setTime(moodTime);
+                moodEvent.setReason(moodReason);
+                moodEvent.setSocialSituation(moodSocialSituation);
+
+
+                EditMoodEventDB(documentReference,moodEvent);
+
+                Intent intent = new Intent(EditEventActivity.this, UserFeedActivity.class);
+                intent.putExtra("accountKey", moodAuthor);
+                startActivity(intent);
+
+            }
+        });
 
     }
+    private final DatePickerDialog.OnDateSetListener DateDataSet = new DatePickerDialog.OnDateSetListener() {
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+            calendar.set(Calendar.YEAR, year);
+            calendar.set(Calendar.MONTH, monthOfYear);
+            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+            //get Date
+            moodDate = new SimpleDateFormat("MMM dd yyyy", Locale.getDefault()).format(calendar.getTime());
+
+            new TimePickerDialog(EditEventActivity.this, TimeDataSet, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false).show();
+        }
+    };
+
+    /* After user decided on a time, save them into our calendar instance, and now parse what our calendar has into the TextView */
+    private final TimePickerDialog.OnTimeSetListener TimeDataSet = new TimePickerDialog.OnTimeSetListener() {
+        @Override
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            calendar.set(Calendar.MINUTE, minute);
+
+            //get Time
+            moodTime = new SimpleDateFormat("h:mm:ss a", Locale.getDefault()).format(calendar.getTime());
+
+            //set TexView to correspond with input data
+            dateAndTimeMood.setText(simpleDateFormat.format(calendar.getTime()));
+        }
+    };
+
+    public void EditMoodEventDB(DocumentReference documentReference, MoodEvent mood){
+        documentReference.collection("MoodActivities")
+                .document(mood.getDocumentId())
+                .set(mood)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Mood was successfully Edited");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "Mood was not Edited", e);
+                    }
+                });
+    }
+
+
+    //==============================================================================================
+    // IMAGE UPLOAD METHODS
+    //==============================================================================================
+
+    private void openFileChooser(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null){
+            imageUri = data.getData();
+
+            Picasso.get().load(imageUri).into(imageUpload);
+        }
+    }
+
+    private String getFileExtension(Uri uri) {
+        ContentResolver cR = getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(cR.getType(uri));
+    }
+
+    private void uploadImage(){
+        if(imageUri != null){
+            final StorageReference fileReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
+
+            uploadTask = fileReference.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            //set up progress bar on later dev
+                        }
+                    }, 500);
+
+                    //Add Toast message here for upload success
+
+                    Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
+                    while(!urlTask.isSuccessful());
+                    Uri downloadUrl = urlTask.getResult();
+
+                    UploadImage uploadImage = new UploadImage(downloadUrl.toString());
+                    moodImageUrl = uploadImage.getImageUrl();
+                    String uploadId = databaseReference.push().getKey();
+                    databaseReference.child(uploadId).setValue(uploadImage);
+
+                    //submit to db
+//                    submitMoodEventToDB();
+
+
+                }
+            })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d(TAG, "failed to upload image");
+                        }
+                    });
+        }
+    }
+
 }
