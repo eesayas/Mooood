@@ -1,12 +1,14 @@
 package com.example.mooood;
 import android.os.Parcel;
 import android.os.Parcelable;
+import java.util.Date;
 
 import com.google.firebase.firestore.Exclude;
 
 public class MoodEvent implements Parcelable{
 
     private String documentId;
+    private Date timeStamp;
 
     private String author;
 
@@ -31,6 +33,7 @@ public class MoodEvent implements Parcelable{
         this.reason = reason;
         this.socialSituation = socialSituation;
     }
+
 
     protected MoodEvent(Parcel in) {
         documentId = in.readString();
@@ -119,6 +122,14 @@ public class MoodEvent implements Parcelable{
 
     public void setAuthor(String author) {
         this.author = author;
+    }
+
+    public Date getTimeStamp() {
+        return this.timeStamp;
+    }
+
+    public void setTimeStamp(Date timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
     @Override

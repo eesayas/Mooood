@@ -29,6 +29,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class UserFeedActivity extends AppCompatActivity{
 
@@ -127,8 +128,7 @@ public class UserFeedActivity extends AppCompatActivity{
         super.onStart();
 
         documentReference.collection("MoodActivities")
-                .orderBy("date", Query.Direction.DESCENDING)
-                .orderBy("time", Query.Direction.DESCENDING)
+                .orderBy("timeStamp", Query.Direction.DESCENDING)
                 .addSnapshotListener(this, new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
