@@ -30,21 +30,15 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import java.util.ArrayList;
 
-import static com.google.firebase.firestore.FieldValue.delete;
-
 public class UserFeedActivity extends AppCompatActivity{
 
     private static final String TAG = "For Testing";
-    public static final String DOC_ID = "Doc Id";
+    public static final String MOODEVENT = "Mood Event";
 
     //Declare the variables for reference later
     SwipeMenuListView postList;
     ArrayAdapter<MoodEvent> postAdapter;
     ArrayList<MoodEvent> postDataList;
-
-    //Accessing account name
-
-
 
     //Firebase setup!
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -115,16 +109,16 @@ public class UserFeedActivity extends AppCompatActivity{
             }
         });
 
-//        //click listener for each item -> ShowEventActivity
-//        postList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//
-//                Intent intent = new Intent(getApplicationContext(), ShowEventActivity.class);
-//                intent.putExtra(DOC_ID, postDataList.get(i).getDocumentId());
-//                startActivity(intent);
-//            }
-//        });
+        //click listener for each item -> ShowEventActivity
+        postList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                Intent intent = new Intent(UserFeedActivity.this, ShowEventActivity.class);
+                intent.putExtra(MOODEVENT, postDataList.get(i));
+                startActivity(intent);
+            }
+        });
 
     } //end of onCreate
 
@@ -141,18 +135,21 @@ public class UserFeedActivity extends AppCompatActivity{
                         postDataList.clear();
 
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                            MoodEvent mood =documentSnapshot.toObject(MoodEvent.class);
-                            String date = documentSnapshot.getData().get("date").toString();
-                            String time = documentSnapshot.getData().get("time").toString();
-                            String emotionalState = documentSnapshot.getData().get("emotionalState").toString();
-                            String imageURl = "";
-                            String reason = documentSnapshot.getData().get("reason").toString();
-                            String socialSituation = documentSnapshot.getData().get("socialSituation").toString();
+//                            MoodEvent mood = documentSnapshot.toObject(MoodEvent.class);
 
-                            MoodEvent moodEvent = new MoodEvent(date, time, emotionalState, imageURl, reason, socialSituation);
-                            moodEvent.setDocumentId(documentSnapshot.getId());
+                            if(queryDocumentSnapshots != null){
+                                String author = documentSnapshot.getData().get("author").toString();
+                                String date = documentSnapshot.getData().get("date").toString();
+                                String time = documentSnapshot.getData().get("time").toString();
+                                String emotionalState = documentSnapshot.getData().get("emotionalState").toString();
+                                String imageURl = documentSnapshot.getData().get("imageUrl").toString();
+                                String reason = documentSnapshot.getData().get("reason").toString();
+                                String socialSituation = documentSnapshot.getData().get("socialSituation").toString();
+                                MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation);
+                                moodEvent.setDocumentId(documentSnapshot.getId());
 
-                            postDataList.add(moodEvent); //add to datalist
+                                postDataList.add(moodEvent); //add to data list
+                            }
                         }
 
                         postAdapter.notifyDataSetChanged();
@@ -161,31 +158,6 @@ public class UserFeedActivity extends AppCompatActivity{
 
                 });
     }
-/*        collectionReference.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot queryDocumentSnapshots, FirebaseFirestoreException e) {
-
-                postDataList.clear();
-
-                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-
-                    String date = documentSnapshot.getData().get("date").toString();
-                    String time = documentSnapshot.getData().get("time").toString();
-                    String emotionalState = documentSnapshot.getData().get("emotionalState").toString();
-                    String imageURl = "";
-                    String reason = documentSnapshot.getData().get("reason").toString();
-                    String socialSituation = documentSnapshot.getData().get("socialSituation").toString();
-
-                    MoodEvent moodEvent = new MoodEvent(date, time, emotionalState, imageURl, reason, socialSituation);
-                    moodEvent.setDocumentId(documentSnapshot.getId());
-
-                    postDataList.add(moodEvent); //add to datalist
-                }
-
-                postAdapter.notifyDataSetChanged();
-            }
-        });
-    }*/
 
     //delete from database
     public void deleteMoodEventFromDB(DocumentReference documentReference, int position){
