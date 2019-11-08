@@ -52,10 +52,10 @@ public class AddMoodTest {
     @Test
     public void checkAddMood(){
         solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
-        solo.enterText((EditText)solo.getView(R.id.activity_main_et__username), "coolerman");
-        solo.waitForText("coolerman",1,2000);
-        solo.enterText((EditText)solo.getView(R.id.activity_main_et__password), "coolerman");
-        solo.waitForText("coolerman",1,2000);
+        solo.enterText((EditText)solo.getView(R.id.activity_main_et__username), "coolestman");
+        solo.waitForText("coolestman",1,2000);
+        solo.enterText((EditText)solo.getView(R.id.activity_main_et__password), "coolestman");
+        solo.waitForText("coolestman",1,2000);
         solo.clickOnView(solo.getView(R.id.activity_main_btn_submit));
         solo.waitForActivity(UserFeedActivity.class);
 
@@ -66,40 +66,46 @@ public class AddMoodTest {
         solo.clickOnView(solo.getView(R.id.social_situation));
         solo.clickOnText("Alone");
         solo.clickOnView(solo.getView(R.id.date_and_time));
-        solo.waitForText("OK",1,2000);
+        solo.waitForText("OK",1,2);
         solo.clickOnText("OK");
-        solo.waitForText("OK",1,2000);
+        calendar = Calendar.getInstance();
+        solo.waitForText("OK",1,2);
         solo.clickOnText("OK");
         calendar = Calendar.getInstance();
         solo.clickOnView(solo.getView(R.id.submit_button));
         solo.waitForActivity(UserFeedActivity.class);
-    }
 
-    @Test
-    public void checkMoodInList(){
         //Formats the time correctly
         SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a");
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd yyyy");
+        SimpleDateFormat scrolltimeFormat = new SimpleDateFormat("h:mm a");
+        String scrollTime = scrolltimeFormat.format(calendar.getTime());
         String selectedTime = timeFormat.format(calendar.getTime());
         String selectedDate = dateFormat.format(calendar.getTime());
+        if(solo.waitForText(scrollTime,1,100)){
+            assertTrue(true);
+        }
+        else{
+            solo.scrollDown();
+        }
+        //Check mood is in list
+        solo.clickOnText(scrollTime);
+        solo.waitForActivity(ShowEventActivity.class);
+        TextView moodAuthor = (TextView)solo.getView(R.id.author);
+        TextView moodDate = (TextView)solo.getView(R.id.date);
+        TextView moodTime = (TextView)solo.getView(R.id.time);
+        TextView moodSocialSituation = (TextView)solo.getView(R.id.social_situation);
+        TextView moodReason =(TextView)solo.getView(R.id.reason);
+        assertEquals(moodAuthor.getText().toString(),"coolestman");
+        assertEquals(moodSocialSituation.getText().toString(),"Alone");
+        assertEquals(moodReason.getText().toString(),"test reason");
+        assertEquals(moodDate.getText().toString(), selectedDate);
+        assertEquals(moodTime.getText().toString(), selectedTime);
+    }
 
-        //Log into user feed
-        solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
-        solo.enterText((EditText)solo.getView(R.id.activity_main_et__username), "coolerman");
-        solo.waitForText("coolerman",1,200);
-        solo.enterText((EditText)solo.getView(R.id.activity_main_et__password), "coolerman");
-        solo.waitForText("coolerman",1,200);
-        solo.clickOnView(solo.getView(R.id.activity_main_btn_submit));
-        solo.waitForActivity(UserFeedActivity.class);
-
-        //Check that mood event exists, i.e, checking persistency.
-        solo.waitForText("coolerman",1,200);
-        solo.clickOnText("coolerman");
-        solo.waitForText("coolerman",1,200);
-        solo.waitForText(selectedDate,1,200);
-        solo.waitForText(selectedTime,1,200);
-        solo.waitForText("Alone",1,200);
-        solo.waitForText("Test reason",1,200);
+    @After
+    public void tearDown() throws Exception {
+        solo.finishOpenedActivities();
     }
 
 }
