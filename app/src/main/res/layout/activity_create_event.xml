@@ -79,6 +79,12 @@
 
         <!--SUBMIT BUTTON-->
         <Button
+            android:id="@+id/location_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Location" />
+
+        <Button
             android:id="@+id/submit_button"
             android:text="SUBMIT"
             android:layout_width="match_parent"
