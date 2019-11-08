@@ -177,6 +177,8 @@ public class MainActivity extends AppCompatActivity {
 
     // checks if the inputted username already exists or not, if it does, it takes the user back to
     // log in page, if not, lets the user sign up
+
+
     /**
      * Checks if the account exists or not to let user make an account
      * If successful, logs in user automatically
