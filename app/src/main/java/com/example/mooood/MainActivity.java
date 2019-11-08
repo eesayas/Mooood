@@ -11,8 +11,12 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +35,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import org.w3c.dom.Document;
 
 import java.util.HashMap;
+import java.util.Scanner;
 
 
 /**
@@ -177,6 +182,8 @@ public class MainActivity extends AppCompatActivity {
 
     // checks if the inputted username already exists or not, if it does, it takes the user back to
     // log in page, if not, lets the user sign up
+
+
     /**
      * Checks if the account exists or not to let user make an account
      * If successful, logs in user automatically
@@ -185,7 +192,6 @@ public class MainActivity extends AppCompatActivity {
      * @param inputtedPassword
      *     This is the password user enters
      */
-
     public void MakeAccount(final String accountName, final String inputtedPassword){
         Log.d("debugging", "mainActivity- Adding account to FB");
         final FirebaseFirestore db;

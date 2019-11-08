@@ -34,9 +34,17 @@
             android:name=".MapsActivity"
             android:label="MapsActivity"></activity>
         <activity
+            android:name=".ShowEventActivity"
+            android:label="ShowEventActivity"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
             android:name=".CreateEventActivity"
             android:label="CreateEventActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".EditEventActivity"
+            android:label="@string/title_activity_user_feed"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".UserFeedActivity"
             android:label="@string/title_activity_user_feed"
