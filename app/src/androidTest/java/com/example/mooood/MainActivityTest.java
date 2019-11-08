@@ -143,7 +143,7 @@ public class MainActivityTest {
     }
 
     /**
-     * Check user trying to log in without correct account
+     * Check user trying to sign up with account that already exists
      */
     @Test
     public void checkSignUpFail(){
