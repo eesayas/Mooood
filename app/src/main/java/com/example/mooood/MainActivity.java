@@ -57,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         userName = findViewById(R.id.activity_main_et__username);
         password = findViewById(R.id.activity_main_et__password);
         signUp = findViewById(R.id.activity_main_tv_signUp);
@@ -192,7 +191,6 @@ public class MainActivity extends AppCompatActivity {
      * @param inputtedPassword
      *     This is the password user enters
      */
-
     public void MakeAccount(final String accountName, final String inputtedPassword){
         Log.d("debugging", "mainActivity- Adding account to FB");
         final FirebaseFirestore db;
