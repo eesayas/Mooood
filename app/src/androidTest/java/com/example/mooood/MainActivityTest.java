@@ -1,13 +1,16 @@
 package com.example.mooood;
 
 import android.app.Activity;
-import android.app.Instrumentation;
+import android.util.Log;
 import android.widget.EditText;
-import android.widget.ListView;
 
+
+import androidx.annotation.NonNull;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.robotium.solo.Solo;
@@ -17,11 +20,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import static com.google.firebase.database.DatabaseReference.goOffline;
 import static com.google.firebase.database.DatabaseReference.goOnline;
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+
 
 /**
  * Test class for MainActivity. All the UI tests are written here. Robotium test framework is
@@ -77,14 +77,14 @@ public class MainActivityTest {
         solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
         solo.enterText((EditText)solo.getView(R.id.activity_main_et__username), "hyeon");
         solo.waitForText("hyeon",1,2000);
-        solo.enterText((EditText)solo.getView(R.id.activity_main_et__password), "1");
+        solo.enterText((EditText)solo.getView(R.id.activity_main_et__password), "0");
         solo.waitForText("0",1,2000);
         solo.clickOnView(solo.getView(R.id.activity_main_btn_submit));
         solo.waitForText("Username or password is incorrect", 1,2000);
     }
 
     /**
-     * Check user trying to log in without correct account
+     * Check user trying to log in without giving username or password
      */
     @Test
     public void checkEmpty(){
@@ -94,6 +94,16 @@ public class MainActivityTest {
 
         solo.clickOnView(solo.getView(R.id.activity_main_btn_submit));
         solo.waitForText("Username or password can not be empty", 1,2000);
+
+        solo.enterText((EditText)solo.getView(R.id.activity_main_et__username), "");
+        solo.enterText((EditText)solo.getView(R.id.activity_main_et__password), "1");
+        solo.waitForText("1",1,2000);
+        solo.clickOnView(solo.getView(R.id.activity_main_btn_submit));
+        solo.waitForText("Username or password can not be empty", 1,2000);
+
+
+        solo.clickOnView(solo.getView(R.id.activity_main_btn_submit));
+
     }
 
     /**
@@ -104,22 +114,48 @@ public class MainActivityTest {
 
         solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
         solo.clickOnView(solo.getView(R.id.activity_main_tv_signUp));
-        solo.enterText((EditText)solo.getView(R.id.activity_main_et__username), "a");
-        solo.waitForText("a",1,2000);
-        solo.enterText((EditText)solo.getView(R.id.activity_main_et__password), "11");
+
+        solo.enterText((EditText)solo.getView(R.id.activity_main_et__username), "aa");
+        solo.waitForText("abc",1,2000);
+        solo.enterText((EditText)solo.getView(R.id.activity_main_et__password), "a");
         solo.waitForText("11",1,2000);
         solo.clickOnView(solo.getView(R.id.activity_main_btn_submit));
-
+        solo.waitForActivity(UserFeedActivity.class);
         final FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
-        DocumentReference docRef = db.collection("participant").document("a");
-        docRef.delete();
+        db.collection("participant").document("aa")
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("testing", "DocumentSnapshot successfully deleted!");
 
-        solo.waitForActivity(UserFeedActivity.class);
 
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("testing", "Error deleting document", e);
+                    }
+                });
+//
     }
 
-
+    /**
+     * Check user trying to sign up with account that already exists
+     */
+    @Test
+    public void checkSignUpFail(){
+        solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
+        solo.clickOnView(solo.getView(R.id.activity_main_tv_signUp));
+        solo.enterText((EditText)solo.getView(R.id.activity_main_et__username), "hyeon");
+        solo.waitForText("hyeon",1,2000);
+        solo.enterText((EditText)solo.getView(R.id.activity_main_et__password), "1");
+        solo.waitForText("1",1,2000);
+        solo.clickOnView(solo.getView(R.id.activity_main_btn_submit));
+        solo.waitForText("Account already exists", 1,2000);
+    }
 
     /**
      * Closes the activity after each test
