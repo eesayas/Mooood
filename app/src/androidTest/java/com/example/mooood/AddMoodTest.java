@@ -82,8 +82,12 @@ public class AddMoodTest {
         String scrollTime = scrolltimeFormat.format(calendar.getTime());
         String selectedTime = timeFormat.format(calendar.getTime());
         String selectedDate = dateFormat.format(calendar.getTime());
-        solo.waitForText(scrollTime,1,100);
-        solo.scrollDown();
+        if(solo.waitForText(scrollTime,1,100)){
+            assertTrue(true);
+        }
+        else{
+            solo.scrollDown();
+        }
         //Check mood is in list
         solo.clickOnText(scrollTime);
         solo.waitForActivity(ShowEventActivity.class);
