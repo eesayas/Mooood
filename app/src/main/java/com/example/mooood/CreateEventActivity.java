@@ -188,6 +188,11 @@ public class CreateEventActivity extends AppCompatActivity{
         //==============================================================================================
 
         submitButton = findViewById(R.id.submit_button);
+        submitButton.setEnabled(false);
+        if(moodDate != null && moodTime != null){
+            submitButton.setEnabled(true);
+        }
+
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -217,8 +222,10 @@ public class CreateEventActivity extends AppCompatActivity{
                 } else{
                     uploadImage();
                 }
-
                 submitMoodEventToDB();
+
+
+
 
 //                MoodEvent moodEvent = new MoodEvent(moodDate, moodTime, moodEmotionalState, moodImageUrl, moodReason, moodSocialSituation);
 //                addMoodEventToDB(collectionReference, moodEvent);
@@ -315,7 +322,7 @@ public class CreateEventActivity extends AppCompatActivity{
 
             //get Date
             moodDate = new SimpleDateFormat("MMM dd yyyy", Locale.getDefault()).format(calendar.getTime());
-
+            submitButton.setEnabled(true);
             new TimePickerDialog(CreateEventActivity.this, TimeDataSet, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false).show();
         }
     };
