@@ -16,21 +16,16 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
@@ -41,7 +36,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -62,9 +56,7 @@ public class CreateEventActivity extends AppCompatActivity{
 
     //Firebase setup!
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private final CollectionReference collectionReference = db.collection("MoodEvents");
     private DocumentReference documentReference;
-    FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     TextView socialSituation;
 
@@ -102,69 +94,18 @@ public class CreateEventActivity extends AppCompatActivity{
 
         documentReference = db.collection("MoodEvents").document(accountName);
 
-        //Creating a mood roster
-        moodImages = new ArrayList<>();
-        moodImages.add(new Emoticon("HAPPY", 2));
-        moodImages.add(new Emoticon("SAD", 2));
-        moodImages.add(new Emoticon("LAUGHING", 2));
-        moodImages.add(new Emoticon("IN LOVE", 2));
-        moodImages.add(new Emoticon("ANGRY", 2));
-        moodImages.add(new Emoticon("SICK", 2));
-        moodImages.add(new Emoticon("AFRAID", 2));
-
-        //adapter for mood roster
-        moodRosterAdapter = new SwipeMoodsAdapter(moodImages, this);
-
-        moodRoster = findViewById(R.id.mood_roster);
-        moodRoster.setAdapter(moodRosterAdapter);
-
-        //styling to show a glimpse of prev and next moods
-        moodRoster.setClipToPadding(false);
-        moodRoster.setPadding(250,0,250,0);
-        moodRoster.setPageMargin(50);
-
-        moodEmotionalState = "HAPPY"; //default
-
-        //click listener for Emoticon
-        moodRoster.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                //no need to use but must be here
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                moodEmotionalState = moodImages.get(position).getEmotionalState();
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                //no need to use but must be here
-            }
-        });
-
-        //situation fragment
-        socialSituation = findViewById(R.id.social_situation);
-        socialSituation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new SocialSituationFragment().show(getSupportFragmentManager(), "ADD_SOCIAL_SITUATON");
-            }
-        });
+        createMoodRoster();
+        swipeMoodAdapterSetup();
+        customSwipeMoodStyling();
+        moodSelection();
+        socialSituationClickListener();
 
         //==============================================================================================
         // IMAGE UPLOAD SETUP
         // Resource: https://codinginflow.com/tutorials/android/firebase-storage-upload-and-retrieve-images/part-2-image-chooser
         //==============================================================================================
 
-        // click listener for Image Upload
-        imageUpload = findViewById(R.id.image_reason);
-        imageUpload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openFileChooser();
-            }
-        });
+        imageUploadClickListener();
 
         storageReference = FirebaseStorage.getInstance().getReference("reason_image");
         databaseReference = FirebaseDatabase.getInstance().getReference("reason_image");
@@ -175,53 +116,22 @@ public class CreateEventActivity extends AppCompatActivity{
 
         //access date and time picker fragments
         //Resource: https://github.com/Kiarasht/Android-Templates/tree/master/Templates/DatePickerDialog
-        simpleDateFormat = new SimpleDateFormat("MMM/dd/yyyy h:mm a", Locale.getDefault());
-        dateAndTimeMood = findViewById((R.id.date_and_time));
-        dateAndTimeMood.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                calendar = Calendar.getInstance();
-                new DatePickerDialog(CreateEventActivity.this, DateDataSet, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(calendar.DAY_OF_MONTH)).show();
-            }
-        });
+
+        dateAndTimePickerClickListener();
+
+        submitButton = findViewById(R.id.submit_button);
+
+        inputChecker();
 
         //==============================================================================================
         // SUBMISSION
         //==============================================================================================
 
-        submitButton = findViewById(R.id.submit_button);
-        submitButton.setEnabled(false);
-        if(moodDate != null && moodTime != null){
-            submitButton.setEnabled(true);
-        }
-        EditText reasonText = findViewById(R.id.reason);
-        reasonText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
+        submitBtnClickListener(accountName);
 
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+    } //end of onCreate
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.length() > 0)
-                {
-                    int number = countWords(s.toString());
-                    if (number < 4){
-                        reasonCount = true;
-                    }
-                    else{
-                        Toast.makeText(CreateEventActivity.this, "reason cannot be more than 3 words!",
-                                Toast.LENGTH_SHORT).show();
-                        reasonCount = false;
-                    }
-                }
-
-            }
-        });
-
+    private void submitBtnClickListener(final String accountName){
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -254,11 +164,121 @@ public class CreateEventActivity extends AppCompatActivity{
 
             }
         });
+    }
 
-    } //end of onCreate
+    private void inputChecker(){
+        submitButton.setEnabled(false);
+        if(moodDate != null && moodTime != null){
+            submitButton.setEnabled(true);
+        }
+        EditText reasonText = findViewById(R.id.reason);
+        reasonText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 0)
+                {
+                    int number = countWords(s.toString());
+                    if (number < 4){
+                        reasonCount = true;
+                    }
+                    else{
+                        Toast.makeText(CreateEventActivity.this, "reason cannot be more than 3 words!",
+                                Toast.LENGTH_SHORT).show();
+                        reasonCount = false;
+                    }
+                }
+
+            }
+        });
+    }
+
+    private void dateAndTimePickerClickListener(){
+        simpleDateFormat = new SimpleDateFormat("MMM/dd/yyyy h:mm a", Locale.getDefault());
+        dateAndTimeMood = findViewById((R.id.date_and_time));
+        dateAndTimeMood.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                calendar = Calendar.getInstance();
+                new DatePickerDialog(CreateEventActivity.this, DateDataSet, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(calendar.DAY_OF_MONTH)).show();
+            }
+        });
+    }
 
 
+    private void imageUploadClickListener(){
+        imageUpload = findViewById(R.id.image_reason);
+        imageUpload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openFileChooser();
+            }
+        });
+    }
 
+    private void socialSituationClickListener(){
+        socialSituation = findViewById(R.id.social_situation);
+        socialSituation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new SocialSituationFragment().show(getSupportFragmentManager(), "ADD_SOCIAL_SITUATON");
+            }
+        });
+    }
+
+    private void moodSelection(){
+        moodEmotionalState = "HAPPY"; //default
+
+        //click listener for Emoticon
+        moodRoster.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                //no need to use but must be here
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                moodEmotionalState = moodImages.get(position).getEmotionalState();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                //no need to use but must be here
+            }
+        });
+
+    }
+
+    private void customSwipeMoodStyling(){
+        moodRoster.setClipToPadding(false);
+        moodRoster.setPadding(250,0,250,0);
+        moodRoster.setPageMargin(50);
+    }
+
+    private void swipeMoodAdapterSetup(){
+        moodRosterAdapter = new SwipeMoodsAdapter(moodImages, this);
+        moodRoster = findViewById(R.id.mood_roster);
+        moodRoster.setAdapter(moodRosterAdapter);
+    }
+
+
+    private void createMoodRoster(){
+        moodImages = new ArrayList<>();
+        moodImages.add(new Emoticon("HAPPY", 2));
+        moodImages.add(new Emoticon("SAD", 2));
+        moodImages.add(new Emoticon("LAUGHING", 2));
+        moodImages.add(new Emoticon("IN LOVE", 2));
+        moodImages.add(new Emoticon("ANGRY", 2));
+        moodImages.add(new Emoticon("SICK", 2));
+        moodImages.add(new Emoticon("AFRAID", 2));
+    }
 
     //==============================================================================================
     // IMAGE UPLOAD METHODS
@@ -362,7 +382,7 @@ public class CreateEventActivity extends AppCompatActivity{
             calendar.set(Calendar.MINUTE, minute);
 
             //get Time
-            moodTime = new SimpleDateFormat("h:mm:ss a", Locale.getDefault()).format(calendar.getTime());
+            moodTime = new SimpleDateFormat("h:mm a", Locale.getDefault()).format(calendar.getTime());
 
             //set TexView to correspond with input data
             dateAndTimeMood.setText(simpleDateFormat.format(calendar.getTime()));
@@ -396,14 +416,13 @@ public class CreateEventActivity extends AppCompatActivity{
 
     private void submitMoodEventToDB(){
 
-        Log.d(TAG, "whatsup " + moodAuthor);
         MoodEvent moodEvent = new MoodEvent(moodAuthor, moodDate, moodTime, moodEmotionalState, moodImageUrl, moodReason, moodSocialSituation);
         moodEvent.setTimeStamp(moodTimeStamp);
         addMoodEventToDB(documentReference, moodEvent);
-        Log.d("debugging", "back to feed");
 
         finish();
     }
+
     public static int countWords(String input) {
         if (input == null || input.isEmpty()) {
             return 0;
@@ -412,7 +431,5 @@ public class CreateEventActivity extends AppCompatActivity{
         String[] words = input.split("\\s+");
         return words.length;
     }
-
-
 
 }
