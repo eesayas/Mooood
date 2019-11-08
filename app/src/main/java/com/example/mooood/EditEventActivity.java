@@ -40,9 +40,11 @@ import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -90,6 +92,7 @@ public class EditEventActivity extends AppCompatActivity{
     String moodSocialSituation;
     String moodDocID;
     String moodAuthor;
+    Date moodTimeStamp;
 
 
     @Override
@@ -238,6 +241,16 @@ public class EditEventActivity extends AppCompatActivity{
                     uploadImage();
                 }
                 moodEvent.setImageUrl(moodImageUrl);
+                //create timestamp
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm:ss a");
+
+                try {
+                    moodTimeStamp = simpleDateFormat.parse(moodDate + ' ' + moodTime);
+
+                } catch (ParseException e){
+                    e.printStackTrace();
+                }
+                moodEvent.setTimeStamp(moodTimeStamp);
 
                 Log.d(TAG, "changed Url in submit");
                 EditMoodEventDB(documentReference,moodEvent);
@@ -324,6 +337,7 @@ public class EditEventActivity extends AppCompatActivity{
             imageUri = data.getData();
 
             Picasso.get().load(imageUri).into(imageUpload);
+            uploadImage();
         }
     }
 
