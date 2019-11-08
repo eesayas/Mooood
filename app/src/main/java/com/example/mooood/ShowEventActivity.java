@@ -9,6 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
+/**
+ * This is responsible for showing all the details of a selected MoodEvent
+ **/
 
 public class ShowEventActivity extends AppCompatActivity {
     private static final String TAG = "For Testing";
@@ -50,6 +53,11 @@ public class ShowEventActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * This gets all needed values from MoodEvent to be displayed
+     * @param moodEvent
+     *     This is the MoodEvent object
+     */
     private void getValuesMoodEvent(MoodEvent moodEvent){
         author = moodEvent.getAuthor();
 
@@ -62,6 +70,9 @@ public class ShowEventActivity extends AppCompatActivity {
         reason = moodEvent.getReason();
     }
 
+    /**
+     * This selects all TextView and ImageView from xml
+     */
     private void getTextAndImageView(){
         authorText = findViewById(R.id.author);
         emoticon = findViewById(R.id.emoticon);
@@ -72,6 +83,9 @@ public class ShowEventActivity extends AppCompatActivity {
         reasonText = findViewById(R.id.reason);
     }
 
+    /**
+     * This sets the values of all selected TextView and ImageView from xml
+     */
     private void setTextAndImageView(){
         authorText.setText(author);
         emoticon.setImageResource(new Emoticon(emotionalState, 2).getImageLink());
@@ -82,6 +96,9 @@ public class ShowEventActivity extends AppCompatActivity {
         reasonText.setText(reason);
     }
 
+    /**
+     * This is a click listener for edit of MoodEvent. Redirect to EditEventActivity
+     */
     private void editBtnClickListener(final MoodEvent moodEvent){
         editButton = findViewById(R.id.edit_button);
         editButton.setOnClickListener(new View.OnClickListener() {
@@ -92,5 +109,4 @@ public class ShowEventActivity extends AppCompatActivity {
             }
         });
     }
-
 }

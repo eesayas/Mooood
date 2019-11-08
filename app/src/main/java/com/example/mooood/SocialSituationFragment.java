@@ -16,11 +16,10 @@ import java.util.ArrayList;
 
 /**
  * This is a simple dialog fragment utilized for selection of social situation for MoodEvent
- * **/
+ **/
 public class SocialSituationFragment extends DialogFragment {
 
     private TextView socialSituationText;
-
     private ListView socialSituationList;
     private ArrayAdapter<String> socialSituationAdapter;
     private ArrayList<String> socialSituationDataList;
@@ -42,6 +41,9 @@ public class SocialSituationFragment extends DialogFragment {
 
     } // end of onCreateDialog
 
+    /**
+     * This is a simple Array Adapter setup based on lab lectures
+     **/
     private void adapterSetup(View view){
         socialSituationDataList = new ArrayList<>();
 
@@ -55,6 +57,9 @@ public class SocialSituationFragment extends DialogFragment {
         socialSituationList.setAdapter(socialSituationAdapter);
     }
 
+    /**
+     * This is a click listener that changes socialSituation TextView to match selection
+     **/
     private void changeSocialSituationOnClick(){
         //for changing TextView in CreatePostActivity
         socialSituationText = getActivity().findViewById(R.id.social_situation);
@@ -72,5 +77,4 @@ public class SocialSituationFragment extends DialogFragment {
             }
         });
     }
-
 }
