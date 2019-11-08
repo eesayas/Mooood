@@ -1,20 +1,25 @@
 package com.example.mooood;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 
 public class MoodEventsAdapter extends ArrayAdapter<MoodEvent> {
 
+    private static final String TAG = "For Testing";
     private ArrayList<MoodEvent> moodEvents;
     private Context context;
 
@@ -36,10 +41,14 @@ public class MoodEventsAdapter extends ArrayAdapter<MoodEvent> {
         MoodEvent moodEvent = moodEvents.get(position);
 
         //select TextViews
-        TextView emotionalStateText = view.findViewById(R.id.emotional_state_text);
+        ImageView emoticon = view.findViewById(R.id.emoticon);
+        TextView author = view.findViewById(R.id.author);
+        TextView relativeTime = view.findViewById(R.id.date_and_time);
 
         //setText of TextViews
-        emotionalStateText.setText(moodEvent.getEmotionalState());
+        emoticon.setImageResource(new Emoticon(moodEvent.getEmotionalState(), 1).getImageLink());
+        author.setText(moodEvent.getAuthor());
+        relativeTime.setText(new RelativeTime(moodEvent.getDate(), moodEvent.getTime()).getRelativeTime());
 
         return view;
     }
