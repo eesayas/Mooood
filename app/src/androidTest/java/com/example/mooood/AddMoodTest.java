@@ -62,7 +62,7 @@ public class AddMoodTest {
         //Create mood event with: happy (default emoji), this is a reason, alone, current date and time, no picture for now, no location for now.
         solo.clickOnView(solo.getView(R.id.fab));
         solo.waitForActivity(CreateEventActivity.class);
-        solo.enterText((EditText) solo.getView(R.id.reason),"This is a reason");
+        solo.enterText((EditText) solo.getView(R.id.reason),"test reason");
         solo.clickOnView(solo.getView(R.id.social_situation));
         solo.clickOnText("Alone");
         solo.clickOnView(solo.getView(R.id.date_and_time));
@@ -99,7 +99,7 @@ public class AddMoodTest {
         solo.waitForText(selectedDate,1,200);
         solo.waitForText(selectedTime,1,200);
         solo.waitForText("Alone",1,200);
-        solo.waitForText("This is a reason",1,200);
+        solo.waitForText("Test reason",1,200);
     }
 
 }
