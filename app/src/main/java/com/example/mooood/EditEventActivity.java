@@ -150,17 +150,15 @@ public class EditEventActivity extends AppCompatActivity{
         moodRoster.setPadding(250,0,250,0);
         moodRoster.setPageMargin(50);
         // make the moodEmotionalState the mood given by showEvent
-        //moodEmotionalState = "HAPPY";
         moodEmotionalState = moodEvent.getEmotionalState();
-        Log.d(TAG, "current Emotional state: " + moodEmotionalState);
-        int pos = 3;
+        int pos=0;
         for(int i = 0; i < 6; i++){
             if(moodEmotionalState.equals(moodImages.get(i).getEmotionalState())){
                 pos = i;
+                break;
             }
             else pos = 0;
         }
-        Log.d(TAG, "current pos: " + pos);
         moodRoster.setCurrentItem(pos);
 
 
@@ -225,10 +223,6 @@ public class EditEventActivity extends AppCompatActivity{
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                moodDate = ;
-//                moodTime = ;
-//                moodEmotionalState = ;
-                //moodImageUrl = moodEvent.getImageUrl();
                 moodReason = reason.getText().toString();
                 moodSocialSituation = socialSituation.getText().toString();
 
