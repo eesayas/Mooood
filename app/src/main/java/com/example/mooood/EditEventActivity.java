@@ -184,6 +184,7 @@ public class EditEventActivity extends AppCompatActivity{
                 EditMoodEventDB(documentReference,moodEvent);
 
                 Intent intent = new Intent(EditEventActivity.this, UserFeedActivity.class);
+                intent.putExtra("accountKey", moodAuthor);
                 startActivity(intent);
 
             }

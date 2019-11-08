@@ -79,13 +79,54 @@ public class EditEventActivityTest {
         solo.clickOnView(solo.getView(R.id.edit_button));
         solo.waitForActivity(EditEventActivity.class);
 
-        TextView socialSituation = (TextView)solo.getView(R.id.social_situation);
+        // get the required views
+        View socialSituation = solo.getView(R.id.social_situation);
 //        imageUpload = findViewById(R.id.image_reason);
         EditText reason =(EditText)solo.getView(R.id.reason) ;
         TextView dateAndTimeMood = (TextView)solo.getView(R.id.date_and_time);
         View submitButton = solo.getView(R.id.submit_button);
-        View cancelButton = solo.getView(R.id.cancel_button);
 
+        //edit the reason and the social situation
+        solo.enterText(reason, "");
+        solo.enterText(reason, "New Reason");
+        solo.waitForText("New Reason",1,2000);
+        solo.clickOnView(socialSituation);
+        solo.clickOnText("With Group");
+        solo.clickOnView(submitButton);
+
+        solo.waitForActivity(UserFeedActivity.class);
+        final ListView list2 = (ListView) solo.getView(R.id.posts_list);
+        solo.clickInList(0);
+        solo.waitForActivity(ShowEventActivity.class);
+        TextView moodSocialSituation = (TextView)solo.getView(R.id.social_situation);
+        TextView moodReason =(TextView)solo.getView(R.id.reason);
+        assertEquals(moodSocialSituation.getText().toString(),"With Group");
+
+        assertEquals(moodReason.getText().toString(),"New Reason");
+
+    }
+
+    @Test
+    public void cancelButton(){
+        solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
+        solo.enterText((EditText)solo.getView(R.id.activity_main_et__username), "hyeon");
+        solo.waitForText("hyeon",1,2000);
+        solo.enterText((EditText)solo.getView(R.id.activity_main_et__password), "1");
+        solo.waitForText("1",1,2000);
+        solo.clickOnView(solo.getView(R.id.activity_main_btn_submit));
+        solo.waitForActivity(UserFeedActivity.class);
+
+        //click on the mood created to start the ShowEvenetActivity
+        final ListView list = (ListView) solo.getView(R.id.posts_list);
+        solo.clickInList(0);
+        solo.waitForActivity(ShowEventActivity.class);
+
+        //click on the edit button to start the editActivity class
+        solo.clickOnView(solo.getView(R.id.edit_button));
+        solo.waitForActivity(EditEventActivity.class);
+        View cancelButton = solo.getView(R.id.cancel_button);
+        solo.clickOnView(cancelButton);
+        solo.waitForActivity(ShowEventActivity.class);
 
 
 
@@ -99,4 +140,3 @@ public class EditEventActivityTest {
     }
 }
 
-}
