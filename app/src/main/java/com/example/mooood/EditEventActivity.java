@@ -48,6 +48,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Purpose: This edits a given MoodEvent in the DB. Borrows mostly from CreateEventActivity
+ */
 public class EditEventActivity extends AppCompatActivity{
 
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -143,6 +146,9 @@ public class EditEventActivity extends AppCompatActivity{
 
     } //onCreate
 
+    /**
+     * This sets the proper emoticon
+     */
     private void setProperEmoticon(){
         socialSituation.setText(moodSocialSituation);
         reason.setText(moodReason);
@@ -155,6 +161,9 @@ public class EditEventActivity extends AppCompatActivity{
         }
     }
 
+    /**
+     * This is the click listener for submit btn
+     * **/
     private void submitBtnClickListener(final MoodEvent moodEvent){
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -190,6 +199,9 @@ public class EditEventActivity extends AppCompatActivity{
         });
     }
 
+    /**
+     * This creates the timestamp needed for sorting the MoodEvent
+     * **/
     private void createTimeStamp(){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm:ss a");
 
@@ -202,6 +214,9 @@ public class EditEventActivity extends AppCompatActivity{
 
     }
 
+    /**
+     * This is the click listener for image upload, opens gallery
+     * **/
     private void imageUploadClickListener(){
         imageUpload = findViewById(R.id.image_reason);
         imageUpload.setOnClickListener(new View.OnClickListener() {
@@ -212,6 +227,9 @@ public class EditEventActivity extends AppCompatActivity{
         });
     }
 
+    /**
+     * This opens fragment to select social situation
+     * */
     private void socialSituationClickListener(){
         socialSituation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -221,7 +239,9 @@ public class EditEventActivity extends AppCompatActivity{
         });
     }
 
-
+    /**
+     * This a listener for the selected Emoticon
+     **/
     private void emoticonClickListener(){
         moodRoster.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -240,6 +260,11 @@ public class EditEventActivity extends AppCompatActivity{
             }
         });
     }
+
+    /**
+     *
+     * This access the date and time fragment
+     * */
     private void dateAndTimeDialogPicker(){
         simpleDateFormat = new SimpleDateFormat("MMM/dd/yyyy h:mm a", Locale.getDefault());
         dateAndTimeMood.setOnClickListener(new View.OnClickListener() {
@@ -252,6 +277,9 @@ public class EditEventActivity extends AppCompatActivity{
 
     }
 
+    /**
+     * This sets the proper Emoticon to reflected by the MoodEvent
+     * */
     private void customStylingSwipeMoods(){
         //styling to show a glimpse of prev and next moods
         moodRoster.setClipToPadding(false);
@@ -271,6 +299,9 @@ public class EditEventActivity extends AppCompatActivity{
         moodRoster.setCurrentItem(pos);
     }
 
+    /**
+     * Create MOOD roster of emoticons
+     * */
     private void createMoodRoster(){
         moodImages = new ArrayList<>();
         moodImages.add(new Emoticon("HAPPY", 2));
@@ -282,6 +313,9 @@ public class EditEventActivity extends AppCompatActivity{
         moodImages.add(new Emoticon("AFRAID", 2));
     }
 
+    /**
+     * get values of moodEvent
+     * */
     private void getAttrMoodEvent(MoodEvent moodEvent){
         moodDate = moodEvent.getDate();
         moodTime = moodEvent.getTime();
@@ -293,6 +327,9 @@ public class EditEventActivity extends AppCompatActivity{
         moodAuthor = moodEvent.getAuthor();
     }
 
+    /**
+     * get text view and image view
+     */
     private void getTextAndImageView(){
         moodRoster = findViewById(R.id.mood_roster);
         socialSituation = findViewById(R.id.social_situation);
@@ -302,6 +339,10 @@ public class EditEventActivity extends AppCompatActivity{
         submitButton = findViewById(R.id.submit_button);
         cancelButton = findViewById(R.id.cancel_button);
     }
+
+    /**
+     * Date and Time Dialog Pickers
+     * */
 
     private final DatePickerDialog.OnDateSetListener DateDataSet = new DatePickerDialog.OnDateSetListener() {
         @Override
@@ -317,7 +358,6 @@ public class EditEventActivity extends AppCompatActivity{
         }
     };
 
-    /* After user decided on a time, save them into our calendar instance, and now parse what our calendar has into the TextView */
     private final TimePickerDialog.OnTimeSetListener TimeDataSet = new TimePickerDialog.OnTimeSetListener() {
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
@@ -332,6 +372,9 @@ public class EditEventActivity extends AppCompatActivity{
         }
     };
 
+    /**
+     * This edits the moodEvent in DB
+     * */
     public void EditMoodEventDB(DocumentReference documentReference, MoodEvent mood){
         documentReference.collection("MoodActivities")
                 .document(mood.getDocumentId())
@@ -351,9 +394,9 @@ public class EditEventActivity extends AppCompatActivity{
     }
 
 
-    //==============================================================================================
-    // IMAGE UPLOAD METHODS
-    //==============================================================================================
+    /**
+     IMAGE UPLOAD METHODS
+    **/
 
     private void openFileChooser(){
         Intent intent = new Intent();

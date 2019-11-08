@@ -78,7 +78,7 @@ public class AddMoodTest {
     @Test
     public void checkMoodInList(){
         //Formats the time correctly
-        SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm:ss a");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a");
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd yyyy");
         String selectedTime = timeFormat.format(calendar.getTime());
         String selectedDate = dateFormat.format(calendar.getTime());
