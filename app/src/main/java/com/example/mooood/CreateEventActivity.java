@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
@@ -17,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -86,6 +89,7 @@ public class CreateEventActivity extends AppCompatActivity{
     String moodImageUrl;
     String moodReason;
     String moodSocialSituation;
+    Boolean reasonCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -192,14 +196,40 @@ public class CreateEventActivity extends AppCompatActivity{
         if(moodDate != null && moodTime != null){
             submitButton.setEnabled(true);
         }
+        EditText reasonText = findViewById(R.id.reason);
+        reasonText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 0)
+                {
+                    int number = countWords(s.toString());
+                    if (number < 4){
+                        reasonCount = true;
+                    }
+                    else{
+                        Toast.makeText(CreateEventActivity.this, "reason cannot be more than 3 words!",
+                                Toast.LENGTH_SHORT).show();
+                        reasonCount = false;
+                    }
+                }
+
+            }
+        });
 
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 //retrieve remaining needed for Mood Event
-                EditText reasonText = findViewById(R.id.reason);
-                moodReason = reasonText.getText().toString();
+
 
                 TextView socialSituationText = findViewById(R.id.social_situation);
                 moodSocialSituation = socialSituationText.getText().toString();
@@ -322,7 +352,14 @@ public class CreateEventActivity extends AppCompatActivity{
 
             //get Date
             moodDate = new SimpleDateFormat("MMM dd yyyy", Locale.getDefault()).format(calendar.getTime());
-            submitButton.setEnabled(true);
+            if(reasonCount == false){
+                submitButton.setEnabled(false);
+            }
+            else{
+                submitButton.setEnabled(true);
+            }
+
+
             new TimePickerDialog(CreateEventActivity.this, TimeDataSet, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false).show();
         }
     };
@@ -377,5 +414,15 @@ public class CreateEventActivity extends AppCompatActivity{
 
         finish();
     }
+    public static int countWords(String input) {
+        if (input == null || input.isEmpty()) {
+            return 0;
+        }
+
+        String[] words = input.split("\\s+");
+        return words.length;
+    }
+
+
 
 }
