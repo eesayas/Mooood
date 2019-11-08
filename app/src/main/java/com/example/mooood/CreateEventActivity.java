@@ -196,7 +196,7 @@ public class CreateEventActivity extends AppCompatActivity{
         if(moodDate != null && moodTime != null){
             submitButton.setEnabled(true);
         }
-        EditText reasonText = findViewById(R.id.reason);
+        final EditText reasonText = findViewById(R.id.reason);
         reasonText.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
@@ -212,6 +212,7 @@ public class CreateEventActivity extends AppCompatActivity{
                 {
                     int number = countWords(s.toString());
                     if (number < 4){
+                        moodReason = reasonText.getText().toString();
                         reasonCount = true;
                     }
                     else{

@@ -33,6 +33,10 @@ public class ShowEventActivityTest {
         solo = new Solo(getInstrumentation(), rule.getActivity());
     }
 
+//    public void ListViewClickTest () {
+//
+//        super (ShowEventActivity.class);
+//    }
     @Test
     public void showActivityLaunch(){
 
@@ -48,21 +52,24 @@ public class ShowEventActivityTest {
         //Create mood event with: happy (default emoji), this is a reason, alone, current date and time, no picture for now, no location for now.
         solo.clickOnView(solo.getView(R.id.fab));
         solo.waitForActivity(CreateEventActivity.class);
-        solo.enterText((EditText) solo.getView(R.id.reason),"This issa reason");
+        solo.enterText((EditText) solo.getView(R.id.reason),"This");
         solo.clickOnView(solo.getView(R.id.social_situation));
         solo.clickOnText("Alone");
         solo.clickOnView(solo.getView(R.id.date_and_time));
+//        solo.waitForFragmentByTag("MyTag");
         solo.waitForText("OK",1,2000);
         solo.clickOnText("OK");
         solo.waitForText("OK",1,2000);
-        solo.clickOnText("OK");
+        EditText date = (EditText)solo.getView(R.id.date_and_time);
+//        String date_time = date.getText().toString();
+        solo.clickOnText("OK");              //get the date and time
         calendar = Calendar.getInstance();
         solo.clickOnView(solo.getView(R.id.submit_button));
         solo.waitForActivity(UserFeedActivity.class);
 
         //click on the mood created to start the ShowEvenetActivity
         final ListView list = (ListView) solo.getView(R.id.posts_list);
-        assertNotNull("The list was not loaded", list);
+
 //        getInstrumentation().runOnMainSync(new Runnable() {
 //            @Override
 //            public void run() {
@@ -72,23 +79,24 @@ public class ShowEventActivityTest {
 //            }
 //
 //        });
-        list.performItemClick(list.getAdapter().getView(0, null, null),
-                0, list.getAdapter().getItemId(0));
-
+//        list.performItemClick(list.getAdapter().getView(0, null, null),
+//                0, list.getAdapter().getItemId(0));
+        solo.clickInList(0);
         solo.waitForActivity(ShowEventActivity.class);
         TextView moodAuthor = (TextView)solo.getView(R.id.author);
-        View moodEmoticon = solo.getView(R.id.emoticon);
-        View moodDate = solo.getView(R.id.date);
-        View moodTime = solo.getView(R.id.time);
+//        View moodEmoticon = solo.getView(R.id.emoticon);
+        TextView moodDate = (TextView)solo.getView(R.id.date);
+        TextView moodTime = (TextView)solo.getView(R.id.time);
         TextView moodSocialSituation = (TextView)solo.getView(R.id.social_situation);
-        View moodImageReason = solo.getView(R.id.image_reason);
+//        View moodImageReason = solo.getView(R.id.image_reason);
         TextView moodReason =(TextView)solo.getView(R.id.reason);
-        View editButton = solo.getView(R.id.edit_button);
+//        View editButton = solo.getView(R.id.edit_button);
 
         assertEquals(moodAuthor.getText().toString(),"hyeon");
         assertEquals(moodSocialSituation.getText().toString(),"Alone");
-        assertEquals(moodReason.getText().toString(),"This is a reason");
-
+        assertEquals(moodReason.getText().toString(),"This");
+        assertEquals(moodDate.getText().toString(), "");
+        assertEquals(moodTime.getText().toString(), "");
     }
 
 
