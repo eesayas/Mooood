@@ -166,10 +166,8 @@ public class CreateEventActivity extends AppCompatActivity{
             }
         });
 
-        //
         storageReference = FirebaseStorage.getInstance().getReference("reason_image");
         databaseReference = FirebaseDatabase.getInstance().getReference("reason_image");
-
 
         //==============================================================================================
         // DATE AND TIME PICKER DIALOG FRAGMENT click listener
@@ -246,7 +244,7 @@ public class CreateEventActivity extends AppCompatActivity{
                     e.printStackTrace();
                 }
 
-//                //upload image
+                //upload image
                 if(uploadTask != null && uploadTask.isInProgress()){
                     Log.d(TAG, "uploading in progress");
                 } else{
@@ -254,19 +252,13 @@ public class CreateEventActivity extends AppCompatActivity{
                 }
                 submitMoodEventToDB();
 
-
-
-
-//                MoodEvent moodEvent = new MoodEvent(moodDate, moodTime, moodEmotionalState, moodImageUrl, moodReason, moodSocialSituation);
-//                addMoodEventToDB(collectionReference, moodEvent);
-//
-//                Intent intent = new Intent(getApplicationContext(), UserFeedActivity.class);
-//                startActivity(intent);
-
             }
         });
 
     } //end of onCreate
+
+
+
 
     //==============================================================================================
     // IMAGE UPLOAD METHODS
@@ -324,8 +316,6 @@ public class CreateEventActivity extends AppCompatActivity{
                     databaseReference.child(uploadId).setValue(uploadImage);
 
                     //submit to db
-
-
 
                 }
             })
