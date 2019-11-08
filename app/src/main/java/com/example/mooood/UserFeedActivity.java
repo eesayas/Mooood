@@ -137,19 +137,17 @@ public class UserFeedActivity extends AppCompatActivity{
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
 //                            MoodEvent mood = documentSnapshot.toObject(MoodEvent.class);
 
-                            if(queryDocumentSnapshots != null){
-                                String author = documentSnapshot.getData().get("author").toString();
-                                String date = documentSnapshot.getData().get("date").toString();
-                                String time = documentSnapshot.getData().get("time").toString();
-                                String emotionalState = documentSnapshot.getData().get("emotionalState").toString();
-                                String imageURl = documentSnapshot.getData().get("imageUrl").toString();
-                                String reason = documentSnapshot.getData().get("reason").toString();
-                                String socialSituation = documentSnapshot.getData().get("socialSituation").toString();
+                                String author = (String)documentSnapshot.getData().get("author");
+                                String date = (String)documentSnapshot.getData().get("date");
+                                String time = (String)documentSnapshot.getData().get("time");
+                                String emotionalState = (String)documentSnapshot.getData().get("emotionalState");
+                                String imageURl = (String)documentSnapshot.getData().get("imageUrl");
+                                String reason = (String)documentSnapshot.getData().get("reason");
+                                String socialSituation = (String)documentSnapshot.getData().get("socialSituation");
                                 MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation);
                                 moodEvent.setDocumentId(documentSnapshot.getId());
 
                                 postDataList.add(moodEvent); //add to data list
-                            }
                         }
 
                         postAdapter.notifyDataSetChanged();

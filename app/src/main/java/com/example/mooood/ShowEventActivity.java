@@ -58,9 +58,9 @@ public class ShowEventActivity extends AppCompatActivity {
         editButton = findViewById(R.id.edit_button);
         editButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-//                Intent intent = new Intent(ShowEventActivity.this, EditEventActivity.class);
-//                intent.putExtra("Mood Event", moodEvent);
-//                startActivity(intent);
+                Intent intent = new Intent(ShowEventActivity.this, EditEventActivity.class);
+                intent.putExtra("Mood Event", moodEvent);
+                startActivity(intent);
             }
         });
 
