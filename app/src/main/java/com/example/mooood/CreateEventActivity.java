@@ -218,6 +218,8 @@ public class CreateEventActivity extends AppCompatActivity{
                     uploadImage();
                 }
 
+                submitMoodEventToDB();
+
 //                MoodEvent moodEvent = new MoodEvent(moodDate, moodTime, moodEmotionalState, moodImageUrl, moodReason, moodSocialSituation);
 //                addMoodEventToDB(collectionReference, moodEvent);
 //
@@ -248,6 +250,7 @@ public class CreateEventActivity extends AppCompatActivity{
             imageUri = data.getData();
 
             Picasso.get().load(imageUri).into(imageUpload);
+            uploadImage();
         }
     }
 
@@ -284,7 +287,7 @@ public class CreateEventActivity extends AppCompatActivity{
                     databaseReference.child(uploadId).setValue(uploadImage);
 
                     //submit to db
-                    submitMoodEventToDB();
+
 
 
                 }

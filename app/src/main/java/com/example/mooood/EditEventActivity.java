@@ -127,8 +127,12 @@ public class EditEventActivity extends AppCompatActivity{
         socialSituation.setText(moodSocialSituation);
         reason.setText(moodReason);
         dateAndTimeMood.setText(moodDate +" "+ moodTime);
-        Picasso.get().load(moodImageUrl).into(imageUpload);     // set the image according to the given URL
-
+        if(moodImageUrl == null){
+            imageUpload.setImageResource(R.drawable.temp_image_upload);
+        }
+        else {
+            Picasso.get().load(moodImageUrl).into(imageUpload);     // set the image according to the given URL
+        }
         documentReference = db.collection("MoodEvents").document(moodAuthor);       //get the document with the same author
 
 
@@ -267,6 +271,8 @@ public class EditEventActivity extends AppCompatActivity{
                 finish();
             }
         });
+
+
 
 
     }
