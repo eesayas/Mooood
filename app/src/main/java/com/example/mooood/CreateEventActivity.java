@@ -1,12 +1,16 @@
 package com.example.mooood;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
@@ -39,6 +43,8 @@ import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,11 +57,14 @@ public class CreateEventActivity extends AppCompatActivity{
 
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final String TAG = "For Testing";
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
 
     //Declare variables for later use
     ViewPager moodRoster;
     SwipeMoodsAdapter moodRosterAdapter;
     List<Emoticon> moodImages;
+
+    String currentPhotoPath;
 
     //Firebase setup!
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -158,14 +167,13 @@ public class CreateEventActivity extends AppCompatActivity{
         imageUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openFileChooser();
+                new ImageOptionsFragment().show(getSupportFragmentManager(), "SELECT_IMAGE_OPTION");
             }
         });
 
         //
         storageReference = FirebaseStorage.getInstance().getReference("reason_image");
         databaseReference = FirebaseDatabase.getInstance().getReference("reason_image");
-
 
         //==============================================================================================
         // DATE AND TIME PICKER DIALOG FRAGMENT click listener
@@ -211,92 +219,96 @@ public class CreateEventActivity extends AppCompatActivity{
                     e.printStackTrace();
                 }
 
-//                //upload image
-                if(uploadTask != null && uploadTask.isInProgress()){
-                    Log.d(TAG, "uploading in progress");
-                } else{
-                    uploadImage();
-                }
-
-//                MoodEvent moodEvent = new MoodEvent(moodDate, moodTime, moodEmotionalState, moodImageUrl, moodReason, moodSocialSituation);
-//                addMoodEventToDB(collectionReference, moodEvent);
-//
-//                Intent intent = new Intent(getApplicationContext(), UserFeedActivity.class);
-//                startActivity(intent);
+//               //upload image
+//                if(uploadTask != null && uploadTask.isInProgress()){
+//                    Log.d(TAG, "uploading in progress");
+//                } else{
+//                       uploadImage();
+//                }
 
             }
         });
 
     } //end of onCreate
 
-    //==============================================================================================
-    // IMAGE UPLOAD METHODS
-    //==============================================================================================
-
-    private void openFileChooser(){
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, PICK_IMAGE_REQUEST);
-    }
-
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null){
+        imageUpload = findViewById(R.id.image_reason);
+        if (requestCode == PICK_IMAGE_REQUEST && data != null && resultCode == RESULT_OK && data.getData() != null) {
             imageUri = data.getData();
-
             Picasso.get().load(imageUri).into(imageUpload);
         }
-    }
 
-    private String getFileExtension(Uri uri) {
-        ContentResolver cR = getContentResolver();
-        MimeTypeMap mime = MimeTypeMap.getSingleton();
-        return mime.getExtensionFromMimeType(cR.getType(uri));
-    }
-
-    private void uploadImage(){
-        if(imageUri != null){
-            final StorageReference fileReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
-
-            uploadTask = fileReference.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            //set up progress bar on later dev
-                        }
-                    }, 500);
-
-                    //Add Toast message here for upload success
-
-                    Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
-                    while(!urlTask.isSuccessful());
-                    Uri downloadUrl = urlTask.getResult();
-
-                    UploadImage uploadImage = new UploadImage(downloadUrl.toString());
-                    moodImageUrl = uploadImage.getImageUrl();
-                    String uploadId = databaseReference.push().getKey();
-                    databaseReference.child(uploadId).setValue(uploadImage);
-
-                    //submit to db
-                    submitMoodEventToDB();
-
-
-                }
-            })
-            .addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.d(TAG, "failed to upload image");
-                }
-            });
+        else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            imageUri = data.getData();
+            Log.d("hello", imageUri.toString());
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            imageUpload.setImageBitmap(imageBitmap);
         }
+
     }
+
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        Log.d("Entry", "Activity REsult access!!!!");
+//        if (requestCode == PICK_IMAGE_REQUEST && resultCode == REQUEST_IMAGE_CAPTURE && data != null && data.getData() != null) {
+//            imageUri = data.getData();
+//            Picasso.get().load(imageUri).into(imageUpload);
+//        }
+//    }
+
+
+
+/*//    private String getFileExtension(Uri uri) {
+//        ContentResolver cR = getContentResolver();
+//        MimeTypeMap mime = MimeTypeMap.getSingleton();
+//        return mime.getExtensionFromMimeType(cR.getType(uri));
+//    }*/
+//
+//    private void uploadImage(){
+//        if(imageUri != null){
+//            final StorageReference fileReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
+//
+//            uploadTask = fileReference.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+//                @Override
+//                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                    Handler handler = new Handler();
+//                    handler.postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            //set up progress bar on later dev
+//                        }
+//                    }, 500);
+//
+//                    //Add Toast message here for upload success
+//
+//                    Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
+//                    while(!urlTask.isSuccessful());
+//                    Uri downloadUrl = urlTask.getResult();
+//
+//                    UploadImage uploadImage = new UploadImage(downloadUrl.toString());
+//                    moodImageUrl = uploadImage.getImageUrl();
+//                    String uploadId = databaseReference.push().getKey();
+//                    databaseReference.child(uploadId).setValue(uploadImage);
+//
+//                    //submit to db
+//                    submitMoodEventToDB();
+//
+//
+//                }
+//            })
+//            .addOnFailureListener(new OnFailureListener() {
+//                @Override
+//                public void onFailure(@NonNull Exception e) {
+//                    Log.d(TAG, "failed to upload image");
+//                }
+//            });
+//        }
+//    }
 
     //==============================================================================================
     // DATE AND TIME PICKER DIALOG FRAGMENT

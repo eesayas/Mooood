@@ -31,28 +31,17 @@ public class RelativeTime {
 
     public String timeDifference(Date dateMood) {
 
+        //declare variable for later use
         relativeTimeDataList = new ArrayList<>();
         Date dateNow = new Date();
         long different = dateNow.getTime() - dateMood.getTime();
+        SimpleDateFormat oldTimeFormat = new SimpleDateFormat("h:mm:ss a");
+        SimpleDateFormat newTimeFormat = new SimpleDateFormat("h:mm a");
 
-        //future time; will be refactored later
+
         if (different < 0){
-
-            SimpleDateFormat oldTimeFormat = new SimpleDateFormat("h:mm:ss a");
-
-            try {
-                Date eventTime = oldTimeFormat.parse(this.eventTime);
-
-                SimpleDateFormat newTimeFormat = new SimpleDateFormat("h:mm a");
-
-                return this.eventDate + " at " + newTimeFormat.format(eventTime);
-
-            } catch (ParseException e){
-                e.printStackTrace();
-
-            }
+            return futureTime(oldTimeFormat, newTimeFormat);
         }
-        //================================================================
 
         long secondsInMilli = 1000;
         long minutesInMilli = secondsInMilli * 60;
@@ -79,7 +68,7 @@ public class RelativeTime {
         long elapsedSeconds = different / secondsInMilli;
         relativeTimeDataList.add(new RelativeTimeData("SECONDS", (int) elapsedSeconds));
 
-        return relativeTimeApprox(relativeTimeDataList);
+        return relativeTimeApprox(relativeTimeDataList, oldTimeFormat, newTimeFormat);
 
     }
 
@@ -89,7 +78,7 @@ public class RelativeTime {
          We must only return "2 HOURS AGO". The following code does this.
     =========================================================================================*/
 
-    public String relativeTimeApprox(ArrayList<RelativeTimeData> relativeTimeDataList){
+    public String relativeTimeApprox(ArrayList<RelativeTimeData> relativeTimeDataList, SimpleDateFormat oldTimeFormat, SimpleDateFormat newTimeFormat){
         String timeDenomination;
         Integer timeData;
 
@@ -107,13 +96,8 @@ public class RelativeTime {
 
                 } else if(timeDenomination == "WEEKS" && timeData > 20){
 
-                    SimpleDateFormat oldTimeFormat = new SimpleDateFormat("h:mm:ss a");
-
                     try {
                         Date eventTime = oldTimeFormat.parse(this.eventTime);
-
-                        SimpleDateFormat newTimeFormat = new SimpleDateFormat("h:mm a");
-
                         return this.eventDate + " at " + newTimeFormat.format(eventTime);
 
                     } catch (ParseException e){
@@ -129,6 +113,18 @@ public class RelativeTime {
 
         return "0 SECONDS AGO";
 
+    }
+
+    public String futureTime(SimpleDateFormat oldTimeFormat, SimpleDateFormat newTimeFormat){
+        try {
+            Date eventTime = oldTimeFormat.parse(this.eventTime);
+            return this.eventDate + " at " + newTimeFormat.format(eventTime);
+
+        } catch (ParseException e){
+            e.printStackTrace();
+        }
+
+        return this.eventDate + " at " + this.eventTime;
     }
 
     //Resource: baeldung.com/java-remove-last-character-of-string

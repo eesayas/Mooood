@@ -155,7 +155,6 @@ public class UserFeedActivity extends AppCompatActivity{
                         postAdapter.notifyDataSetChanged();
                     }
 
-
                 });
     }
 

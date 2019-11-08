@@ -2,10 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.mooood">
 
+    <uses-feature android:name="android.hardware.camera"></uses-feature>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_mooood_logo_versatile"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_mooood_logo_versatile_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
