@@ -9,10 +9,29 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
+/**
+ * This is responsible for showing all the details of a selected MoodEvent
+ **/
 
 public class ShowEventActivity extends AppCompatActivity {
     private static final String TAG = "For Testing";
-    public static final String MOODEVENT = "Mood Event";
+    public static final String MOOD_EVENT = "Mood Event";
+
+    String author;
+    String date;
+    String time;
+    String emotionalState;
+    String socialSituation;
+    String imageUrl;
+    String reason;
+
+    TextView authorText;
+    ImageView emoticon;
+    TextView dateText;
+    TextView timeText;
+    TextView socialSituationText;
+    ImageView imageReason;
+    TextView reasonText;
 
     Button editButton;
 
@@ -22,29 +41,52 @@ public class ShowEventActivity extends AppCompatActivity {
         setContentView(R.layout.activity_show_event);
 
         Intent intent = getIntent();
-        final MoodEvent moodEvent = intent.getParcelableExtra(MOODEVENT);
+        final MoodEvent moodEvent = intent.getParcelableExtra(MOOD_EVENT);
 
-        //get all values of MoodEvent
-        String author = moodEvent.getAuthor();
+        getValuesMoodEvent(moodEvent);
 
-        String date = moodEvent.getDate();
-        String time = moodEvent.getTime();
-        String emotionalState = moodEvent.getEmotionalState();
+        getTextAndImageView();
 
-        String socialSituation = moodEvent.getSocialSituation();
-        String imageUrl = moodEvent.getImageUrl();
-        String reason = moodEvent.getReason();
+        setTextAndImageView();
 
-        //get TextViews and ImageViews
-        TextView authorText = findViewById(R.id.author);
-        ImageView emoticon = findViewById(R.id.emoticon);
-        TextView dateText = findViewById(R.id.date);
-        TextView timeText = findViewById(R.id.time);
-        TextView socialSituationText = findViewById(R.id.social_situation);
-        ImageView imageReason = findViewById(R.id.image_reason);
-        TextView reasonText = findViewById(R.id.reason);
+        editBtnClickListener(moodEvent);
 
-        //set values for TextViews and ImageViews
+    }
+
+    /**
+     * This gets all needed values from MoodEvent to be displayed
+     * @param moodEvent
+     *     This is the MoodEvent object
+     */
+    private void getValuesMoodEvent(MoodEvent moodEvent){
+        author = moodEvent.getAuthor();
+
+        date = moodEvent.getDate();
+        time = moodEvent.getTime();
+        emotionalState = moodEvent.getEmotionalState();
+
+        socialSituation = moodEvent.getSocialSituation();
+        imageUrl = moodEvent.getImageUrl();
+        reason = moodEvent.getReason();
+    }
+
+    /**
+     * This selects all TextView and ImageView from xml
+     */
+    private void getTextAndImageView(){
+        authorText = findViewById(R.id.author);
+        emoticon = findViewById(R.id.emoticon);
+        dateText = findViewById(R.id.date);
+        timeText = findViewById(R.id.time);
+        socialSituationText = findViewById(R.id.social_situation);
+        imageReason = findViewById(R.id.image_reason);
+        reasonText = findViewById(R.id.reason);
+    }
+
+    /**
+     * This sets the values of all selected TextView and ImageView from xml
+     */
+    private void setTextAndImageView(){
         authorText.setText(author);
         emoticon.setImageResource(new Emoticon(emotionalState, 2).getImageLink());
         dateText.setText(date);
@@ -52,17 +94,19 @@ public class ShowEventActivity extends AppCompatActivity {
         socialSituationText.setText(socialSituation);
         Picasso.get().load(imageUrl).into(imageReason);
         reasonText.setText(reason);
+    }
 
-
-        //click listener for edit post
+    /**
+     * This is a click listener for edit of MoodEvent. Redirect to EditEventActivity
+     */
+    private void editBtnClickListener(final MoodEvent moodEvent){
         editButton = findViewById(R.id.edit_button);
         editButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(ShowEventActivity.this, EditEventActivity.class);
-                intent.putExtra("Mood Event", moodEvent);
+                intent.putExtra(MOOD_EVENT, moodEvent);
                 startActivity(intent);
             }
         });
-
     }
 }

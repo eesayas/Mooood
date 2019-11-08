@@ -1,9 +1,15 @@
 package com.example.mooood;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 import java.util.Date;
-
 import com.google.firebase.firestore.Exclude;
+
+/**
+ * This is the class for MoodEvent object
+ * It has basic getters and setters for each attribute
+ * Parcelable is implemented for sending data to ShowEventActivity
+ */
 
 public class MoodEvent implements Parcelable{
 

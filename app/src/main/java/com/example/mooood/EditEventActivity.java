@@ -52,20 +52,16 @@ public class EditEventActivity extends AppCompatActivity{
 
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final String TAG = "For Testing";
-    public static final String MOODEVENT = "Mood Event";
+    public static final String MOOD_EVENT = "Mood Event";
 
     //Declare variables for later use
     ViewPager moodRoster;
     SwipeMoodsAdapter moodRosterAdapter;
     List<Emoticon> moodImages;
 
-
-
     //Firebase setup!
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private final CollectionReference collectionReference = db.collection("MoodEvents");
     private DocumentReference documentReference;
-    FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     TextView socialSituation;
     EditText reason;
@@ -94,7 +90,6 @@ public class EditEventActivity extends AppCompatActivity{
     String moodAuthor;
     Date moodTimeStamp;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,28 +97,53 @@ public class EditEventActivity extends AppCompatActivity{
 
         //Accessing Document
         Intent intent = getIntent();
-        final MoodEvent moodEvent = intent.getParcelableExtra(MOODEVENT);
+        final MoodEvent moodEvent = intent.getParcelableExtra(MOOD_EVENT);
 
         // get the views
-        moodRoster = findViewById(R.id.mood_roster);
-        socialSituation = findViewById(R.id.social_situation);
-        imageUpload = findViewById(R.id.image_reason);
-        reason = findViewById(R.id.reason);
-        dateAndTimeMood = findViewById((R.id.date_and_time));
-        submitButton = findViewById(R.id.submit_button);
-        cancelButton = findViewById(R.id.cancel_button);
+        getTextAndImageView();
 
         // get the attributes of the mood event
-        moodDate = moodEvent.getDate();
-        moodTime = moodEvent.getTime();
-        moodEmotionalState = moodEvent.getEmotionalState();
-        moodImageUrl = moodEvent.getImageUrl();
-        moodReason = moodEvent.getReason();
-        moodSocialSituation = moodEvent.getSocialSituation();
-        moodDocID = moodEvent.getDocumentId();
-        moodAuthor = moodEvent.getAuthor();
+        getAttrMoodEvent(moodEvent);
 
         //set the views according to the mood event
+        setProperEmoticon();
+
+        //get the document with the same author
+        documentReference = db.collection("MoodEvents").document(moodAuthor);
+
+        //Creating a mood roster
+        createMoodRoster();
+
+        //adapter for mood roster
+        moodRosterAdapter = new SwipeMoodsAdapter(moodImages, this);
+        moodRoster.setAdapter(moodRosterAdapter);
+
+        customStylingSwipeMoods();
+
+        emoticonClickListener();
+
+        socialSituationClickListener();
+
+        dateAndTimeDialogPicker();
+
+        imageUploadClickListener();
+
+        //firebase setup
+        storageReference = FirebaseStorage.getInstance().getReference("reason_image");
+        databaseReference = FirebaseDatabase.getInstance().getReference("reason_image");
+
+        submitBtnClickListener(moodEvent);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+
+    } //onCreate
+
+    private void setProperEmoticon(){
         socialSituation.setText(moodSocialSituation);
         reason.setText(moodReason);
         dateAndTimeMood.setText(moodDate +" "+ moodTime);
@@ -133,42 +153,76 @@ public class EditEventActivity extends AppCompatActivity{
         else {
             Picasso.get().load(moodImageUrl).into(imageUpload);     // set the image according to the given URL
         }
-        documentReference = db.collection("MoodEvents").document(moodAuthor);       //get the document with the same author
+    }
 
+    private void submitBtnClickListener(final MoodEvent moodEvent){
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                moodReason = reason.getText().toString();
+                moodSocialSituation = socialSituation.getText().toString();
 
+                moodEvent.setEmotionalState(moodEmotionalState);
+                moodEvent.setDate(moodDate);
+                moodEvent.setTime(moodTime);
+                moodEvent.setReason(moodReason);
+                moodEvent.setSocialSituation(moodSocialSituation);
 
-        //Creating a mood roster
-        moodImages = new ArrayList<>();
-        moodImages.add(new Emoticon("HAPPY", 2));
-        moodImages.add(new Emoticon("SAD", 2));
-        moodImages.add(new Emoticon("LAUGHING", 2));
-        moodImages.add(new Emoticon("IN LOVE", 2));
-        moodImages.add(new Emoticon("ANGRY", 2));
-        moodImages.add(new Emoticon("SICK", 2));
-        moodImages.add(new Emoticon("AFRAID", 2));
+                //upload image
+                if(uploadTask != null && uploadTask.isInProgress()){
+                    Log.d(TAG, "uploading in progress");
+                } else{
+                    uploadImage();
+                }
+                moodEvent.setImageUrl(moodImageUrl);
 
-        //adapter for mood roster
-        moodRosterAdapter = new SwipeMoodsAdapter(moodImages, this);
+                //create timestamp
+                createTimeStamp();
 
-        moodRoster.setAdapter(moodRosterAdapter);
+                moodEvent.setTimeStamp(moodTimeStamp);
 
-        //styling to show a glimpse of prev and next moods
-        moodRoster.setClipToPadding(false);
-        moodRoster.setPadding(250,0,250,0);
-        moodRoster.setPageMargin(50);
-        // make the moodEmotionalState the mood given by showEvent
-        moodEmotionalState = moodEvent.getEmotionalState();
-        int pos=0;
-        for(int i = 0; i < 6; i++){
-            if(moodEmotionalState.equals(moodImages.get(i).getEmotionalState())){
-                pos = i;
-                break;
+                EditMoodEventDB(documentReference,moodEvent);
+
+                Intent intent = new Intent(EditEventActivity.this, UserFeedActivity.class);
+                startActivity(intent);
+
             }
-            else pos = 0;
+        });
+    }
+
+    private void createTimeStamp(){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm:ss a");
+
+        try {
+            moodTimeStamp = simpleDateFormat.parse(moodDate + ' ' + moodTime);
+
+        } catch (ParseException e){
+            e.printStackTrace();
         }
-        moodRoster.setCurrentItem(pos);
+
+    }
+
+    private void imageUploadClickListener(){
+        imageUpload = findViewById(R.id.image_reason);
+        imageUpload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openFileChooser();
+            }
+        });
+    }
+
+    private void socialSituationClickListener(){
+        socialSituation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new SocialSituationFragment().show(getSupportFragmentManager(), "ADD_SOCIAL_SITUATON");
+            }
+        });
+    }
 
 
+    private void emoticonClickListener(){
         moodRoster.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -185,20 +239,8 @@ public class EditEventActivity extends AppCompatActivity{
                 //no need to use but must be here
             }
         });
-
-        socialSituation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new SocialSituationFragment().show(getSupportFragmentManager(), "ADD_SOCIAL_SITUATON");
-            }
-        });
-
-        //==============================================================================================
-        // DATE AND TIME PICKER DIALOG FRAGMENT click listener
-        //==============================================================================================
-
-        //access date and time picker fragments
-        //Resource: https://github.com/Kiarasht/Android-Templates/tree/master/Templates/DatePickerDialog
+    }
+    private void dateAndTimeDialogPicker(){
         simpleDateFormat = new SimpleDateFormat("MMM/dd/yyyy h:mm a", Locale.getDefault());
         dateAndTimeMood.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -208,74 +250,59 @@ public class EditEventActivity extends AppCompatActivity{
             }
         });
 
-        //==============================================================================================
-        // IMAGE UPLOAD SETUP
-        // Resource: https://codinginflow.com/tutorials/android/firebase-storage-upload-and-retrieve-images/part-2-image-chooser
-        //==============================================================================================
-
-        // click listener for Image Upload
-        imageUpload = findViewById(R.id.image_reason);
-        imageUpload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openFileChooser();
-            }
-        });
-
-        //
-        storageReference = FirebaseStorage.getInstance().getReference("reason_image");
-        databaseReference = FirebaseDatabase.getInstance().getReference("reason_image");
-
-
-        submitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                moodReason = reason.getText().toString();
-                moodSocialSituation = socialSituation.getText().toString();
-
-                moodEvent.setEmotionalState(moodEmotionalState);
-                moodEvent.setDate(moodDate);
-                moodEvent.setTime(moodTime);
-                moodEvent.setReason(moodReason);
-                moodEvent.setSocialSituation(moodSocialSituation);
-                //upload image
-                if(uploadTask != null && uploadTask.isInProgress()){
-                    Log.d(TAG, "uploading in progress");
-                } else{
-                    uploadImage();
-                }
-                moodEvent.setImageUrl(moodImageUrl);
-                //create timestamp
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm:ss a");
-
-                try {
-                    moodTimeStamp = simpleDateFormat.parse(moodDate + ' ' + moodTime);
-
-                } catch (ParseException e){
-                    e.printStackTrace();
-                }
-                moodEvent.setTimeStamp(moodTimeStamp);
-
-                Log.d(TAG, "changed Url in submit");
-                EditMoodEventDB(documentReference,moodEvent);
-
-                Intent intent = new Intent(EditEventActivity.this, UserFeedActivity.class);
-                intent.putExtra("accountKey", moodAuthor);
-                startActivity(intent);
-
-            }
-        });
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-
-
-
     }
+
+    private void customStylingSwipeMoods(){
+        //styling to show a glimpse of prev and next moods
+        moodRoster.setClipToPadding(false);
+        moodRoster.setPadding(250,0,250,0);
+        moodRoster.setPageMargin(50);
+
+
+        // make the moodEmotionalState the mood given by showEvent
+        int pos=0;
+        for(int i = 0; i < 6; i++){
+            if(moodEmotionalState.equals(moodImages.get(i).getEmotionalState())){
+                pos = i;
+                break;
+            }
+            else pos = 0;
+        }
+        moodRoster.setCurrentItem(pos);
+    }
+
+    private void createMoodRoster(){
+        moodImages = new ArrayList<>();
+        moodImages.add(new Emoticon("HAPPY", 2));
+        moodImages.add(new Emoticon("SAD", 2));
+        moodImages.add(new Emoticon("LAUGHING", 2));
+        moodImages.add(new Emoticon("IN LOVE", 2));
+        moodImages.add(new Emoticon("ANGRY", 2));
+        moodImages.add(new Emoticon("SICK", 2));
+        moodImages.add(new Emoticon("AFRAID", 2));
+    }
+
+    private void getAttrMoodEvent(MoodEvent moodEvent){
+        moodDate = moodEvent.getDate();
+        moodTime = moodEvent.getTime();
+        moodEmotionalState = moodEvent.getEmotionalState();
+        moodImageUrl = moodEvent.getImageUrl();
+        moodReason = moodEvent.getReason();
+        moodSocialSituation = moodEvent.getSocialSituation();
+        moodDocID = moodEvent.getDocumentId();
+        moodAuthor = moodEvent.getAuthor();
+    }
+
+    private void getTextAndImageView(){
+        moodRoster = findViewById(R.id.mood_roster);
+        socialSituation = findViewById(R.id.social_situation);
+        imageUpload = findViewById(R.id.image_reason);
+        reason = findViewById(R.id.reason);
+        dateAndTimeMood = findViewById((R.id.date_and_time));
+        submitButton = findViewById(R.id.submit_button);
+        cancelButton = findViewById(R.id.cancel_button);
+    }
+
     private final DatePickerDialog.OnDateSetListener DateDataSet = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
@@ -298,7 +325,7 @@ public class EditEventActivity extends AppCompatActivity{
             calendar.set(Calendar.MINUTE, minute);
 
             //get Time
-            moodTime = new SimpleDateFormat("h:mm:ss a", Locale.getDefault()).format(calendar.getTime());
+            moodTime = new SimpleDateFormat("h:mm a", Locale.getDefault()).format(calendar.getTime());
 
             //set TexView to correspond with input data
             dateAndTimeMood.setText(simpleDateFormat.format(calendar.getTime()));
@@ -380,8 +407,6 @@ public class EditEventActivity extends AppCompatActivity{
                     String uploadId = databaseReference.push().getKey();
                     databaseReference.child(uploadId).setValue(uploadImage);
 
-                    //submit to db
-//                    submitMoodEventToDB();
 
 
                 }

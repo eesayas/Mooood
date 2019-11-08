@@ -1,22 +1,20 @@
 package com.example.mooood;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 
+/**
+ * This is an adapter for displaying MoodEvents in UserFeedActivity
+ * Implementation is derived from lab lectures
+ **/
 public class MoodEventsAdapter extends ArrayAdapter<MoodEvent> {
 
     private static final String TAG = "For Testing";

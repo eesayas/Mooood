@@ -1,4 +1,3 @@
-//Reference: Lab 3 Instructions - Fragments
 package com.example.mooood;
 
 import android.app.AlertDialog;
@@ -10,20 +9,20 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-
 import java.util.ArrayList;
 
+/**
+ * This is a simple dialog fragment utilized for selection of social situation for MoodEvent
+ **/
 public class SocialSituationFragment extends DialogFragment {
 
-    TextView socialSituationText;
-
-    ListView socialSituationList;
-    ArrayAdapter<String> socialSituationAdapter;
-    ArrayList<String> socialSituationDataList;
+    private TextView socialSituationText;
+    private ListView socialSituationList;
+    private ArrayAdapter<String> socialSituationAdapter;
+    private ArrayList<String> socialSituationDataList;
 
     @NonNull
     @Override
@@ -31,7 +30,21 @@ public class SocialSituationFragment extends DialogFragment {
         //Inflate layout of this fragment
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_social_situation, null);
 
-        //add data for Adapter
+        adapterSetup(view);
+        changeSocialSituationOnClick();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        return builder
+                .setView(view)
+                .setTitle("Choose Social Situation")
+                .create();
+
+    } // end of onCreateDialog
+
+    /**
+     * This is a simple Array Adapter setup based on lab lectures
+     **/
+    private void adapterSetup(View view){
         socialSituationDataList = new ArrayList<>();
 
         socialSituationDataList.add("Alone");
@@ -42,7 +55,12 @@ public class SocialSituationFragment extends DialogFragment {
         socialSituationList = view.findViewById(R.id.social_situation_list);
         socialSituationAdapter = new ArrayAdapter<>(view.getContext(), R.layout.content_social_situation, socialSituationDataList);
         socialSituationList.setAdapter(socialSituationAdapter);
+    }
 
+    /**
+     * This is a click listener that changes socialSituation TextView to match selection
+     **/
+    private void changeSocialSituationOnClick(){
         //for changing TextView in CreatePostActivity
         socialSituationText = getActivity().findViewById(R.id.social_situation);
 
@@ -57,13 +75,6 @@ public class SocialSituationFragment extends DialogFragment {
                 //exit SocialSituationFragment after choice
                 dismiss();
             }
-
         });
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        return builder
-                .setView(view)
-                .setTitle("Choose Social Situation")
-                .create();
     }
 }

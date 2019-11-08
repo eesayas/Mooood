@@ -11,7 +11,6 @@ import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -19,22 +18,23 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import java.util.ArrayList;
-import java.util.Date;
+
+/**
+ * FILE PURPOSE: This is for displaying all of User's MoodEvents
+ */
 
 public class UserFeedActivity extends AppCompatActivity{
 
     private static final String TAG = "For Testing";
-    public static final String MOODEVENT = "Mood Event";
+    public static final String MOOD_EVENT = "Mood Event";
 
     //Declare the variables for reference later
     SwipeMenuListView postList;
@@ -43,10 +43,11 @@ public class UserFeedActivity extends AppCompatActivity{
 
     //Firebase setup!
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private final CollectionReference collectionReference = db.collection("MoodEvents");
     private DocumentReference documentReference;
 
-
+    /**
+     * This implements all methods below accordingly
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,73 +57,18 @@ public class UserFeedActivity extends AppCompatActivity{
         final String accountName = intent.getStringExtra("accountKey");
         documentReference = db.collection("MoodEvents").document(accountName);
 
-        //basic ArrayAdapter init
-        postDataList = new ArrayList<>();
-        postList = findViewById(R.id.posts_list);
-        postAdapter = new MoodEventsAdapter(postDataList, this);
-        postList.setAdapter(postAdapter);
+        arrayAdapterSetup();
+        createDeleteButtonOnSwipe();
 
-        //adding delete button to SwipeMenu
-        SwipeMenuCreator creator = new SwipeMenuCreator() {
-
-            @Override
-            public void create(SwipeMenu menu) {
-
-                //init delete button
-                SwipeMenuItem deleteItem = new SwipeMenuItem(getApplicationContext());
-
-                //custom design for delete button
-                deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9, 0x3F, 0x25)));
-                deleteItem.setWidth(200);
-                deleteItem.setIcon(R.drawable.ic_delete_forever);
-
-                //add button
-                menu.addMenuItem(deleteItem);
-            }
-        };
-
-        // set creator
-        postList.setMenuCreator(creator);
-
-        //click listener for garbage can icon
-        postList.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
-                switch (index){
-                    case 0:
-                        deleteMoodEventFromDB(documentReference, position);
-                        break;
-                }
-                return false;
-            }
-        });
-
-        //go to CreatePostActivity
-        final FloatingActionButton createPostBtn = findViewById(R.id.fab);
-        createPostBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Intent intent = new Intent(getApplicationContext(), CreateEventActivity.class);
-                intent.putExtra("key", accountName);
-                startActivity(intent);
-
-            }
-        });
-
-        //click listener for each item -> ShowEventActivity
-        postList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-                Intent intent = new Intent(UserFeedActivity.this, ShowEventActivity.class);
-                intent.putExtra(MOODEVENT, postDataList.get(i));
-                startActivity(intent);
-            }
-        });
+        deleteBtnClickListener();
+        createPostBtnClickListener(accountName);
+        showEventClickListener();
 
     } //end of onCreate
 
+    /**
+     * This will collect and show all of User's MoodEvent in DB
+     */
     @Override
     protected void onStart() {
         super.onStart();
@@ -135,7 +81,6 @@ public class UserFeedActivity extends AppCompatActivity{
                         postDataList.clear();
 
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-//                            MoodEvent mood = documentSnapshot.toObject(MoodEvent.class);
 
                                 String author = (String)documentSnapshot.getData().get("author");
                                 String date = (String)documentSnapshot.getData().get("date");
@@ -157,8 +102,16 @@ public class UserFeedActivity extends AppCompatActivity{
                 });
     }
 
+
+    /**
+     * This deletes a MoodEvent from the DB
+     * @param documentReference
+     *     This is documentReference of MoodEvent in DB
+     * @param position
+     *     This is the position of MoodEvent in postDataList
+     */
     //delete from database
-    public void deleteMoodEventFromDB(DocumentReference documentReference, int position){
+    private void deleteMoodEventFromDB(DocumentReference documentReference, int position){
         documentReference.collection("MoodActivities")
                 .document(postDataList.get(position).getDocumentId())
                 .delete()
@@ -179,5 +132,117 @@ public class UserFeedActivity extends AppCompatActivity{
         postAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * This creates the deleteButton for SwipeMenuListView
+     *
+     * The MIT License (MIT)
+     *
+     * Copyright (c) 2014 baoyongzhang
+     *
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+     *
+     * The above copyright notice and this permission notice shall be included in all
+     * copies or substantial portions of the Software.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     * SOFTWARE.
+     */
+    private void createDeleteButtonOnSwipe(){
+        //adding delete button to SwipeMenu
+        SwipeMenuCreator creator = new SwipeMenuCreator() {
+
+            @Override
+            public void create(SwipeMenu menu) {
+
+                //init delete button
+                SwipeMenuItem deleteItem = new SwipeMenuItem(getApplicationContext());
+
+                //custom design for delete button
+                deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9, 0x3F, 0x25)));
+                deleteItem.setWidth(200);
+                deleteItem.setIcon(R.drawable.ic_delete_forever);
+
+                //add button
+                menu.addMenuItem(deleteItem);
+            }
+        };
+
+        // set creator
+        postList.setMenuCreator(creator);
+    }
+
+    /**
+     * This is a basic Array Adapter setup based on the lab lectures
+     */
+
+    private void arrayAdapterSetup(){
+        //basic ArrayAdapter init
+        postDataList = new ArrayList<>();
+        postList = findViewById(R.id.posts_list);
+        postAdapter = new MoodEventsAdapter(postDataList, this);
+        postList.setAdapter(postAdapter);
+    }
+
+    /**
+     * This is a click listener for each delete button in SwipeMenuListView
+     */
+
+    private void deleteBtnClickListener(){
+        //click listener for garbage can icon
+        postList.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+                switch (index){
+                    case 0:
+                        deleteMoodEventFromDB(documentReference, position);
+                        break;
+                }
+                return false;
+            }
+        });
+    }
+
+    /**
+     * This is a click listener for create post. Will redirect to CreateEventActivity
+     */
+    private void createPostBtnClickListener(final String accountName){
+        final FloatingActionButton createPostBtn = findViewById(R.id.fab);
+        createPostBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent(getApplicationContext(), CreateEventActivity.class);
+                intent.putExtra("key", accountName);
+                startActivity(intent);
+
+            }
+        });
+    }
+
+    /**
+     * This is a click listener for show event. Will redirect to ShowEventActivity
+     */
+    private void showEventClickListener(){
+        //click listener for each item -> ShowEventActivity
+        postList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                Intent intent = new Intent(UserFeedActivity.this, ShowEventActivity.class);
+                intent.putExtra(MOOD_EVENT, postDataList.get(i));
+                startActivity(intent);
+            }
+        });
+    }
 
 }
