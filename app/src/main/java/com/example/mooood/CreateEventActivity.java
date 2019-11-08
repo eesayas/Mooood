@@ -373,7 +373,7 @@ public class CreateEventActivity extends AppCompatActivity{
             calendar.set(Calendar.MINUTE, minute);
 
             //get Time
-            moodTime = new SimpleDateFormat("h:mm:ss a", Locale.getDefault()).format(calendar.getTime());
+            moodTime = new SimpleDateFormat("h:mm a", Locale.getDefault()).format(calendar.getTime());
 
             //set TexView to correspond with input data
             dateAndTimeMood.setText(simpleDateFormat.format(calendar.getTime()));

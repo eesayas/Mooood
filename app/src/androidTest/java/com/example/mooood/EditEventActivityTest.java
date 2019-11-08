@@ -5,7 +5,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 
 import com.robotium.solo.Solo;
@@ -22,7 +21,7 @@ import java.util.Calendar;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static org.junit.Assert.*;
 
-public class ShowEventActivityTest {
+public class EditEventActivityTest {
     private Solo solo;
     public static Calendar calendar;
 
@@ -35,12 +34,8 @@ public class ShowEventActivityTest {
         solo = new Solo(getInstrumentation(), rule.getActivity());
     }
 
-//    public void ListViewClickTest () {
-//
-//        super (ShowEventActivity.class);
-//    }
     @Test
-    public void showActivityLaunch(){
+    public void editEventActivityLaunch(){
 
         //Log In using a known user ID
         solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
@@ -79,16 +74,21 @@ public class ShowEventActivityTest {
         final ListView list = (ListView) solo.getView(R.id.posts_list);
         solo.clickInList(0);
         solo.waitForActivity(ShowEventActivity.class);
-        TextView moodAuthor = (TextView)solo.getView(R.id.author);
-        TextView moodDate = (TextView)solo.getView(R.id.date);
-        TextView moodTime = (TextView)solo.getView(R.id.time);
-        TextView moodSocialSituation = (TextView)solo.getView(R.id.social_situation);
-        TextView moodReason =(TextView)solo.getView(R.id.reason);
-        assertEquals(moodAuthor.getText().toString(),"hyeon");
-        assertEquals(moodSocialSituation.getText().toString(),"Alone");
-        assertEquals(moodReason.getText().toString(),"This");
-        assertEquals(moodDate.getText().toString(), date);
-        assertEquals(moodTime.getText().toString(), time);
+
+        //click on the edit button to start the editActivity class
+        solo.clickOnView(solo.getView(R.id.edit_button));
+        solo.waitForActivity(EditEventActivity.class);
+
+        TextView socialSituation = (TextView)solo.getView(R.id.social_situation);
+//        imageUpload = findViewById(R.id.image_reason);
+        EditText reason =(EditText)solo.getView(R.id.reason) ;
+        TextView dateAndTimeMood = (TextView)solo.getView(R.id.date_and_time);
+        View submitButton = solo.getView(R.id.submit_button);
+        View cancelButton = solo.getView(R.id.cancel_button);
+
+
+
+
     }
 
 
@@ -97,4 +97,6 @@ public class ShowEventActivityTest {
     public void tearDown() throws Exception {
         solo.finishOpenedActivities();
     }
+}
+
 }
