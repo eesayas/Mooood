@@ -79,6 +79,7 @@ public class EditEventActivity extends AppCompatActivity{
     Calendar calendar;
     TextView dateAndTimeMood;
     Button submitButton;
+    Button cancelButton;
 
     //needed for creating MoodEvent later
     String moodDate;
@@ -100,13 +101,16 @@ public class EditEventActivity extends AppCompatActivity{
         Intent intent = getIntent();
         final MoodEvent moodEvent = intent.getParcelableExtra(MOODEVENT);
 
+        // get the views
         moodRoster = findViewById(R.id.mood_roster);
         socialSituation = findViewById(R.id.social_situation);
         imageUpload = findViewById(R.id.image_reason);
         reason = findViewById(R.id.reason);
         dateAndTimeMood = findViewById((R.id.date_and_time));
         submitButton = findViewById(R.id.submit_button);
+        cancelButton = findViewById(R.id.cancel_button);
 
+        // get the attributes of the mood event
         moodDate = moodEvent.getDate();
         moodTime = moodEvent.getTime();
         moodEmotionalState = moodEvent.getEmotionalState();
@@ -116,12 +120,13 @@ public class EditEventActivity extends AppCompatActivity{
         moodDocID = moodEvent.getDocumentId();
         moodAuthor = moodEvent.getAuthor();
 
+        //set the views according to the mood event
         socialSituation.setText(moodSocialSituation);
         reason.setText(moodReason);
         dateAndTimeMood.setText(moodDate +" "+ moodTime);
         Picasso.get().load(moodImageUrl).into(imageUpload);     // set the image according to the given URL
 
-        documentReference = db.collection("MoodEvents").document(moodAuthor);
+        documentReference = db.collection("MoodEvents").document(moodAuthor);       //get the document with the same author
 
 
 
@@ -147,6 +152,17 @@ public class EditEventActivity extends AppCompatActivity{
         // make the moodEmotionalState the mood given by showEvent
         //moodEmotionalState = "HAPPY";
         moodEmotionalState = moodEvent.getEmotionalState();
+        Log.d(TAG, "current Emotional state: " + moodEmotionalState);
+        int pos = 3;
+        for(int i = 0; i < 6; i++){
+            if(moodEmotionalState.equals(moodImages.get(i).getEmotionalState())){
+                pos = i;
+            }
+            else pos = 0;
+        }
+        Log.d(TAG, "current pos: " + pos);
+        moodRoster.setCurrentItem(pos);
+
 
         moodRoster.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -221,8 +237,15 @@ public class EditEventActivity extends AppCompatActivity{
                 moodEvent.setTime(moodTime);
                 moodEvent.setReason(moodReason);
                 moodEvent.setSocialSituation(moodSocialSituation);
+                //upload image
+                if(uploadTask != null && uploadTask.isInProgress()){
+                    Log.d(TAG, "uploading in progress");
+                } else{
+                    uploadImage();
+                }
+                moodEvent.setImageUrl(moodImageUrl);
 
-
+                Log.d(TAG, "changed Url in submit");
                 EditMoodEventDB(documentReference,moodEvent);
 
                 Intent intent = new Intent(EditEventActivity.this, UserFeedActivity.class);
@@ -231,6 +254,13 @@ public class EditEventActivity extends AppCompatActivity{
 
             }
         });
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
 
     }
     private final DatePickerDialog.OnDateSetListener DateDataSet = new DatePickerDialog.OnDateSetListener() {
@@ -332,6 +362,7 @@ public class EditEventActivity extends AppCompatActivity{
 
                     UploadImage uploadImage = new UploadImage(downloadUrl.toString());
                     moodImageUrl = uploadImage.getImageUrl();
+                    Log.d(TAG, "image url changed");
                     String uploadId = databaseReference.push().getKey();
                     databaseReference.child(uploadId).setValue(uploadImage);
 
