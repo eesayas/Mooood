@@ -44,6 +44,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Date;
 
+/**
+ * FILE PURPOSE: This is for create new mood event
+ **/
+
 public class CreateEventActivity extends AppCompatActivity{
 
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -146,6 +150,12 @@ public class CreateEventActivity extends AppCompatActivity{
 
     } //end of onCreate
 
+    /**
+     * This is a click listener for submit button. This actually submits the new MoodEvent ito DB
+     * @params accountName
+     * This is the accountName of the user that is logged in
+     */
+
     private void submitBtnClickListener(final String accountName){
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -180,6 +190,10 @@ public class CreateEventActivity extends AppCompatActivity{
             }
         });
     }
+
+    /**
+     * This checks if reason is only 3 words or 20 characters
+     */
 
     private void inputChecker(){
         submitButton.setEnabled(false);
@@ -216,6 +230,10 @@ public class CreateEventActivity extends AppCompatActivity{
         });
     }
 
+    /**
+     * This is accesses the fragment that is used to obtain date and time of MoodEvent
+     */
+
     private void dateAndTimePickerClickListener(){
         simpleDateFormat = new SimpleDateFormat("MMM/dd/yyyy h:mm a", Locale.getDefault());
         dateAndTimeMood = findViewById((R.id.date_and_time));
@@ -228,7 +246,9 @@ public class CreateEventActivity extends AppCompatActivity{
         });
     }
 
-
+    /**
+     * This opens the image gallery of the phone for image upload
+     * */
     private void imageUploadClickListener(){
         imageUpload = findViewById(R.id.image_reason);
         imageUpload.setOnClickListener(new View.OnClickListener() {
@@ -239,6 +259,9 @@ public class CreateEventActivity extends AppCompatActivity{
         });
     }
 
+    /**
+     * This accesses the fragment that gives options for social situation
+     **/
     private void socialSituationClickListener(){
         socialSituation = findViewById(R.id.social_situation);
         socialSituation.setOnClickListener(new View.OnClickListener() {
@@ -249,6 +272,9 @@ public class CreateEventActivity extends AppCompatActivity{
         });
     }
 
+    /**
+     * This is a listener of the selections of mood from Mood Roster
+     */
     private void moodSelection(){
         moodEmotionalState = "HAPPY"; //default
 
@@ -272,19 +298,27 @@ public class CreateEventActivity extends AppCompatActivity{
 
     }
 
+    /**
+     * This just customs the mood roster so the next and previous emoticon can be seen partially
+     **/
     private void customSwipeMoodStyling(){
         moodRoster.setClipToPadding(false);
         moodRoster.setPadding(250,0,250,0);
         moodRoster.setPageMargin(50);
     }
 
+    /**
+     * This is the setup for the adapter that contains all the emoticons
+     **/
     private void swipeMoodAdapterSetup(){
         moodRosterAdapter = new SwipeMoodsAdapter(moodImages, this);
         moodRoster = findViewById(R.id.mood_roster);
         moodRoster.setAdapter(moodRosterAdapter);
     }
 
-
+    /**
+     * This creates the actual mood roster and populates it with Emoticons
+     * **/
     private void createMoodRoster(){
         moodImages = new ArrayList<>();
         moodImages.add(new Emoticon("HAPPY", 2));
@@ -296,9 +330,9 @@ public class CreateEventActivity extends AppCompatActivity{
         moodImages.add(new Emoticon("AFRAID", 2));
     }
 
-    //==============================================================================================
-    // IMAGE UPLOAD METHODS
-    //==============================================================================================
+    /***
+     IMAGE UPLOAD METHODS
+     **/
 
     private void openFileChooser(){
         Intent intent = new Intent();
@@ -364,9 +398,9 @@ public class CreateEventActivity extends AppCompatActivity{
         }
     }
 
-    //==============================================================================================
-    // DATE AND TIME PICKER DIALOG FRAGMENT
-    //==============================================================================================
+    /**
+    * DATE AND TIME PICKER DIALOG FRAGMENT
+    **/
 
     /* After user decided on a date, store those in our calendar variable and then start the TimePickerDialog immediately */
     private final DatePickerDialog.OnDateSetListener DateDataSet = new DatePickerDialog.OnDateSetListener() {
@@ -404,6 +438,8 @@ public class CreateEventActivity extends AppCompatActivity{
             dateAndTimeMood.setText(simpleDateFormat.format(calendar.getTime()));
         }
     };
+
+
     //==============================================================================================
     // GOOGLE MAPS LOCATION ACCESS
     //==============================================================================================
@@ -412,9 +448,9 @@ public class CreateEventActivity extends AppCompatActivity{
         CreateEventActivity.this.startActivity(intent);
     }
 
-
-
-    //adds MoodEvent object to db
+    /**
+     * This adds the MoodEvent to DB
+     * **/
     private void addMoodEventToDB(DocumentReference documentReference, MoodEvent moodEvent){
         Log.d("debugging", "here");
 
@@ -439,6 +475,9 @@ public class CreateEventActivity extends AppCompatActivity{
 
     }
 
+    /**
+     * This constructs a MoodEvent with the appropriate values and adds it into the DB
+     * */
     private void submitMoodEventToDB(){
 
         MoodEvent moodEvent = new MoodEvent(moodAuthor, moodDate, moodTime, moodEmotionalState, moodImageUrl, moodReason, moodSocialSituation);
@@ -448,6 +487,9 @@ public class CreateEventActivity extends AppCompatActivity{
         finish();
     }
 
+    /**
+     * This is needed for checking word lengths on text input fields
+     **/
     public static int countWords(String input) {
         if (input == null || input.isEmpty()) {
             return 0;
