@@ -241,6 +241,7 @@ public class UserFeedActivity extends AppCompatActivity{
                 Intent intent = new Intent(UserFeedActivity.this, ShowEventActivity.class);
                 intent.putExtra(MOOD_EVENT, postDataList.get(i));
                 startActivity(intent);
+
             }
         });
     }
