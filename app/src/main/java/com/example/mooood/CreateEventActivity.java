@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,6 +23,18 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -48,7 +61,7 @@ import java.util.Date;
  * FILE PURPOSE: This is for create new mood event
  **/
 
-public class CreateEventActivity extends AppCompatActivity{
+public class CreateEventActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final String TAG = "For Testing";
@@ -76,6 +89,14 @@ public class CreateEventActivity extends AppCompatActivity{
     TextView dateAndTimeMood;
     Button submitButton;
     Button locationButton;
+
+    //For location services inside the activity
+    private MapView mapView;
+    private GoogleMap gmap;
+    private FusedLocationProviderClient fusedLocationClient;
+
+
+    private static final String MAP_VIEW_BUNDLE_KEY="MapViewBundleKey";
 
     //needed for creating MoodEvent later
     String moodAuthor;
@@ -129,18 +150,18 @@ public class CreateEventActivity extends AppCompatActivity{
         inputChecker();
 
         //==============================================================================================
-        // LOCATION BUTTON click listener
+        // LOCATION services
         //==============================================================================================
-        locationButton=findViewById(R.id.location_button);
-        locationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openMaps();
-            }
-        });
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
+        Bundle mapViewBundle = null;
+        if (savedInstanceState != null) {
+            mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        }
 
-
+        mapView = findViewById(R.id.createMapView);
+        mapView.onCreate(mapViewBundle);
+        mapView.getMapAsync(this);
 
         //==============================================================================================
         // SUBMISSION
@@ -443,10 +464,17 @@ public class CreateEventActivity extends AppCompatActivity{
     //==============================================================================================
     // GOOGLE MAPS LOCATION ACCESS
     //==============================================================================================
-    private void openMaps(){
-        Intent intent = new Intent(CreateEventActivity.this,MapsActivity.class);
-        CreateEventActivity.this.startActivity(intent);
-    }
+//    private void openMaps(Bundle savedInstanceState){
+//        Bundle mapViewBundle = null;
+//        if (savedInstanceState != null) {
+//            mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY);
+//        }
+//
+//        MapView.onCreate(mapViewBundle);
+//
+//        MapView.getMapAsync(this);
+//
+//    }
 
     /**
      * This adds the MoodEvent to DB
@@ -499,4 +527,105 @@ public class CreateEventActivity extends AppCompatActivity{
         return words.length;
     }
 
+    /**
+     *This contains all
+     */
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        Bundle mapViewBundle = outState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        if (mapViewBundle == null) {
+            mapViewBundle = new Bundle();
+            outState.putBundle(MAP_VIEW_BUNDLE_KEY, mapViewBundle);
+        }
+
+        mapView.onSaveInstanceState(mapViewBundle);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        gmap = googleMap;
+
+        gmap.setIndoorEnabled(true);
+        gmap.setMyLocationEnabled(true);
+        UiSettings uiSettings = gmap.getUiSettings();
+        uiSettings.setIndoorLevelPickerEnabled(true);
+        uiSettings.setMyLocationButtonEnabled(true);
+        uiSettings.setMapToolbarEnabled(true);
+        uiSettings.setCompassEnabled(true);
+        uiSettings.setZoomControlsEnabled(true);
+
+        final LatLng Edmonton = new LatLng(53.5, -113.5);
+        CameraPosition.Builder camBuilder = CameraPosition.builder();
+        camBuilder.bearing(0);
+        camBuilder.tilt(0);
+        camBuilder.target(Edmonton);
+        camBuilder.zoom(11);
+
+        CameraPosition cp = camBuilder.build();
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        if (location != null) {
+                            double myLatitude=location.getLatitude();
+                            double myLongitude= location.getLongitude();
+                            LatLng myLocation= new LatLng(myLatitude,myLongitude);
+                            gmap.addMarker(new MarkerOptions().position(myLocation).title("Current Location"));
+
+                        }
+                        else{
+                            gmap.addMarker(new MarkerOptions().position(Edmonton).title("Current Location"));
+                        }
+                    }
+                });
+
+
+        gmap.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
+
+        gmap.setOnPoiClickListener(new GoogleMap.OnPoiClickListener() {
+            @Override
+            public void onPoiClick(PointOfInterest pointOfInterest) {
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(pointOfInterest.latLng);
+                gmap.addMarker(markerOptions);
+                gmap.moveCamera(CameraUpdateFactory.newLatLng(pointOfInterest.latLng));
+            }
+        });
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mapView.onResume();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mapView.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mapView.onStop();
+    }
+    @Override
+    protected void onPause() {
+        mapView.onPause();
+        super.onPause();
+    }
+    @Override
+    protected void onDestroy() {
+        mapView.onDestroy();
+        super.onDestroy();
+    }
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
+    }
 }
