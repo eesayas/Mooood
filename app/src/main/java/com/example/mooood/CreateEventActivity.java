@@ -94,7 +94,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     private MapView mapView;
     private GoogleMap gmap;
     private FusedLocationProviderClient fusedLocationClient;
-
+    private LatLng moodLocation;
 
     private static final String MAP_VIEW_BUNDLE_KEY="MapViewBundleKey";
 
@@ -108,6 +108,8 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     String moodReason;
     String moodSocialSituation;
     Boolean reasonCount;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -507,8 +509,8 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
      * This constructs a MoodEvent with the appropriate values and adds it into the DB
      * */
     private void submitMoodEventToDB(){
-
-        MoodEvent moodEvent = new MoodEvent(moodAuthor, moodDate, moodTime, moodEmotionalState, moodImageUrl, moodReason, moodSocialSituation);
+        LatLng moodCoordinates= getMoodLocation();
+        MoodEvent moodEvent = new MoodEvent(moodAuthor, moodDate, moodTime, moodEmotionalState, moodImageUrl, moodReason, moodSocialSituation,moodCoordinates.latitude,moodCoordinates.longitude);
         moodEvent.setTimeStamp(moodTimeStamp);
         addMoodEventToDB(documentReference, moodEvent);
 
@@ -574,16 +576,16 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
                             double myLatitude=location.getLatitude();
                             double myLongitude= location.getLongitude();
                             LatLng myLocation= new LatLng(myLatitude,myLongitude);
+                            setMoodLocation(myLocation);
                             gmap.addMarker(new MarkerOptions().position(myLocation).title("Current Location"));
 
                         }
                         else{
                             gmap.addMarker(new MarkerOptions().position(Edmonton).title("Current Location"));
+                            setMoodLocation(Edmonton);
                         }
                     }
                 });
-
-
         gmap.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
 
         gmap.setOnPoiClickListener(new GoogleMap.OnPoiClickListener() {
@@ -627,5 +629,13 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     public void onLowMemory() {
         super.onLowMemory();
         mapView.onLowMemory();
+    }
+
+    public LatLng getMoodLocation() {
+        return moodLocation;
+    }
+
+    public void setMoodLocation(LatLng moodLocation) {
+        this.moodLocation = moodLocation;
     }
 }
