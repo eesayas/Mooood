@@ -4,9 +4,12 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
@@ -14,20 +17,28 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.TimePicker;
-
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
@@ -38,7 +49,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -47,7 +57,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Date;
 
-public class CreateEventActivity extends AppCompatActivity{
+/**
+ * FILE PURPOSE: This is for create new mood event
+ **/
+
+public class CreateEventActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final String TAG = "For Testing";
@@ -59,9 +73,7 @@ public class CreateEventActivity extends AppCompatActivity{
 
     //Firebase setup!
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private final CollectionReference collectionReference = db.collection("MoodEvents");
     private DocumentReference documentReference;
-    FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     TextView socialSituation;
 
@@ -78,6 +90,14 @@ public class CreateEventActivity extends AppCompatActivity{
     Button submitButton;
     Button locationButton;
 
+    //For location services inside the activity
+    private MapView mapView;
+    private GoogleMap gmap;
+    private FusedLocationProviderClient fusedLocationClient;
+    private LatLng moodLocation;
+
+    private static final String MAP_VIEW_BUNDLE_KEY="MapViewBundleKey";
+
     //needed for creating MoodEvent later
     String moodAuthor;
     String moodDate;
@@ -87,6 +107,9 @@ public class CreateEventActivity extends AppCompatActivity{
     String moodImageUrl;
     String moodReason;
     String moodSocialSituation;
+    Boolean reasonCount;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,27 +122,183 @@ public class CreateEventActivity extends AppCompatActivity{
 
         documentReference = db.collection("MoodEvents").document(accountName);
 
-        //Creating a mood roster
-        moodImages = new ArrayList<>();
-        moodImages.add(new Emoticon("HAPPY", 2));
-        moodImages.add(new Emoticon("SAD", 2));
-        moodImages.add(new Emoticon("LAUGHING", 2));
-        moodImages.add(new Emoticon("IN LOVE", 2));
-        moodImages.add(new Emoticon("ANGRY", 2));
-        moodImages.add(new Emoticon("SICK", 2));
-        moodImages.add(new Emoticon("AFRAID", 2));
+        createMoodRoster();
+        swipeMoodAdapterSetup();
+        customSwipeMoodStyling();
+        moodSelection();
+        socialSituationClickListener();
 
-        //adapter for mood roster
-        moodRosterAdapter = new SwipeMoodsAdapter(moodImages, this);
+        //==============================================================================================
+        // IMAGE UPLOAD SETUP
+        // Resource: https://codinginflow.com/tutorials/android/firebase-storage-upload-and-retrieve-images/part-2-image-chooser
+        //==============================================================================================
 
-        moodRoster = findViewById(R.id.mood_roster);
-        moodRoster.setAdapter(moodRosterAdapter);
+        imageUploadClickListener();
 
-        //styling to show a glimpse of prev and next moods
-        moodRoster.setClipToPadding(false);
-        moodRoster.setPadding(250,0,250,0);
-        moodRoster.setPageMargin(50);
+        storageReference = FirebaseStorage.getInstance().getReference("reason_image");
+        databaseReference = FirebaseDatabase.getInstance().getReference("reason_image");
 
+        //==============================================================================================
+        // DATE AND TIME PICKER DIALOG FRAGMENT click listener
+        //==============================================================================================
+
+        //access date and time picker fragments
+        //Resource: https://github.com/Kiarasht/Android-Templates/tree/master/Templates/DatePickerDialog
+
+        dateAndTimePickerClickListener();
+
+        submitButton = findViewById(R.id.submit_button);
+
+        inputChecker();
+
+        //==============================================================================================
+        // LOCATION services
+        //==============================================================================================
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        Bundle mapViewBundle = null;
+        if (savedInstanceState != null) {
+            mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        }
+
+        mapView = findViewById(R.id.createMapView);
+        mapView.onCreate(mapViewBundle);
+        mapView.getMapAsync(this);
+
+        //==============================================================================================
+        // SUBMISSION
+        //==============================================================================================
+
+        submitBtnClickListener(accountName);
+
+    } //end of onCreate
+
+    /**
+     * This is a click listener for submit button. This actually submits the new MoodEvent ito DB
+     * @params accountName
+     * This is the accountName of the user that is logged in
+     */
+
+    private void submitBtnClickListener(final String accountName){
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //retrieve remaining needed for Mood Event
+
+
+                TextView socialSituationText = findViewById(R.id.social_situation);
+                moodSocialSituation = socialSituationText.getText().toString();
+
+                moodAuthor = accountName;
+
+                //create timestamp
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm:ss a");
+
+                try {
+                    moodTimeStamp = simpleDateFormat.parse(moodDate + ' ' + moodTime);
+
+                } catch (ParseException e){
+                    e.printStackTrace();
+                }
+
+                //upload image
+                if(uploadTask != null && uploadTask.isInProgress()){
+                    Log.d(TAG, "uploading in progress");
+                } else{
+                    uploadImage();
+                }
+                submitMoodEventToDB();
+
+            }
+        });
+    }
+
+    /**
+     * This checks if reason is only 3 words or 20 characters
+     */
+
+    private void inputChecker(){
+        submitButton.setEnabled(false);
+        if(moodDate != null && moodTime != null){
+            submitButton.setEnabled(true);
+        }
+        final EditText reasonText = findViewById(R.id.reason);
+        reasonText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 0)
+                {
+                    int number = countWords(s.toString());
+                    if (number < 4){
+                        moodReason = reasonText.getText().toString();
+                        reasonCount = true;
+                    }
+                    else{
+                        Toast.makeText(CreateEventActivity.this, "reason cannot be more than 3 words!",
+                                Toast.LENGTH_SHORT).show();
+                        reasonCount = false;
+                    }
+                }
+
+            }
+        });
+    }
+
+    /**
+     * This is accesses the fragment that is used to obtain date and time of MoodEvent
+     */
+
+    private void dateAndTimePickerClickListener(){
+        simpleDateFormat = new SimpleDateFormat("MMM/dd/yyyy h:mm a", Locale.getDefault());
+        dateAndTimeMood = findViewById((R.id.date_and_time));
+        dateAndTimeMood.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                calendar = Calendar.getInstance();
+                new DatePickerDialog(CreateEventActivity.this, DateDataSet, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(calendar.DAY_OF_MONTH)).show();
+            }
+        });
+    }
+
+    /**
+     * This opens the image gallery of the phone for image upload
+     * */
+    private void imageUploadClickListener(){
+        imageUpload = findViewById(R.id.image_reason);
+        imageUpload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openFileChooser();
+            }
+        });
+    }
+
+    /**
+     * This accesses the fragment that gives options for social situation
+     **/
+    private void socialSituationClickListener(){
+        socialSituation = findViewById(R.id.social_situation);
+        socialSituation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new SocialSituationFragment().show(getSupportFragmentManager(), "ADD_SOCIAL_SITUATON");
+            }
+        });
+    }
+
+    /**
+     * This is a listener of the selections of mood from Mood Roster
+     */
+    private void moodSelection(){
         moodEmotionalState = "HAPPY"; //default
 
         //click listener for Emoticon
@@ -140,113 +319,43 @@ public class CreateEventActivity extends AppCompatActivity{
             }
         });
 
-        //situation fragment
-        socialSituation = findViewById(R.id.social_situation);
-        socialSituation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new SocialSituationFragment().show(getSupportFragmentManager(), "ADD_SOCIAL_SITUATON");
-            }
-        });
+    }
 
-        //==============================================================================================
-        // IMAGE UPLOAD SETUP
-        // Resource: https://codinginflow.com/tutorials/android/firebase-storage-upload-and-retrieve-images/part-2-image-chooser
-        //==============================================================================================
+    /**
+     * This just customs the mood roster so the next and previous emoticon can be seen partially
+     **/
+    private void customSwipeMoodStyling(){
+        moodRoster.setClipToPadding(false);
+        moodRoster.setPadding(250,0,250,0);
+        moodRoster.setPageMargin(50);
+    }
 
-        // click listener for Image Upload
-        imageUpload = findViewById(R.id.image_reason);
-        imageUpload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openFileChooser();
-            }
-        });
+    /**
+     * This is the setup for the adapter that contains all the emoticons
+     **/
+    private void swipeMoodAdapterSetup(){
+        moodRosterAdapter = new SwipeMoodsAdapter(moodImages, this);
+        moodRoster = findViewById(R.id.mood_roster);
+        moodRoster.setAdapter(moodRosterAdapter);
+    }
 
-        //
-        storageReference = FirebaseStorage.getInstance().getReference("reason_image");
-        databaseReference = FirebaseDatabase.getInstance().getReference("reason_image");
+    /**
+     * This creates the actual mood roster and populates it with Emoticons
+     * **/
+    private void createMoodRoster(){
+        moodImages = new ArrayList<>();
+        moodImages.add(new Emoticon("HAPPY", 2));
+        moodImages.add(new Emoticon("SAD", 2));
+        moodImages.add(new Emoticon("LAUGHING", 2));
+        moodImages.add(new Emoticon("IN LOVE", 2));
+        moodImages.add(new Emoticon("ANGRY", 2));
+        moodImages.add(new Emoticon("SICK", 2));
+        moodImages.add(new Emoticon("AFRAID", 2));
+    }
 
-
-        //==============================================================================================
-        // DATE AND TIME PICKER DIALOG FRAGMENT click listener
-        //==============================================================================================
-
-        //access date and time picker fragments
-        //Resource: https://github.com/Kiarasht/Android-Templates/tree/master/Templates/DatePickerDialog
-        simpleDateFormat = new SimpleDateFormat("MMM/dd/yyyy h:mm a", Locale.getDefault());
-        dateAndTimeMood = findViewById((R.id.date_and_time));
-        dateAndTimeMood.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                calendar = Calendar.getInstance();
-                new DatePickerDialog(CreateEventActivity.this, DateDataSet, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(calendar.DAY_OF_MONTH)).show();
-            }
-        });
-
-        //==============================================================================================
-        // LOCATION BUTTON click listener
-        //==============================================================================================
-        locationButton=findViewById(R.id.location_button);
-        locationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openMaps();
-            }
-        });
-
-
-
-
-        //==============================================================================================
-        // SUBMISSION
-        //==============================================================================================
-
-        submitButton = findViewById(R.id.submit_button);
-        submitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                //retrieve remaining needed for Mood Event
-                EditText reasonText = findViewById(R.id.reason);
-                moodReason = reasonText.getText().toString();
-
-                TextView socialSituationText = findViewById(R.id.social_situation);
-                moodSocialSituation = socialSituationText.getText().toString();
-
-                moodAuthor = accountName;
-
-                //create timestamp
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm:ss a");
-
-                try {
-                    moodTimeStamp = simpleDateFormat.parse(moodDate + ' ' + moodTime);
-
-                } catch (ParseException e){
-                    e.printStackTrace();
-                }
-
-//                //upload image
-                if(uploadTask != null && uploadTask.isInProgress()){
-                    Log.d(TAG, "uploading in progress");
-                } else{
-                    uploadImage();
-                }
-
-//                MoodEvent moodEvent = new MoodEvent(moodDate, moodTime, moodEmotionalState, moodImageUrl, moodReason, moodSocialSituation);
-//                addMoodEventToDB(collectionReference, moodEvent);
-//
-//                Intent intent = new Intent(getApplicationContext(), UserFeedActivity.class);
-//                startActivity(intent);
-
-            }
-        });
-
-    } //end of onCreate
-
-    //==============================================================================================
-    // IMAGE UPLOAD METHODS
-    //==============================================================================================
+    /***
+     IMAGE UPLOAD METHODS
+     **/
 
     private void openFileChooser(){
         Intent intent = new Intent();
@@ -263,6 +372,7 @@ public class CreateEventActivity extends AppCompatActivity{
             imageUri = data.getData();
 
             Picasso.get().load(imageUri).into(imageUpload);
+            uploadImage();
         }
     }
 
@@ -299,8 +409,6 @@ public class CreateEventActivity extends AppCompatActivity{
                     databaseReference.child(uploadId).setValue(uploadImage);
 
                     //submit to db
-                    submitMoodEventToDB();
-
 
                 }
             })
@@ -313,9 +421,9 @@ public class CreateEventActivity extends AppCompatActivity{
         }
     }
 
-    //==============================================================================================
-    // DATE AND TIME PICKER DIALOG FRAGMENT
-    //==============================================================================================
+    /**
+    * DATE AND TIME PICKER DIALOG FRAGMENT
+    **/
 
     /* After user decided on a date, store those in our calendar variable and then start the TimePickerDialog immediately */
     private final DatePickerDialog.OnDateSetListener DateDataSet = new DatePickerDialog.OnDateSetListener() {
@@ -327,6 +435,13 @@ public class CreateEventActivity extends AppCompatActivity{
 
             //get Date
             moodDate = new SimpleDateFormat("MMM dd yyyy", Locale.getDefault()).format(calendar.getTime());
+            if(reasonCount == false){
+                submitButton.setEnabled(false);
+            }
+            else{
+                submitButton.setEnabled(true);
+            }
+
 
             new TimePickerDialog(CreateEventActivity.this, TimeDataSet, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false).show();
         }
@@ -340,23 +455,32 @@ public class CreateEventActivity extends AppCompatActivity{
             calendar.set(Calendar.MINUTE, minute);
 
             //get Time
-            moodTime = new SimpleDateFormat("h:mm:ss a", Locale.getDefault()).format(calendar.getTime());
+            moodTime = new SimpleDateFormat("h:mm a", Locale.getDefault()).format(calendar.getTime());
 
             //set TexView to correspond with input data
             dateAndTimeMood.setText(simpleDateFormat.format(calendar.getTime()));
         }
     };
+
+
     //==============================================================================================
     // GOOGLE MAPS LOCATION ACCESS
     //==============================================================================================
-    private void openMaps(){
-        Intent intent = new Intent(CreateEventActivity.this,MapsActivity.class);
-        CreateEventActivity.this.startActivity(intent);
-    }
+//    private void openMaps(Bundle savedInstanceState){
+//        Bundle mapViewBundle = null;
+//        if (savedInstanceState != null) {
+//            mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY);
+//        }
+//
+//        MapView.onCreate(mapViewBundle);
+//
+//        MapView.getMapAsync(this);
+//
+//    }
 
-
-
-    //adds MoodEvent object to db
+    /**
+     * This adds the MoodEvent to DB
+     * **/
     private void addMoodEventToDB(DocumentReference documentReference, MoodEvent moodEvent){
         Log.d("debugging", "here");
 
@@ -381,15 +505,137 @@ public class CreateEventActivity extends AppCompatActivity{
 
     }
 
+    /**
+     * This constructs a MoodEvent with the appropriate values and adds it into the DB
+     * */
     private void submitMoodEventToDB(){
-
-        Log.d(TAG, "whatsup " + moodAuthor);
-        MoodEvent moodEvent = new MoodEvent(moodAuthor, moodDate, moodTime, moodEmotionalState, moodImageUrl, moodReason, moodSocialSituation);
+        LatLng moodCoordinates= getMoodLocation();
+        MoodEvent moodEvent = new MoodEvent(moodAuthor, moodDate, moodTime, moodEmotionalState, moodImageUrl, moodReason, moodSocialSituation,moodCoordinates.latitude,moodCoordinates.longitude);
         moodEvent.setTimeStamp(moodTimeStamp);
         addMoodEventToDB(documentReference, moodEvent);
-        Log.d("debugging", "back to feed");
 
         finish();
     }
 
+    /**
+     * This is needed for checking word lengths on text input fields
+     **/
+    public static int countWords(String input) {
+        if (input == null || input.isEmpty()) {
+            return 0;
+        }
+
+        String[] words = input.split("\\s+");
+        return words.length;
+    }
+
+    /**
+     *This contains all
+     */
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        Bundle mapViewBundle = outState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        if (mapViewBundle == null) {
+            mapViewBundle = new Bundle();
+            outState.putBundle(MAP_VIEW_BUNDLE_KEY, mapViewBundle);
+        }
+
+        mapView.onSaveInstanceState(mapViewBundle);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        gmap = googleMap;
+
+        gmap.setIndoorEnabled(true);
+        gmap.setMyLocationEnabled(true);
+        UiSettings uiSettings = gmap.getUiSettings();
+        uiSettings.setIndoorLevelPickerEnabled(true);
+        uiSettings.setMyLocationButtonEnabled(true);
+        uiSettings.setMapToolbarEnabled(true);
+        uiSettings.setCompassEnabled(true);
+        uiSettings.setZoomControlsEnabled(true);
+
+        final LatLng Edmonton = new LatLng(53.5, -113.5);
+        CameraPosition.Builder camBuilder = CameraPosition.builder();
+        camBuilder.bearing(0);
+        camBuilder.tilt(0);
+        camBuilder.target(Edmonton);
+        camBuilder.zoom(11);
+
+        CameraPosition cp = camBuilder.build();
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        if (location != null) {
+                            double myLatitude=location.getLatitude();
+                            double myLongitude= location.getLongitude();
+                            LatLng myLocation= new LatLng(myLatitude,myLongitude);
+                            setMoodLocation(myLocation);
+                            gmap.addMarker(new MarkerOptions().position(myLocation).title("Current Location"));
+
+                        }
+                        else{
+                            gmap.addMarker(new MarkerOptions().position(Edmonton).title("Current Location"));
+                            setMoodLocation(Edmonton);
+                        }
+                    }
+                });
+        gmap.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
+
+        gmap.setOnPoiClickListener(new GoogleMap.OnPoiClickListener() {
+            @Override
+            public void onPoiClick(PointOfInterest pointOfInterest) {
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(pointOfInterest.latLng);
+                gmap.addMarker(markerOptions);
+                gmap.moveCamera(CameraUpdateFactory.newLatLng(pointOfInterest.latLng));
+            }
+        });
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mapView.onResume();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mapView.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mapView.onStop();
+    }
+    @Override
+    protected void onPause() {
+        mapView.onPause();
+        super.onPause();
+    }
+    @Override
+    protected void onDestroy() {
+        mapView.onDestroy();
+        super.onDestroy();
+    }
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
+    }
+
+    public LatLng getMoodLocation() {
+        return moodLocation;
+    }
+
+    public void setMoodLocation(LatLng moodLocation) {
+        this.moodLocation = moodLocation;
+    }
 }

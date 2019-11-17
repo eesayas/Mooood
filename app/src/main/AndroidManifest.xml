@@ -8,7 +8,9 @@
          location permissions for the 'MyLocation' functionality.
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-feature android:name="android.hardware.location.gps" />
 
     <application
         android:allowBackup="true"
@@ -41,6 +43,10 @@
             android:name=".CreateEventActivity"
             android:label="CreateEventActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".EditEventActivity"
+            android:label="@string/title_activity_user_feed"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".UserFeedActivity"
             android:label="@string/title_activity_user_feed"

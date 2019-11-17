@@ -41,6 +41,7 @@
             android:gravity="start|top"
             android:inputType="textMultiLine"
             android:hint="Reason"
+            android:maxLength="20"
             android:background="@drawable/edit_text_border"/>
 
         <!--SITUATION-->
@@ -60,7 +61,7 @@
             android:layout_gravity="center|center_vertical"
             android:id="@+id/image_reason"
             android:layout_height="500dp"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:src="@drawable/temp_image_upload">
         </ImageView>
 
@@ -77,11 +78,20 @@
         </TextView>
 
         <!--SUBMIT BUTTON-->
-        <Button
-            android:id="@+id/location_button"
+
+        <TextView
+            android:id="@+id/textView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Location" />
+            android:layout_height="40dp"
+            android:text="Location"
+            android:gravity="center"
+            android:textSize="24sp"
+            tools:text="Location" />
+
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/createMapView"
+            android:layout_width="match_parent"
+            android:layout_height="258dp" />
 
         <Button
             android:id="@+id/submit_button"
@@ -93,6 +103,7 @@
         </Button>
 
         <Button
+            android:id="@+id/cancel_button"
             android:text="CANCEL"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
