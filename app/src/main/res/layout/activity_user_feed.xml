@@ -7,13 +7,50 @@
     android:layout_height="match_parent"
     tools:context=".UserFeedActivity">
 
-    <!--    this is the listview of mood posts-->
-    <com.baoyz.swipemenulistview.SwipeMenuListView
-        android:id="@+id/posts_list"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <!--    this is the floating action button-->
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/feedButton"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="FEED"/>
+
+            <Button
+                android:id="@+id/userButton"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="USER"/>
+
+        </LinearLayout>
+
+
+
+        <SearchView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/userSearchView"
+            android:queryHint="Filter Your Moooods..." />
+
+        <com.baoyz.swipemenulistview.SwipeMenuListView
+            android:id="@+id/posts_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <!--    this is the floating action button-->
+    </LinearLayout>
+
+    <!--    this is the listview of mood posts-->
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
