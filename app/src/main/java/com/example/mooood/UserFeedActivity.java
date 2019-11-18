@@ -11,7 +11,6 @@ import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -19,22 +18,23 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import java.util.ArrayList;
-import java.util.Date;
+
+/**
+ * FILE PURPOSE: This is for displaying all of User's MoodEvents
+ */
 
 public class UserFeedActivity extends AppCompatActivity{
 
     private static final String TAG = "For Testing";
-    public static final String MOODEVENT = "Mood Event";
+    public static final String MOOD_EVENT = "Mood Event";
 
     //Declare the variables for reference later
     SwipeMenuListView postList;
@@ -43,10 +43,11 @@ public class UserFeedActivity extends AppCompatActivity{
 
     //Firebase setup!
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private final CollectionReference collectionReference = db.collection("MoodEvents");
     private DocumentReference documentReference;
 
-
+    /**
+     * This implements all methods below accordingly
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,12 +57,109 @@ public class UserFeedActivity extends AppCompatActivity{
         final String accountName = intent.getStringExtra("accountKey");
         documentReference = db.collection("MoodEvents").document(accountName);
 
-        //basic ArrayAdapter init
-        postDataList = new ArrayList<>();
-        postList = findViewById(R.id.posts_list);
-        postAdapter = new MoodEventsAdapter(postDataList, this);
-        postList.setAdapter(postAdapter);
+        arrayAdapterSetup();
+        createDeleteButtonOnSwipe();
 
+        deleteBtnClickListener();
+        createPostBtnClickListener(accountName);
+        showEventClickListener();
+
+    } //end of onCreate
+
+    /**
+     * This will collect and show all of User's MoodEvent in DB
+     */
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        documentReference.collection("MoodActivities")
+                .orderBy("timeStamp", Query.Direction.DESCENDING)
+                .addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                        postDataList.clear();
+
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+
+                                String author = (String)documentSnapshot.getData().get("author");
+                                String date = (String)documentSnapshot.getData().get("date");
+                                String time = (String)documentSnapshot.getData().get("time");
+                                String emotionalState = (String)documentSnapshot.getData().get("emotionalState");
+                                String imageURl = (String)documentSnapshot.getData().get("imageUrl");
+                                String reason = (String)documentSnapshot.getData().get("reason");
+                                String socialSituation = (String)documentSnapshot.getData().get("socialSituation");
+                                String latitude = (String) documentSnapshot.getData().get("latitude");
+                                String longitude= (String) documentSnapshot.getData().get("longitude");
+                                MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation,latitude,longitude);
+                                moodEvent.setDocumentId(documentSnapshot.getId());
+
+                                postDataList.add(moodEvent); //add to data list
+                        }
+
+                        postAdapter.notifyDataSetChanged();
+                    }
+
+
+                });
+    }
+
+
+    /**
+     * This deletes a MoodEvent from the DB
+     * @param documentReference
+     *     This is documentReference of MoodEvent in DB
+     * @param position
+     *     This is the position of MoodEvent in postDataList
+     */
+    //delete from database
+    private void deleteMoodEventFromDB(DocumentReference documentReference, int position){
+        documentReference.collection("MoodActivities")
+                .document(postDataList.get(position).getDocumentId())
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Mood was successfully deleted");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "Mood was not deleted", e);
+                    }
+                });
+
+        postDataList.remove(position);
+        postAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * This creates the deleteButton for SwipeMenuListView
+     *
+     * The MIT License (MIT)
+     *
+     * Copyright (c) 2014 baoyongzhang
+     *
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+     *
+     * The above copyright notice and this permission notice shall be included in all
+     * copies or substantial portions of the Software.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     * SOFTWARE.
+     */
+    private void createDeleteButtonOnSwipe(){
         //adding delete button to SwipeMenu
         SwipeMenuCreator creator = new SwipeMenuCreator() {
 
@@ -83,7 +181,25 @@ public class UserFeedActivity extends AppCompatActivity{
 
         // set creator
         postList.setMenuCreator(creator);
+    }
 
+    /**
+     * This is a basic Array Adapter setup based on the lab lectures
+     */
+
+    private void arrayAdapterSetup(){
+        //basic ArrayAdapter init
+        postDataList = new ArrayList<>();
+        postList = findViewById(R.id.posts_list);
+        postAdapter = new MoodEventsAdapter(postDataList, this);
+        postList.setAdapter(postAdapter);
+    }
+
+    /**
+     * This is a click listener for each delete button in SwipeMenuListView
+     */
+
+    private void deleteBtnClickListener(){
         //click listener for garbage can icon
         postList.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
             @Override
@@ -96,8 +212,12 @@ public class UserFeedActivity extends AppCompatActivity{
                 return false;
             }
         });
+    }
 
-        //go to CreatePostActivity
+    /**
+     * This is a click listener for create post. Will redirect to CreateEventActivity
+     */
+    private void createPostBtnClickListener(final String accountName){
         final FloatingActionButton createPostBtn = findViewById(R.id.fab);
         createPostBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,17 +229,23 @@ public class UserFeedActivity extends AppCompatActivity{
 
             }
         });
+    }
 
+    /**
+     * This is a click listener for show event. Will redirect to ShowEventActivity
+     */
+    private void showEventClickListener(){
         //click listener for each item -> ShowEventActivity
         postList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
                 Intent intent = new Intent(UserFeedActivity.this, ShowEventActivity.class);
-                intent.putExtra(MOODEVENT, postDataList.get(i));
+                intent.putExtra(MOOD_EVENT, postDataList.get(i));
                 startActivity(intent);
             }
         });
+<<<<<<< HEAD
 
     } //end of onCreate
 
@@ -156,29 +282,8 @@ public class UserFeedActivity extends AppCompatActivity{
                     }
 
                 });
+=======
+>>>>>>> origin/agentburrito
     }
-
-    //delete from database
-    public void deleteMoodEventFromDB(DocumentReference documentReference, int position){
-        documentReference.collection("MoodActivities")
-                .document(postDataList.get(position).getDocumentId())
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "Mood was successfully deleted");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "Mood was not deleted", e);
-                    }
-                });
-
-        postDataList.remove(position);
-        postAdapter.notifyDataSetChanged();
-    }
-
 
 }

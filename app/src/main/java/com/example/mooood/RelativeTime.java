@@ -5,12 +5,19 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+/**
+ * This is responsible to determine the relative time of MoodEvent (ie "3 MINUTES AGO" or "JUST NOW").
+ * This will be used when a MoodEvent must display a time and date info in UserFeedActivity.
+ */
 public class RelativeTime {
     private String relativeTime;
     private ArrayList<RelativeTimeData> relativeTimeDataList; //for organizing data later
     private String eventTime;
     private String eventDate;
 
+    /**
+     * Constructor which calls methods below to calculate relative time
+     */
     public RelativeTime(String date, String time){
         String dateAndTimeInput = date + ' ' + time;
         this.eventDate = date;
@@ -29,6 +36,13 @@ public class RelativeTime {
         }
     }
 
+    /**
+     * This calculates relative time (ie. the time from the MoodEvent to the time now)
+     * @param dateMood
+     *  This is the date of the MoodEvent
+     * @return
+     *  This returns a String that displays the relative time in appropriate format
+     */
     public String timeDifference(Date dateMood) {
 
         //declare variable for later use
@@ -72,6 +86,12 @@ public class RelativeTime {
 
     }
 
+    /**
+     * This returns the relative time of the highest time denomination
+     * HOURS > MINUTES > SECONDS
+     * @param relativeTimeDataList
+     *  This has all the relative time data and their respective denomination
+     */
     /*========================================================================================
         Code Explanation:
          Let say relativeTimeDatalist = [{'WEEKS', 0}, {'DAYS', 0}, {'HOURS, 2'} ... ].
@@ -115,6 +135,7 @@ public class RelativeTime {
 
     }
 
+<<<<<<< HEAD
     public String futureTime(SimpleDateFormat oldTimeFormat, SimpleDateFormat newTimeFormat){
         try {
             Date eventTime = oldTimeFormat.parse(this.eventTime);
@@ -128,13 +149,21 @@ public class RelativeTime {
     }
 
     //Resource: baeldung.com/java-remove-last-character-of-string
+=======
+    /**
+     * This removes the last character in a string
+     * Will be needed when "SECONDS" needs to be "SECOND" (applicable to other denominations)
+     */
+>>>>>>> origin/agentburrito
     public static String removeLastChar(String s) {
         return (s == null || s.length() == 0)
                 ? null
                 : (s.substring(0, s.length() - 1));
     }
 
-    //normal getter and setter for relative time message
+    /**
+     * Simple getter and setter for relative time
+     * **/
     public String getRelativeTime() {
         return this.relativeTime;
     }

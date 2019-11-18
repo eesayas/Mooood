@@ -4,15 +4,23 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,8 +39,18 @@ import com.google.firebase.firestore.QuerySnapshot;
 import org.w3c.dom.Document;
 
 import java.util.HashMap;
+import java.util.Scanner;
+
+
+/**
+ * This is where the program starts (Login/Sign up)
+ */
+
 
 public class MainActivity extends AppCompatActivity {
+    private final static int REQUEST_CODE = 141;
+
+
     private EditText userName;
     private EditText password;
     private TextView noAccount;
@@ -55,9 +73,45 @@ public class MainActivity extends AppCompatActivity {
         noAccount = findViewById(R.id.activity_main_tv_noAccount);
         background = findViewById(R.id.activity_main_CL_background);
         errorMsg = findViewById(R.id.activity_main_tv_incorrect);
+
+        //Requests location permission on startup, exits the app if permission denied.
+        String[] PERMISSIONS = new String[]{
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION};
+        if (
+                (ContextCompat.checkSelfPermission(MainActivity.this, PERMISSIONS[0]) != PackageManager.PERMISSION_GRANTED) ||
+                        (ContextCompat.checkSelfPermission(MainActivity.this, PERMISSIONS[1]) != PackageManager.PERMISSION_GRANTED)
+        ) {
+            ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, REQUEST_CODE);
+        }
+
+    }
+    //Handles user decision to grant or not grant permissions.
+    @Override
+    public void onRequestPermissionsResult ( int requestCode,
+                                             String[] permissions, int[] grantResults){
+        switch (requestCode) {
+            case REQUEST_CODE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                } else {
+                    System.exit(0);
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request.
+        }
+
     }
 
-    // takes the user to the sign up page
+    /**
+     * takes the user to the sign up page or the login page depending on where they were
+     */
     public void userSignUpORSignIn(View view) {
         Log.d("debugging","mainActivity- |" + signUp.getText().toString());
         // hiding error message textview
@@ -89,10 +143,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // checks if the user inputted the user name to sign up or log in
+    /**
+     * Checks to make sure the username or password is not empty when an user tries to login/sign up
+     */
     public void CheckEmpty(View view) {
         Log.d("debugging","mainActivity- |"+ prompt.getText().toString()+"|");
-        String userNameInput = userName.getText().toString();
+        String userNameInput = userName.getText().toString().toLowerCase();
         String passwordInput = password.getText().toString();
         // if either username or password is empty it will show a message saying that they can not be empty
         if ((userName.getText().toString().isEmpty()) || password.getText().toString().isEmpty()){
@@ -111,7 +167,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Checks if the account exists or not
+    /**
+     * Checks if the account exists or not to validate log in
+     * @param accountName
+     *     This is the account name user enters
+     * @param inputtedpassword
+     *     This is the password user enters
+     */
     public void CheckLogIn(final String accountName, final String inputtedpassword){
         Log.d("debugging", "mainActivity- Check account");
         final FirebaseFirestore db;
@@ -135,6 +197,7 @@ public class MainActivity extends AppCompatActivity {
                             Intent intent = new Intent(getApplicationContext(), UserFeedActivity.class);
                             intent.putExtra("accountKey", accountName);
                             startActivity(intent);
+                            finish();
                         }
                         // if inputted password is wrong, set the password field empty and
                         // show error message
@@ -159,9 +222,19 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     // checks if the inputted username already exists or not, if it does, it takes the user back to
     // log in page, if not, lets the user sign up
-    // https://firebase.google.com/docs/firestore/query-data/get-data
+
+
+    /**
+     * Checks if the account exists or not to let user make an account
+     * If successful, logs in user automatically
+     * @param accountName
+     *     This is the account name user enters
+     * @param inputtedPassword
+     *     This is the password user enters
+     */
     public void MakeAccount(final String accountName, final String inputtedPassword){
         Log.d("debugging", "mainActivity- Adding account to FB");
         final FirebaseFirestore db;
@@ -194,6 +267,8 @@ public class MainActivity extends AppCompatActivity {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         Log.d("debugging", "mainActivity- User added");
+                                        CheckLogIn(accountName, inputtedPassword);
+
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {
@@ -210,6 +285,5 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-
 
 }

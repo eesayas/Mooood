@@ -3,13 +3,20 @@ package com.example.mooood;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This is a class for the Emoticon used displaying the cow caricature to depict the mood of User
+ */
 public class Emoticon{
 
     private String emotionalState;
     private int imageLink;
     private HashMap<String, Integer> emoticonData = new HashMap<>();
 
-    //this populates the hashmap with proper keys and values
+    /**
+     * This populates the hashmap with keys (emotional state) and values (image of cow)
+     * @param version
+     * This determines which version of cow image to use. currently there are 2 for each emotional state
+     **/
     private void populateEmoticonData(int version){
         if(version == 1){
             emoticonData.put("HAPPY", R.drawable.mooood_logo);
@@ -32,7 +39,9 @@ public class Emoticon{
 
     }
 
-    //constructor when you need emotionalState but only have imageLink
+    /**
+     * This is the constructor when you need emotionalState but only have imageLink
+     **/
     public Emoticon( int imageLink, int version ){
         populateEmoticonData(version);
 
@@ -45,7 +54,9 @@ public class Emoticon{
 
     }
 
-    //constructor when you need imageLink but only have emotionalState
+    /**
+     *  This is the constructor when you need imageLink but only have emotionalState
+     **/
     public Emoticon( String emotionalState, int version ){
         populateEmoticonData(version);
 
@@ -53,7 +64,9 @@ public class Emoticon{
         this.imageLink = emoticonData.get(emotionalState);
     }
 
-    //getters and setters
+   /**
+    * Simple getters and setters
+    **/
     public String getEmotionalState() {
         return this.emotionalState;
     }
