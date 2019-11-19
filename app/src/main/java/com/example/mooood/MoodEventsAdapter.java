@@ -46,7 +46,7 @@ public class MoodEventsAdapter extends ArrayAdapter<MoodEvent> {
         //setText of TextViews
         emoticon.setImageResource(new Emoticon(moodEvent.getEmotionalState(), 1).getImageLink());
         author.setText(moodEvent.getAuthor());
-        relativeTime.setText(new RelativeTime(moodEvent.getDate(), moodEvent.getTime()).getRelativeTime());
+        relativeTime.setText(moodEvent.getDate());
 
         return view;
     }

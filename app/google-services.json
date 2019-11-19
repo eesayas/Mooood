@@ -8,41 +8,20 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:415906764410:android:f9e78ff521d69e6e77cdc3",
-        "android_client_info": {
-          "package_name": "com.exammle.mood"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "415906764410-6des5bt4sfjbv9hqvu6466mrufg6orcc.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAHmje9vUTKDmFQqprfwc2mvLwf81fD6zA"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "415906764410-6des5bt4sfjbv9hqvu6466mrufg6orcc.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:415906764410:android:bafcc6ef8344e6b477cdc3",
         "android_client_info": {
           "package_name": "com.example.mooood"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "415906764410-u1sb43lm617pc02uccqfv68rs37d5d31.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mooood",
+            "certificate_hash": "fb004c5f2b7f1a531dd2e79362eaa3606124b4f9"
+          }
+        },
         {
           "client_id": "415906764410-6des5bt4sfjbv9hqvu6466mrufg6orcc.apps.googleusercontent.com",
           "client_type": 3
