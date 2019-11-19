@@ -24,7 +24,6 @@ public class ShowEventActivity extends AppCompatActivity {
     String socialSituation;
     String imageUrl;
     String reason;
-    
 
     TextView authorText;
     ImageView emoticon;

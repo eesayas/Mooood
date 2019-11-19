@@ -1,13 +1,17 @@
 package com.example.mooood;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -22,6 +26,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -49,6 +54,9 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
+
+import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -63,8 +71,10 @@ import java.util.Date;
 
 public class CreateEventActivity extends AppCompatActivity implements OnMapReadyCallback {
 
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int REQUEST_TAKE_PHOTO = 1;
     private static final int PICK_IMAGE_REQUEST = 1;
-    private static final String TAG = "For Testing";
+    private static final String TAG = "Debugging";
 
     //Declare variables for later use
     ViewPager moodRoster;
@@ -78,6 +88,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     TextView socialSituation;
 
     //for image upload
+    String currentPhotoPath;
     ImageView imageUpload;
     Uri imageUri;
     private StorageReference storageReference;
@@ -122,6 +133,8 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
 
         documentReference = db.collection("MoodEvents").document(accountName);
 
+        //Create moodevent first
+
         createMoodRoster();
         swipeMoodAdapterSetup();
         customSwipeMoodStyling();
@@ -129,14 +142,13 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         socialSituationClickListener();
 
         //==============================================================================================
-        // IMAGE UPLOAD SETUP
-        // Resource: https://codinginflow.com/tutorials/android/firebase-storage-upload-and-retrieve-images/part-2-image-chooser
+        // IMAGE UPLOAD setup
         //==============================================================================================
-
-        imageUploadClickListener();
 
         storageReference = FirebaseStorage.getInstance().getReference("reason_image");
         databaseReference = FirebaseDatabase.getInstance().getReference("reason_image");
+
+        imageUploadClickListener();
 
         //==============================================================================================
         // DATE AND TIME PICKER DIALOG FRAGMENT click listener
@@ -173,46 +185,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
 
     } //end of onCreate
 
-    /**
-     * This is a click listener for submit button. This actually submits the new MoodEvent ito DB
-     * @params accountName
-     * This is the accountName of the user that is logged in
-     */
 
-    private void submitBtnClickListener(final String accountName){
-        submitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                //retrieve remaining needed for Mood Event
-
-
-                TextView socialSituationText = findViewById(R.id.social_situation);
-                moodSocialSituation = socialSituationText.getText().toString();
-
-                moodAuthor = accountName;
-
-                //create timestamp
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm:ss a");
-
-                try {
-                    moodTimeStamp = simpleDateFormat.parse(moodDate + ' ' + moodTime);
-
-                } catch (ParseException e){
-                    e.printStackTrace();
-                }
-
-                //upload image
-                if(uploadTask != null && uploadTask.isInProgress()){
-                    Log.d(TAG, "uploading in progress");
-                } else{
-                    uploadImage();
-                }
-                submitMoodEventToDB();
-
-            }
-        });
-    }
 
     /**
      * This checks if reason is only 3 words or 20 characters
@@ -265,19 +238,6 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
             public void onClick(View view) {
                 calendar = Calendar.getInstance();
                 new DatePickerDialog(CreateEventActivity.this, DateDataSet, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(calendar.DAY_OF_MONTH)).show();
-            }
-        });
-    }
-
-    /**
-     * This opens the image gallery of the phone for image upload
-     * */
-    private void imageUploadClickListener(){
-        imageUpload = findViewById(R.id.image_reason);
-        imageUpload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openFileChooser();
             }
         });
     }
@@ -353,10 +313,52 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         moodImages.add(new Emoticon("AFRAID", 2));
     }
 
-    /***
-     IMAGE UPLOAD METHODS
-     **/
+    //==========================================================================================
+    // UPLOAD IMAGE METHODS (Note: Use design pattern to put all this into a different file)
+    //==========================================================================================
+    /**
+     * This opens the image gallery of the phone for image upload
+     * */
+    private void imageUploadClickListener(){
+        imageUpload = findViewById(R.id.image_reason);
+        imageUpload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cameraOrGallery();
+            }
+        });
+    }
 
+    /**
+     * This gives a choice between camera or photo gallery
+     **/
+    private void cameraOrGallery(){
+        final CharSequence[] options = {
+                "Take a photo",
+                "Choose from gallery"
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(CreateEventActivity.this);
+
+        builder.setTitle("Select");
+
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if(options[i].equals("Take a photo")){
+                    dispatchTakePictureIntent();
+                } else if(options[i].equals("Choose from gallery")){
+                    openFileChooser();
+                }
+            }
+        });
+
+        builder.show();
+    }
+
+    /**
+     * This is for selecting image from photo gallery
+     **/
     private void openFileChooser(){
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -364,24 +366,94 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
 
+    /**
+     * This creates a temp file for the camera taken photo
+     **/
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    /**
+     * This is for capturing image from camera
+     */
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+                ex.printStackTrace();
+
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this, "com.example.android.fileprovider", photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+
+            }
+        }
+    }
+
+    /**
+     * This is for displaying the preview for image provided by User
+     * @param requestCode
+     *      This is the request code from openFileChooser or dispatchTakePictureIntent
+     * @param resultCode
+     *      This is the result code from openFileChooser or dispatchTakePictureIntent
+     * @param data
+     *      This is the data from openFileChooser or dispatchTakePictureIntent
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
 
+        //if from photo gallery
         if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null){
             imageUri = data.getData();
-
             Picasso.get().load(imageUri).into(imageUpload);
-            uploadImage();
+
+        } else if(requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK){ //if from camera
+            Log.d(TAG, "from camera");
+            File f = new File(currentPhotoPath);
+            imageUri = Uri.fromFile(f);
+            Picasso.get().load(imageUri).into(imageUpload);
         }
     }
 
+    /**
+     * This returns a string which represents the extension of the given uri
+     * @param uri
+     *      This is the uri of the image to be uploaded
+     * @return
+     *      The String extension of the uri
+     **/
     private String getFileExtension(Uri uri) {
         ContentResolver cR = getContentResolver();
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         return mime.getExtensionFromMimeType(cR.getType(uri));
     }
 
+    /**
+     * This uploads the image into Firebase (note: this is async)
+     **/
     private void uploadImage(){
         if(imageUri != null){
             final StorageReference fileReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
@@ -397,8 +469,6 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
                         }
                     }, 500);
 
-                    //Add Toast message here for upload success
-
                     Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
                     while(!urlTask.isSuccessful());
                     Uri downloadUrl = urlTask.getResult();
@@ -407,8 +477,6 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
                     moodImageUrl = uploadImage.getImageUrl();
                     String uploadId = databaseReference.push().getKey();
                     databaseReference.child(uploadId).setValue(uploadImage);
-
-                    //submit to db
 
                 }
             })
@@ -420,6 +488,72 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
             });
         }
     }
+
+    //==========================================================================================
+    // ASSEMBLING MOODEVENT AND SUBMITTING IT TO DB
+    //==========================================================================================
+
+    /**
+     * This is a click listener for submit button. This actually submits the new MoodEvent ito DB
+     * @params accountName
+     * This is the accountName of the user that is logged in
+     */
+
+    private void submitBtnClickListener(final String accountName){
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //retrieve remaining needed for Mood Event
+
+
+                TextView socialSituationText = findViewById(R.id.social_situation);
+                moodSocialSituation = socialSituationText.getText().toString();
+
+                moodAuthor = accountName;
+
+                //create timestamp
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm:ss a");
+
+                try {
+                    moodTimeStamp = simpleDateFormat.parse(moodDate + ' ' + moodTime);
+
+                } catch (ParseException e){
+                    e.printStackTrace();
+                }
+
+                //upload image
+                if(uploadTask != null && uploadTask.isInProgress()){
+                    Log.d(TAG, "uploading in progress");
+                } else{
+                    uploadImage();
+                }
+                submitMoodEventToDB();
+
+            }
+        });
+    }
+
+    /**
+     * This constructs a MoodEvent with the appropriate values and adds it into the DB
+     * */
+    private void submitMoodEventToDB(){
+        LatLng moodCoordinates= getMoodLocation();
+        MoodEvent moodEvent = new MoodEvent(moodAuthor, moodDate, moodTime, moodEmotionalState, moodImageUrl, moodReason, moodSocialSituation, String.valueOf(moodCoordinates.latitude), String.valueOf(moodCoordinates.longitude) );
+        moodEvent.setTimeStamp(moodTimeStamp);
+        addMoodEventToDB(documentReference, moodEvent);
+
+        finish();
+    }
+
+
+    //==========================================================================================
+    // END
+    //==========================================================================================
+
+
+
+
 
     /**
     * DATE AND TIME PICKER DIALOG FRAGMENT
@@ -463,20 +597,6 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     };
 
 
-    //==============================================================================================
-    // GOOGLE MAPS LOCATION ACCESS
-    //==============================================================================================
-//    private void openMaps(Bundle savedInstanceState){
-//        Bundle mapViewBundle = null;
-//        if (savedInstanceState != null) {
-//            mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY);
-//        }
-//
-//        MapView.onCreate(mapViewBundle);
-//
-//        MapView.getMapAsync(this);
-//
-//    }
 
     /**
      * This adds the MoodEvent to DB
@@ -505,17 +625,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
 
     }
 
-    /**
-     * This constructs a MoodEvent with the appropriate values and adds it into the DB
-     * */
-    private void submitMoodEventToDB(){
-        LatLng moodCoordinates= getMoodLocation();
-        MoodEvent moodEvent = new MoodEvent(moodAuthor, moodDate, moodTime, moodEmotionalState, moodImageUrl, moodReason, moodSocialSituation,moodCoordinates.latitude,moodCoordinates.longitude);
-        moodEvent.setTimeStamp(moodTimeStamp);
-        addMoodEventToDB(documentReference, moodEvent);
 
-        finish();
-    }
 
     /**
      * This is needed for checking word lengths on text input fields
@@ -530,7 +640,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     }
 
     /**
-     *This contains all
+     *This contains all GEOLOCATION
      */
 
 
