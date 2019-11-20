@@ -34,6 +34,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import org.w3c.dom.Document;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private Button prompt;
     private TextView errorMsg;
     private ConstraintLayout background;
+    public static ArrayList<String> userNames;
 
     // 0 means logging in, 1 means sign up
     private Integer checkBtn = 0;
@@ -64,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         noAccount = findViewById(R.id.activity_main_tv_noAccount);
         background = findViewById(R.id.activity_main_CL_background);
         errorMsg = findViewById(R.id.activity_main_tv_incorrect);
+        userNames = new ArrayList<>();
     }
 
     /**
@@ -150,12 +153,19 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("debugging", "mainActivity- Logged In");
                             errorMsg.setVisibility(View.INVISIBLE);
                             errorMsg.setText("");
-
+                            if(userNames.contains(accountName)){
+                                Log.d("debugging", "Name already in List");
+                            } else{
+                                userNames.add(accountName);
+                            }
                             Intent intent = new Intent(getApplicationContext(), UserFeedActivity.class);
                             intent.putExtra("accountKey", accountName);
                             startActivity(intent);
                             finish();
-                        }
+
+                            }
+
+
                         // if inputted password is wrong, set the password field empty and
                         // show error message
                         else {
@@ -224,6 +234,7 @@ public class MainActivity extends AppCompatActivity {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         Log.d("debugging", "mainActivity- User added");
+                                        userNames.add(accountName);
                                         CheckLogIn(accountName, inputtedPassword);
 
                                     }

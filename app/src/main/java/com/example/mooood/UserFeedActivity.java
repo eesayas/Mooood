@@ -30,6 +30,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.SearchView;
 
 import java.util.ArrayList;
@@ -48,6 +49,8 @@ public class UserFeedActivity extends AppCompatActivity {
     ArrayAdapter<MoodEvent> postAdapter;
     ArrayList<MoodEvent> postDataList;
     SearchView userSearchView;
+    Button feedButton;
+
 
     //Firebase setup!
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -68,12 +71,14 @@ public class UserFeedActivity extends AppCompatActivity {
         documentReference = db.collection("MoodEvents").document(accountName);
         collectionReference = db.collection("MoodEvents").document(accountName).collection("MoodActivities");
 
+
         arrayAdapterSetup();
         createDeleteButtonOnSwipe();
         filterMood();
         deleteBtnClickListener();
         createPostBtnClickListener(accountName);
         showEventClickListener();
+        selectFeed(accountName);
 
 
 
@@ -239,6 +244,8 @@ public class UserFeedActivity extends AppCompatActivity {
             });
         }
 
+
+
         /**
          * This is a click listener for show event. Will redirect to ShowEventActivity
          */
@@ -309,9 +316,18 @@ public class UserFeedActivity extends AppCompatActivity {
 
     }
 
+    private void selectFeed(final String accountName){
+        feedButton= findViewById(R.id.feedButton);
+        feedButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-
-
+                Intent intent = new Intent(UserFeedActivity.this, feedActivity.class);
+                intent.putExtra("account", accountName);
+                startActivity(intent);
+            }
+        });
+    }
 
 
 }
