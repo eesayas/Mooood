@@ -170,14 +170,18 @@ public class CreateEventActivity extends AppCompatActivity{
                 moodAuthor = accountName;
 
                 //create timestamp
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm:ss a");
-
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
+                Log.d("Time1", " before changing timestamp" + ' ' + moodDate + ' ' + moodTime);
                 try {
                     moodTimeStamp = simpleDateFormat.parse(moodDate + ' ' + moodTime);
+                    Log.d("Time1", "changing timestamp");
 
                 } catch (ParseException e){
+                    Log.d("Time1", "catch exception");
                     e.printStackTrace();
                 }
+
+                Log.d("Time1", " after changing timestamp ");
 
                 //upload image
                 if(uploadTask != null && uploadTask.isInProgress()){
@@ -482,6 +486,7 @@ public class CreateEventActivity extends AppCompatActivity{
 
         MoodEvent moodEvent = new MoodEvent(moodAuthor, moodDate, moodTime, moodEmotionalState, moodImageUrl, moodReason, moodSocialSituation);
         moodEvent.setTimeStamp(moodTimeStamp);
+        Log.d("Time1", "new time stamp" + moodTimeStamp);
         addMoodEventToDB(documentReference, moodEvent);
 
         finish();

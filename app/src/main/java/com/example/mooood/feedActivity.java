@@ -30,6 +30,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static com.example.mooood.MainActivity.userNames;
@@ -42,6 +43,7 @@ public class feedActivity extends AppCompatActivity {
     ArrayList<MoodEvent> feedDataList;
     SearchView feedSearchView;
     FloatingActionButton notificationButton;
+    Button userButton;
 
     //Firebase setup
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -63,6 +65,9 @@ public class feedActivity extends AppCompatActivity {
         arrayAdapterSetup();
         addUsers();
         searchUsers(name);
+        selectUser(name);
+
+
 
     } //End of onCreate
 
@@ -126,9 +131,11 @@ public class feedActivity extends AppCompatActivity {
                                 String imageURl = (String) documentSnapshot.getData().get("imageUrl");
                                 String reason = (String) documentSnapshot.getData().get("reason");
                                 String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
+                                Date timeStamp = (Date) documentSnapshot.getData().get("timeStamp");
                                 MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation);
                                 moodEvent.setDocumentId(documentSnapshot.getId());
-
+                                moodEvent.setTimeStamp(timeStamp);
+                                Log.d("timestamp", " time stamp ADDED to database");
                                 db.collection("Users").document(userNames.get(finalI)).set(moodEvent);
                                 Log.d(TAG, "ADDED to database");
                             }
@@ -202,6 +209,17 @@ public class feedActivity extends AppCompatActivity {
             }
         });
     }
+    private void selectUser(final String accountName){
+        userButton= findViewById(R.id.userButton);
+        userButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+                Intent intent = new Intent(feedActivity.this, UserFeedActivity.class);
+                intent.putExtra("accountKey", accountName);
+                startActivity(intent);
+            }
+        });
+    }
 
 }
