@@ -170,7 +170,7 @@ public class CreateEventActivity extends AppCompatActivity{
                 moodAuthor = accountName;
 
                 //create timestamp
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm:ss a");
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
 
                 try {
                     moodTimeStamp = simpleDateFormat.parse(moodDate + ' ' + moodTime);

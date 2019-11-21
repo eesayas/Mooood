@@ -30,9 +30,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
-import static com.example.mooood.MainActivity.userNames;
 
 public class feedActivity extends AppCompatActivity {
 
@@ -41,6 +41,7 @@ public class feedActivity extends AppCompatActivity {
     ArrayAdapter<MoodEvent> Adapter;
     ArrayList<MoodEvent> feedDataList;
     SearchView feedSearchView;
+    ArrayList<String> usernames;
     FloatingActionButton notificationButton;
 
     //Firebase setup
@@ -59,9 +60,57 @@ public class feedActivity extends AppCompatActivity {
         feedCollectionReference = db.collection("MoodEvents").document(name).collection("Following");
         collectionReference = db.collection("MoodEvents");
         feedDataList = new ArrayList<>();
+        usernames= new ArrayList<>();
+
+        db.collection("participant").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                //usernames.clear();
+                for (QueryDocumentSnapshot doc: queryDocumentSnapshots){
+                    usernames.add((String)doc.getId());
+                    //Log.d("USERNAME", names);
+                    //usernames.add(names);
+                }
+
+            }
+        });
+
+        Log.d("ADDUSERS", "Working before loop" + usernames.size());
+
+        for (int i = 0; i < usernames.size(); i++) {
+            Log.d("ADDUSERS", "Working after loop");
+
+            final int finalI = i;
+            collectionReference.document(usernames.get(i)).collection("MoodActivities")
+                    .orderBy("timeStamp", Query.Direction.DESCENDING)
+                    .limit(1)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                //Date timeStamp = (Date) documentSnapshot.getData().get("timeStamp");
+                                String author = (String) documentSnapshot.getData().get("author");
+                                String date = (String) documentSnapshot.getData().get("date");
+                                String time = (String) documentSnapshot.getData().get("time");
+                                String emotionalState = (String) documentSnapshot.getData().get("emotionalState");
+                                String imageURl = (String) documentSnapshot.getData().get("imageUrl");
+                                String reason = (String) documentSnapshot.getData().get("reason");
+                                String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
+                                MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation);
+                                moodEvent.setDocumentId(documentSnapshot.getId());
+                                //moodEvent.setTimeStamp(timeStamp);
+
+                                db.collection("Users").document(usernames.get(finalI)).set(moodEvent);
+                                Log.d(TAG, "ADDED to database");
+                            }
+
+                        }
+                    });
+        }
 
         arrayAdapterSetup();
-        addUsers();
+        //addUsers();
         searchUsers(name);
 
     } //End of onCreate
@@ -70,8 +119,7 @@ public class feedActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         //Displaying most recent Mood events that the User is following
-
-        feedCollectionReference
+             feedCollectionReference
              .orderBy("timeStamp", Query.Direction.DESCENDING)
              .addSnapshotListener(this, new EventListener<QuerySnapshot>() {
                  @Override
@@ -79,6 +127,7 @@ public class feedActivity extends AppCompatActivity {
                      feedDataList.clear();
 
                      for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                         //Date timeStamp = (Date) documentSnapshot.getData().get("timeStamp");
                          String author = (String) documentSnapshot.getData().get("author");
                          String date = (String) documentSnapshot.getData().get("date");
                          String time = (String) documentSnapshot.getData().get("time");
@@ -88,6 +137,7 @@ public class feedActivity extends AppCompatActivity {
                          String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
                          MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation);
                          moodEvent.setDocumentId(documentSnapshot.getId());
+                         //moodEvent.setTimeStamp(timeStamp);
 
                          feedDataList.add(moodEvent); //add to data list
                      }
@@ -105,13 +155,15 @@ public class feedActivity extends AppCompatActivity {
     }
 
 
-    private void addUsers(){
+   /* private void addUsers(){
         //From the userNames of Users in the MainActivity, go through all the users and collect the most recent moodEvent.
         // Then form a new collection with it
+        *//*Log.d("ADDUSERS", "Working before loop");
+        for (int i = 0; i < usernames.size(); i++) {
+            Log.d("ADDUSERS", "Working after loop");
 
-        for (int i = 0; i < userNames.size(); i++) {
             final int finalI = i;
-            collectionReference.document(userNames.get(i)).collection("MoodActivities")
+            collectionReference.document(usernames.get(i)).collection("MoodActivities")
                     .orderBy("timeStamp", Query.Direction.DESCENDING)
                     .limit(1)
                     .get()
@@ -119,6 +171,7 @@ public class feedActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                //Date timeStamp = (Date) documentSnapshot.getData().get("timeStamp");
                                 String author = (String) documentSnapshot.getData().get("author");
                                 String date = (String) documentSnapshot.getData().get("date");
                                 String time = (String) documentSnapshot.getData().get("time");
@@ -128,18 +181,20 @@ public class feedActivity extends AppCompatActivity {
                                 String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
                                 MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation);
                                 moodEvent.setDocumentId(documentSnapshot.getId());
+                                //moodEvent.setTimeStamp(timeStamp);
 
-                                db.collection("Users").document(userNames.get(finalI)).set(moodEvent);
+                                db.collection("Users").document(usernames.get(finalI)).set(moodEvent);
                                 Log.d(TAG, "ADDED to database");
                             }
 
                         }
                     });
-        }
-
-    }
+        }*//*
+    }*/
 
     private void searchUsers (final String name) {
+
+
         feedSearchView = findViewById(R.id.feedSearchView);
         feedSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -156,6 +211,7 @@ public class feedActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                 feedDataList.clear();
                                 for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                    //Date timeStamp = (Date) documentSnapshot.getData().get("timeStamp");
                                     String author = (String) documentSnapshot.getData().get("author");
                                     String date = (String) documentSnapshot.getData().get("date");
                                     String time = (String) documentSnapshot.getData().get("time");
@@ -165,6 +221,8 @@ public class feedActivity extends AppCompatActivity {
                                     String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
                                     MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation);
                                     moodEvent.setDocumentId(documentSnapshot.getId());
+                                    //moodEvent.setTimeStamp(timeStamp);
+
                                     feedDataList.add(moodEvent); //add to data list
                                 }
                                 Adapter.notifyDataSetChanged();
@@ -183,7 +241,7 @@ public class feedActivity extends AppCompatActivity {
         feedSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                onStart();
+                //onStart();
                 return false;
             }
         });
