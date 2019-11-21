@@ -40,6 +40,8 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PointOfInterest;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -93,6 +95,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     String currentPhotoPath;
     ImageView imageUpload;
     Uri imageUri;
+
     private StorageReference storageReference;
     private DatabaseReference databaseReference;
     private StorageTask uploadTask;
@@ -473,15 +476,15 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
                                 }
                             }, 500);
 
-                            Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
-                            Uri downloadUrl = urlTask.getResult();
+//                            Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
+//                            Uri downloadUrl = urlTask.getResult();
 
-                            UploadImage uploadImage = new UploadImage(downloadUrl.toString());
-                            moodEvent.setImageUrl(uploadImage.getImageUrl());
-                            String uploadId = databaseReference.push().getKey();
-                            databaseReference.child(uploadId).setValue(uploadImage);
+//                            UploadImage uploadImage = new UploadImage(taskSnapshot.getStorage().getDownloadUrl().toString());
+//
+//
+//                            Log.d(TAG, "uploaded image " + uploadImage.getImageUrl());
 
-                           submitMoodEventToDB(documentReference, moodEvent);
+
                         }
 
                     })
@@ -491,9 +494,46 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
                             Log.d(TAG, "failed to upload image");
                         }
                     });
+
+            getUploadedImageUrl(uploadTask, fileReference);
+
         }
 
     }
+
+    /**
+     * This gets the url of the uploaded image
+     */
+    private void getUploadedImageUrl(StorageTask uploadTask, final StorageReference imageReference){
+        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+
+                // Continue with the task to get the download URL
+                return imageReference.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+                    Uri downloadUri = task.getResult();
+                    moodEvent.setImageUrl(downloadUri.toString());
+
+                    String uploadId = databaseReference.push().getKey();
+                    databaseReference.child(uploadId).setValue(downloadUri.toString());
+
+                    submitMoodEventToDB(documentReference, moodEvent);
+                } else {
+                    // Handle failures
+                    // ...
+                }
+            }
+        });
+    }
+
 
 
     //==========================================================================================
@@ -514,14 +554,16 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
                 createTimeStamp();
                 obtainReason();
 
-                if(uploadTask != null && uploadTask.isInProgress()){
-                    Log.d(TAG, "uploading in progress");
-                } else{
-                    uploadImage();
+                if(uploadTask != null && uploadTask.isInProgress()) {
+                    Log.d(TAG, "Upload in Progress");
 
-//                    submitMoodEventToDB(documentReference, moodEvent);
+                } else if(uploadTask == null){
+                    submitMoodEventToDB(documentReference, moodEvent);
                 }
 
+                else{
+                    uploadImage();
+                }
 
 
 
