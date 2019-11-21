@@ -148,7 +148,7 @@ public class feedActivity extends AppCompatActivity {
                              Log.d("Time1", "changing timestamp in OnStart");
                          }catch (ParseException a){
                              Log.d("Time1", "catch exception in Onstart");
-                             e.printStackTrace();
+                             a.printStackTrace();
                          }
 
                          MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation);
@@ -251,10 +251,10 @@ public class feedActivity extends AppCompatActivity {
         userButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                Intent intent = new Intent(feedActivity.this, UserFeedActivity.class);
-                intent.putExtra("accountKey", accountName);
-                startActivity(intent);
+                    finish();
+//                Intent intent = new Intent(feedActivity.this, UserFeedActivity.class);
+//                intent.putExtra("accountKey", accountName);
+//                startActivity(intent);
             }
         });
     }
