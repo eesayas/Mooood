@@ -43,7 +43,6 @@ public class feedActivity extends AppCompatActivity {
     ArrayAdapter<MoodEvent> Adapter;
     ArrayList<MoodEvent> feedDataList;
     SearchView feedSearchView;
-    ArrayList<String> usernames;
     FloatingActionButton notificationButton;
     Button userButton;
     Date moodTimeStamp;
@@ -65,15 +64,17 @@ public class feedActivity extends AppCompatActivity {
         feedCollectionReference = db.collection("MoodEvents").document(name).collection("Following");
         collectionReference = db.collection("MoodEvents");
         feedDataList = new ArrayList<>();
-        usernames= new ArrayList<>();
+
+        //Will go through Each participant in the participant collection. For each one it will get the most recent mood and Add it to the User collection
+        //The User Collection will have the most recent Mood event for the user.
 
         db.collection("participant").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 for (QueryDocumentSnapshot doc: queryDocumentSnapshots){
-                    final String names = doc.getId();
-                    Log.d("display", names);
-                    collectionReference.document(names).collection("MoodActivities")
+                    final String participant = doc.getId();
+                    Log.d("display", participant);
+                    collectionReference.document(participant).collection("MoodActivities")
                             .orderBy("timeStamp", Query.Direction.DESCENDING)
                             .limit(1)
                             .get()
@@ -81,7 +82,7 @@ public class feedActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                     for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM dd yyyy h:mm a");
+                                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
 
                                         String author = (String) documentSnapshot.getData().get("author");
                                         String date = (String) documentSnapshot.getData().get("date");
@@ -98,12 +99,15 @@ public class feedActivity extends AppCompatActivity {
                                             e.printStackTrace();
                                         }
 
-                                        MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation);
+                                        final MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation);
                                         moodEvent.setDocumentId(documentSnapshot.getId());
                                         moodEvent.setTimeStamp(moodTimeStamp);
 
-                                        db.collection("Users").document(names).set(moodEvent);
+                                        db.collection("Users").document(participant).set(moodEvent);
                                         Log.d(TAG, "ADDED to database");
+
+                                        //This will update the following list of the user
+                                        updateFollowingList(name, participant, moodEvent);
                                     }
 
                                 }
@@ -112,7 +116,6 @@ public class feedActivity extends AppCompatActivity {
 
             }
         });
-
 
         arrayAdapterSetup();
         searchUsers(name);
@@ -125,7 +128,9 @@ public class feedActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
         //Displaying most recent Mood events that the User is following
+
         feedCollectionReference
                 .orderBy("timeStamp", Query.Direction.DESCENDING)
                 .addSnapshotListener(this, new EventListener<QuerySnapshot>() {
@@ -134,7 +139,7 @@ public class feedActivity extends AppCompatActivity {
                         feedDataList.clear();
 
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM dd yyyy h:mm a");
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
                             String author = (String) documentSnapshot.getData().get("author");
                             String date = (String) documentSnapshot.getData().get("date");
                             String time = (String) documentSnapshot.getData().get("time");
@@ -171,12 +176,11 @@ public class feedActivity extends AppCompatActivity {
     }
 
     private void searchUsers (final String name) {
-
-
         feedSearchView = findViewById(R.id.feedSearchView);
         feedSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
+
                 //Will search through the collection "Users" and try to match the Name submitted in the searchView with the name in the database
                 // If it is matched, the name searched up will display the user's most recent mood
 
@@ -189,7 +193,7 @@ public class feedActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                 feedDataList.clear();
                                 for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM dd yyyy h:mm a");
+                                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
 
                                     String author = (String) documentSnapshot.getData().get("author");
                                     String date = (String) documentSnapshot.getData().get("date");
@@ -227,7 +231,7 @@ public class feedActivity extends AppCompatActivity {
         feedSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                //onStart();
+                onStart();
                 return false;
             }
         });
@@ -235,6 +239,7 @@ public class feedActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
                 //When the mood of the searched name is clicked, it will show a Toast message that you are "Now Following"
                 //this person and will add the name and there most recent mood under the collection "Following"
                 //This will not be how the User follows people though!
@@ -257,6 +262,32 @@ public class feedActivity extends AppCompatActivity {
 //                startActivity(intent);
             }
         });
+    }
+
+    //This will update the following list of the user
+    private void updateFollowingList(final String name, final String participant, final MoodEvent moodEvent){
+
+        feedCollectionReference
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            String nameOfFollower= documentSnapshot.getId();
+                            Log.d("nameRN", participant);
+                            Log.d("nameofFollower", nameOfFollower);
+                            if (participant.equals(nameOfFollower)){
+                                Log.d("matching", "matched!");
+                                db.collection("MoodEvents").document(name).collection("Following")
+                                        .document(nameOfFollower).set(moodEvent);
+                            }
+                            else{
+                                Log.d("MESSAGE", "Is not the same");
+                            }
+                        }
+                    }
+                });
+
     }
 
 }

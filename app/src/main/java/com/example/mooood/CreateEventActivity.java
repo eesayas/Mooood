@@ -393,18 +393,18 @@ public class CreateEventActivity extends AppCompatActivity{
 
                 }
             })
-            .addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.d(TAG, "failed to upload image");
-                }
-            });
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d(TAG, "failed to upload image");
+                        }
+                    });
         }
     }
 
     /**
-    * DATE AND TIME PICKER DIALOG FRAGMENT
-    **/
+     * DATE AND TIME PICKER DIALOG FRAGMENT
+     **/
 
     /* After user decided on a date, store those in our calendar variable and then start the TimePickerDialog immediately */
     private final DatePickerDialog.OnDateSetListener DateDataSet = new DatePickerDialog.OnDateSetListener() {
