@@ -268,6 +268,7 @@ public class UserFeedActivity extends AppCompatActivity {
      */
     private void filterMood () {
             userSearchView = findViewById(R.id.userSearchView);
+
             userSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String s) {
