@@ -76,6 +76,7 @@ public class CreateEventActivity extends AppCompatActivity{
     TextView dateAndTimeMood;
     Button submitButton;
     Button locationButton;
+    Button cancelButton;
 
     //needed for creating MoodEvent later
     String moodAuthor;
@@ -147,6 +148,13 @@ public class CreateEventActivity extends AppCompatActivity{
         //==============================================================================================
 
         submitBtnClickListener(accountName);
+        cancelButton = findViewById(R.id.cancel_button);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
     } //end of onCreate
 
