@@ -131,13 +131,13 @@ public class EditEventActivity extends AppCompatActivity{
 
         socialSituationClickListener();
 
-        dateAndTimeDialogPicker();
 
         imageUploadClickListener();
 
         //firebase setup
         storageReference = FirebaseStorage.getInstance().getReference("reason_image");
         databaseReference = FirebaseDatabase.getInstance().getReference("reason_image");
+        dateAndTimeMood.setClickable(false);
 
         submitBtnClickListener(moodEvent);
         cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -146,6 +146,7 @@ public class EditEventActivity extends AppCompatActivity{
                 finish();
             }
         });
+        inputChecker();
 
 
     } //onCreate
@@ -230,11 +231,14 @@ public class EditEventActivity extends AppCompatActivity{
                     if (number < 4){
                         moodReason = reasonText.getText().toString();
                         reasonCount = true;
+                        submitButton.setEnabled(true);
+
                     }
                     else{
                         Toast.makeText(EditEventActivity.this, "reason cannot be more than 3 words!",
                                 Toast.LENGTH_SHORT).show();
                         reasonCount = false;
+                        submitButton.setEnabled(false);
                     }
                 }
 
@@ -246,7 +250,7 @@ public class EditEventActivity extends AppCompatActivity{
      * This creates the timestamp needed for sorting the MoodEvent
      * **/
     private void createTimeStamp(){
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm:ss a");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
 
         try {
             moodTimeStamp = simpleDateFormat.parse(moodDate + ' ' + moodTime);
@@ -302,22 +306,6 @@ public class EditEventActivity extends AppCompatActivity{
                 //no need to use but must be here
             }
         });
-    }
-
-    /**
-     *
-     * This access the date and time fragment
-     * */
-    private void dateAndTimeDialogPicker(){
-        simpleDateFormat = new SimpleDateFormat("MMM/dd/yyyy h:mm a", Locale.getDefault());
-        dateAndTimeMood.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                calendar = Calendar.getInstance();
-                new DatePickerDialog(EditEventActivity.this, DateDataSet, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(calendar.DAY_OF_MONTH)).show();
-            }
-        });
-
     }
 
     /**
@@ -383,42 +371,6 @@ public class EditEventActivity extends AppCompatActivity{
         cancelButton = findViewById(R.id.cancel_button);
     }
 
-    /**
-     * Date and Time Dialog Pickers
-     * */
-
-    private final DatePickerDialog.OnDateSetListener DateDataSet = new DatePickerDialog.OnDateSetListener() {
-        @Override
-        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            calendar.set(Calendar.YEAR, year);
-            calendar.set(Calendar.MONTH, monthOfYear);
-            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
-            //get Date
-            moodDate = new SimpleDateFormat("MMM dd yyyy", Locale.getDefault()).format(calendar.getTime());
-            if(reasonCount == false){
-                submitButton.setEnabled(false);
-            }
-            else{
-                submitButton.setEnabled(true);
-            }
-            new TimePickerDialog(EditEventActivity.this, TimeDataSet, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false).show();
-        }
-    };
-
-    private final TimePickerDialog.OnTimeSetListener TimeDataSet = new TimePickerDialog.OnTimeSetListener() {
-        @Override
-        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-            calendar.set(Calendar.MINUTE, minute);
-
-            //get Time
-            moodTime = new SimpleDateFormat("h:mm a", Locale.getDefault()).format(calendar.getTime());
-
-            //set TexView to correspond with input data
-            dateAndTimeMood.setText(simpleDateFormat.format(calendar.getTime()));
-        }
-    };
 
     /**
      * This edits the moodEvent in DB

@@ -222,11 +222,13 @@ public class CreateEventActivity extends AppCompatActivity{
                     if (number < 4){
                         moodReason = reasonText.getText().toString();
                         reasonCount = true;
+                        submitButton.setEnabled(true);
                     }
                     else{
                         Toast.makeText(CreateEventActivity.this, "reason cannot be more than 3 words!",
                                 Toast.LENGTH_SHORT).show();
                         reasonCount = false;
+                        submitButton.setEnabled(false);
                     }
                 }
 
