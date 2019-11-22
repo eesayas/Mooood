@@ -14,6 +14,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.robotium.solo.Solo;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -62,7 +63,21 @@ public class AddMoodTest {
         //Create mood event with: happy (default emoji), this is a reason, alone, current date and time, no picture for now, no location for now.
         solo.clickOnView(solo.getView(R.id.fab));
         solo.waitForActivity(CreateEventActivity.class);
-        solo.enterText((EditText) solo.getView(R.id.reason),"test reason");
+        solo.enterText((EditText) solo.getView(R.id.reason),"");
+
+
+
+        //edit the reason and the social situation
+        //solo.enterText(reason, "");
+        // try entering a reason more than 3 words
+        solo.enterText((EditText) solo.getView(R.id.reason),"New Reason more 3w");
+
+        solo.waitForText("New Reason more 3w",1,2000);
+//        solo.clickOnView(solo.getView(R.id.social_situation));
+//        solo.clickOnText("Alone");
+
+        assertFalse(solo.getView(R.id.submit_button).isEnabled());
+        
         solo.clickOnView(solo.getView(R.id.social_situation));
         solo.clickOnText("Alone");
         solo.clickOnView(solo.getView(R.id.date_and_time));
@@ -72,6 +87,18 @@ public class AddMoodTest {
         solo.waitForText("OK",1,2);
         solo.clickOnText("OK");
         calendar = Calendar.getInstance();
+
+        //check if submit button is disabled
+        assertFalse(solo.getView(R.id.submit_button).isEnabled());
+        // change the reason to be less than 3 words
+        solo.enterText((EditText) solo.getView(R.id.reason),"");
+        // try entering a reason less than 3 words
+        solo.enterText((EditText) solo.getView(R.id.reason),"New Reason");
+
+        solo.waitForText("New Reason",1,2000);
+//        Assert.assertTrue(solo.getView(R.id.submit_button).isEnabled());
+
+        assertTrue(solo.getView(R.id.submit_button).isEnabled());
         solo.clickOnView(solo.getView(R.id.submit_button));
         solo.waitForActivity(UserFeedActivity.class);
 
@@ -98,7 +125,7 @@ public class AddMoodTest {
         TextView moodReason =(TextView)solo.getView(R.id.reason);
         assertEquals(moodAuthor.getText().toString(),"coolestman");
         assertEquals(moodSocialSituation.getText().toString(),"Alone");
-        assertEquals(moodReason.getText().toString(),"test reason");
+        assertEquals(moodReason.getText().toString(),"New Reason");
         assertEquals(moodDate.getText().toString(), selectedDate);
         assertEquals(moodTime.getText().toString(), selectedTime);
     }
