@@ -436,10 +436,12 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
             Picasso.get().load(imageUri).into(imageUpload);
 
         } else if(requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK){ //if from camera
-            Log.d(TAG, "from camera");
+            galleryAddPic();
+
             File f = new File(currentPhotoPath);
             imageUri = Uri.fromFile(f);
             Picasso.get().load(imageUri).into(imageUpload);
+
         }
     }
 
@@ -454,6 +456,17 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         ContentResolver cR = getContentResolver();
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         return mime.getExtensionFromMimeType(cR.getType(uri));
+    }
+
+    /**
+     * This saves the image to the gallery of the android device
+     */
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(currentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
     }
 
     /**
@@ -497,6 +510,8 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
 
             getUploadedImageUrl(uploadTask, fileReference);
 
+        } else{
+            Log.d(TAG, "IMAGE CAPTURE HAS NO URI");
         }
 
     }
@@ -557,7 +572,8 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
                 if(uploadTask != null && uploadTask.isInProgress()) {
                     Log.d(TAG, "Upload in Progress");
 
-                } else if(uploadTask == null){
+                } else if(uploadTask == null && imageUri == null){
+                    Log.d(TAG, "Image Capture fail");
                     submitMoodEventToDB(documentReference, moodEvent);
                 }
 
@@ -597,8 +613,6 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
      * This adds the MoodEvent to DB
      * **/
     private void submitMoodEventToDB(DocumentReference documentReference, MoodEvent moodEvent){
-
-        Log.d(TAG, moodEvent.toString());
 
         documentReference.collection("MoodActivities")
                 .document()
