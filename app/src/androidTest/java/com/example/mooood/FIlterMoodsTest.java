@@ -1,6 +1,8 @@
 package com.example.mooood;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -25,6 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static org.junit.Assert.*;
@@ -44,6 +47,7 @@ public class FIlterMoodsTest {
     @Before
     public void setUp() throws Exception {
         solo = new Solo(InstrumentationRegistry.getInstrumentation(), rule.getActivity());
+
     }
 
     /**
@@ -74,36 +78,27 @@ public class FIlterMoodsTest {
         solo.enterText(editText, "happy");
         solo.sendKey(KeyEvent.KEYCODE_ENTER);
 
-       ArrayList<String> emotions= new ArrayList<>();
-       emotions.add("HAPPY");
-       emotions.add("SAD");
-       emotions.add("LAUGHING");
-       emotions.add("IN LOVE");
-       emotions.add("ANGRY");
-       emotions.add("SICK");
-       emotions.add("AFRAID");
-
-       HashMap<String, Integer> emoticonData = new HashMap<>();
-       emoticonData.put("HAPPY", R.drawable.happy_cow_v2);
-       emoticonData.put("SAD", R.drawable.sad_cow_v2);
-       emoticonData.put("LAUGHING", R.drawable.laughing_cow_v2);
-       emoticonData.put("IN LOVE", R.drawable.inlove_cow_v2);
-       emoticonData.put("ANGRY", R.drawable.angry_cow_v2);
-       emoticonData.put("SICK", R.drawable.sick_cow_v2);
-       emoticonData.put("AFRAID", R.drawable.afraid_cow_v2);
-
-
-       final ListView list = (ListView) solo.getView(R.id.posts_list);
-
 
         solo.clickInList(0);
         solo.waitForActivity(ShowEventActivity.class);
 
-        ImageView image= (ImageView)solo.getView(R.id.emoticon);
-        TextView moodAuthor = (TextView)solo.getView(R.id.author);
-        //assertEquals(e, emoticonData.get("HAPPY"));
+       List<Emoticon> moodImages= new ArrayList<>();
+       moodImages.add(new Emoticon("HAPPY", 2));
+       moodImages.add(new Emoticon("SAD", 2));
+       moodImages.add(new Emoticon("LAUGHING", 2));
+       moodImages.add(new Emoticon("IN LOVE", 2));
+       moodImages.add(new Emoticon("ANGRY", 2));
+       moodImages.add(new Emoticon("SICK", 2));
+       moodImages.add(new Emoticon("AFRAID", 2));
 
-       assertEquals(moodAuthor.getText().toString(),"maaz");
+       ImageView imageView = (ImageView)solo.getView(R.id.emoticon);
+       int drawable = R.drawable.happy_cow_v2;
+       Log.d("draw", String.valueOf(drawable));
+       Drawable idImage= imageView.getDrawable();
+       int index= moodImages.indexOf(imageView);
+       Log.d("printout", moodImages.get(index).getEmotionalState());
+       //assertEquals(moodImages.get(index).getEmotionalState(), "HAPPY");
+
        }
 
     @After
