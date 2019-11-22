@@ -77,7 +77,7 @@ public class AddMoodTest {
 //        solo.clickOnText("Alone");
 
         assertFalse(solo.getView(R.id.submit_button).isEnabled());
-        
+
         solo.clickOnView(solo.getView(R.id.social_situation));
         solo.clickOnText("Alone");
         solo.clickOnView(solo.getView(R.id.date_and_time));
