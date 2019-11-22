@@ -51,31 +51,32 @@ public class FIlterMoodsTest {
         Activity activity = rule.getActivity();
     }
 
-//    @Test
-//    public void checkFilterMood(){
-//        solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
-//        solo.enterText((EditText)solo.getView(R.id.activity_main_et__username), "maaz1");
-//        solo.waitForText("maaz1",1,2000);
-//        solo.enterText((EditText)solo.getView(R.id.activity_main_et__password), "1");
-//        solo.waitForText("1",1,2000);
-//        solo.clickOnView(solo.getView(R.id.activity_main_btn_submit));
-//        solo.waitForActivity(UserFeedActivity.class);
-//
-//        solo.clickOnView(solo.getView(R.id.userSearchView));
-//        solo.enterText((SearchView)solo.getView(R.id.userSearchView), "happy");
-//        solo.sendKey(KeyEvent.KEYCODE_ENTER);
-//
-//        //
-//        /*final ListView list = (ListView) solo.getView(R.id.posts_list);
-//        solo.clickInList(0);
-//        solo.waitForActivity(ShowEventActivity.class);
-//
-//        TextView moodAuthor = (TextView)solo.getView(R.id.author);
-//
-//        assertEquals(moodAuthor.getText().toString(),"maaz1");
-//*/
-//
-//    }
+   @Test
+    public void checkFilterMood(){
+        solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
+        solo.enterText((EditText)solo.getView(R.id.activity_main_et__username), "maaz");
+        solo.waitForText("maaz1",1,2000);
+        solo.enterText((EditText)solo.getView(R.id.activity_main_et__password), "1");
+        solo.waitForText("1",1,2000);
+        solo.clickOnView(solo.getView(R.id.activity_main_btn_submit));
+        solo.waitForActivity(UserFeedActivity.class);
+
+        solo.clickOnView(solo.getView(R.id.userSearchView));
+        SearchView searchView = (SearchView) solo.getView(R.id.userSearchView);
+        int id= searchView.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
+        EditText editText= searchView.findViewById(id);
+        solo.enterText(editText, "happy");
+        solo.sendKey(KeyEvent.KEYCODE_ENTER);
+
+        final ListView list = (ListView) solo.getView(R.id.posts_list);
+
+        solo.clickInList(0);
+        solo.waitForActivity(ShowEventActivity.class);
+
+        TextView moodAuthor = (TextView)solo.getView(R.id.author);
+
+        assertEquals(moodAuthor.getText().toString(),"maaz1");
+  }
 
     @After
     public void tearDown() throws Exception {
