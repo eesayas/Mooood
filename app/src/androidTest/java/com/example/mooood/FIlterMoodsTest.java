@@ -76,6 +76,7 @@ public class FIlterMoodsTest {
         int id= searchView.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
         EditText editText= searchView.findViewById(id);
         solo.enterText(editText, "happy");
+       solo.waitForText("happy",1,20000);
         solo.sendKey(KeyEvent.KEYCODE_ENTER);
 
 

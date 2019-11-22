@@ -11,59 +11,68 @@
 
         <TextView
             android:id="@+id/author"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp">
+            android:textSize="20sp"
+            android:layout_gravity="center_horizontal">
         </TextView>
 
         <TextView
             android:text="felt"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp">
+            android:textSize="20sp"
+            android:layout_gravity="center_horizontal">
         </TextView>
 
         <ImageView
             android:id="@+id/emoticon"
             android:layout_width="200dp"
-            android:layout_height="200dp">
+            android:layout_height="200dp"
+            android:layout_gravity="center_horizontal">
         </ImageView>
 
         <TextView
             android:id="@+id/date"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
         </TextView>
 
         <TextView
             android:id="@+id/time"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
         </TextView>
 
         <TextView
             android:id="@+id/social_situation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
         </TextView>
 
         <ImageView
             android:id="@+id/image_reason"
             android:layout_width="200dp"
-            android:layout_height="200dp">
+            android:layout_height="200dp"
+            android:layout_gravity="center_horizontal">
         </ImageView>
 
         <TextView
             android:id="@+id/reason"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
         </TextView>
 
         <Button
             android:id="@+id/edit_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="EDIT THIS POST">
+            android:text="EDIT THIS POST"
+            android:layout_gravity="center_horizontal">
         </Button>
     </LinearLayout>
 
