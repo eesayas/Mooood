@@ -296,7 +296,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
             //get Date
-            moodEvent.setDate( new SimpleDateFormat("MMM dd yyyy", Locale.getDefault()).format(calendar.getTime()) );
+            moodEvent.setDate( new SimpleDateFormat("MMM/dd/yyyy", Locale.getDefault()).format(calendar.getTime()) );
 
             //go to TimePicker
             new TimePickerDialog(CreateEventActivity.this, TimeDataSet, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false).show();
@@ -549,101 +549,9 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         });
     }
 
-
-
     //==========================================================================================
-    // ASSEMBLING MOODEVENT AND SUBMITTING IT TO DB
+    // GEOLOCATION METHODS
     //==========================================================================================
-    /**
-     * This is a click listener for submit button. This actually submits the new MoodEvent ito DB
-     * @params accountName
-     * This is the accountName of the user that is logged in
-     */
-    private void submitBtnClickListener(){
-        submitButton = findViewById(R.id.submit_button);
-        submitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                //necessary methods before MoodEvent submission
-                createTimeStamp();
-                obtainReason();
-
-                if(uploadTask != null && uploadTask.isInProgress()) {
-                    Log.d(TAG, "Upload in Progress");
-
-                } else if(uploadTask == null && imageUri == null){
-                    Log.d(TAG, "Image Capture fail");
-                    submitMoodEventToDB(documentReference, moodEvent);
-                }
-
-                else{
-                    uploadImage();
-                }
-
-
-
-            }
-        });
-    }
-
-    /**
-     * This obtains the reason for MoodEvent
-     **/
-    private void obtainReason(){
-        reason = findViewById(R.id.reason);
-        moodEvent.setReason(reason.getText().toString());
-    }
-
-    /**
-     * This creates timestamp for moodEvent
-     **/
-    private void createTimeStamp(){
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
-
-        try {
-            moodEvent.setTimeStamp(simpleDateFormat.parse(moodEvent.getDate() + ' ' + moodEvent.getTime()));
-
-        } catch (ParseException e){
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * This adds the MoodEvent to DB
-     * **/
-    private void submitMoodEventToDB(DocumentReference documentReference, MoodEvent moodEvent){
-
-        documentReference.collection("MoodActivities")
-                .document()
-                .set(moodEvent)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        //These are a method which gets executed when the the task is successful
-                        Log.d(TAG, "CreateEventActivity - Data addition successful");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        //Not successful =(
-                        Log.d(TAG, "CreateEventActivity - Data addition failed" + e.toString());
-                    }
-                });
-
-        finish();
-
-    }
-
-    //==========================================================================================
-    // END
-    //==========================================================================================
-
-    /**
-     *This contains all GEOLOCATION
-     */
-
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -748,5 +656,90 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
 
     public void setMoodLocation(LatLng moodLocation) {
         this.moodLocation = moodLocation;
+    }
+
+
+
+    //==========================================================================================
+    // ASSEMBLING MOODEVENT AND SUBMITTING IT TO DB
+    //==========================================================================================
+    /**
+     * This is a click listener for submit button. This actually submits the new MoodEvent ito DB
+     * @params accountName
+     * This is the accountName of the user that is logged in
+     */
+    private void submitBtnClickListener(){
+        submitButton = findViewById(R.id.submit_button);
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //necessary methods before MoodEvent submission
+                createTimeStamp();
+                obtainReason();
+
+                if(uploadTask != null && uploadTask.isInProgress()) {
+                    Log.d(TAG, "Upload in Progress");
+
+                } else if(uploadTask == null && imageUri == null){
+                    Log.d(TAG, "Image Capture fail");
+                    submitMoodEventToDB(documentReference, moodEvent);
+                }
+
+                else{
+                    uploadImage();
+                }
+
+            }
+        });
+    }
+
+    /**
+     * This obtains the reason for MoodEvent
+     **/
+    private void obtainReason(){
+        reason = findViewById(R.id.reason);
+        moodEvent.setReason(reason.getText().toString());
+    }
+
+    /**
+     * This creates timestamp for moodEvent
+     **/
+    private void createTimeStamp(){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
+
+        try {
+            moodEvent.setTimeStamp(simpleDateFormat.parse(moodEvent.getDate() + ' ' + moodEvent.getTime()));
+
+        } catch (ParseException e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * This adds the MoodEvent to DB
+     * **/
+    private void submitMoodEventToDB(DocumentReference documentReference, MoodEvent moodEvent){
+
+        documentReference.collection("MoodActivities")
+                .document()
+                .set(moodEvent)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        //These are a method which gets executed when the the task is successful
+                        Log.d(TAG, "CreateEventActivity - Data addition successful");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        //Not successful =(
+                        Log.d(TAG, "CreateEventActivity - Data addition failed" + e.toString());
+                    }
+                });
+
+        finish();
+
     }
 }
