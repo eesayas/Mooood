@@ -122,194 +122,194 @@ public class UserFeedActivity extends AppCompatActivity {
     } //end of OnStart()
 
 
-        /**
-         * This deletes a MoodEvent from the DB
-         * @param documentReference
-         *     This is documentReference of MoodEvent in DB
-         * @param position
-         *     This is the position of MoodEvent in postDataList
-         */
-        //delete from database
-        private void deleteMoodEventFromDB (DocumentReference documentReference,int position){
-            documentReference.collection("MoodActivities")
-                    .document(postDataList.get(position).getDocumentId())
-                    .delete()
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d(TAG, "Mood was successfully deleted");
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.d(TAG, "Mood was not deleted", e);
-                        }
-                    });
-
-            postDataList.remove(position);
-            postAdapter.notifyDataSetChanged();
-        }
-
-        /**
-         * This creates the deleteButton for SwipeMenuListView
-         *
-         * The MIT License (MIT)
-         *
-         * Copyright (c) 2014 baoyongzhang
-         *
-         * Permission is hereby granted, free of charge, to any person obtaining a copy
-         * of this software and associated documentation files (the "Software"), to deal
-         * in the Software without restriction, including without limitation the rights
-         * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-         * copies of the Software, and to permit persons to whom the Software is
-         * furnished to do so, subject to the following conditions:
-         *
-         * The above copyright notice and this permission notice shall be included in all
-         * copies or substantial portions of the Software.
-         *
-         * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-         * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-         * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-         * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-         * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-         * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-         * SOFTWARE.
-         */
-        private void createDeleteButtonOnSwipe () {
-            //adding delete button to SwipeMenu
-            SwipeMenuCreator creator = new SwipeMenuCreator() {
-
-                @Override
-                public void create(SwipeMenu menu) {
-
-                    //init delete button
-                    SwipeMenuItem deleteItem = new SwipeMenuItem(getApplicationContext());
-
-                    //custom design for delete button
-                    deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9, 0x3F, 0x25)));
-                    deleteItem.setWidth(200);
-                    deleteItem.setIcon(R.drawable.ic_delete_forever);
-
-                    //add button
-                    menu.addMenuItem(deleteItem);
-                }
-            };
-
-            // set creator
-            postList.setMenuCreator(creator);
-        }
-
-        /**
-         * This is a basic Array Adapter setup based on the lab lectures
-         */
-
-        private void arrayAdapterSetup () {
-            //basic ArrayAdapter init
-            postDataList = new ArrayList<>();
-            postList = findViewById(R.id.posts_list);
-            postAdapter = new MoodEventsAdapter(postDataList, this);
-            postList.setAdapter(postAdapter);
-        }
-
-        /**
-         * This is a click listener for each delete button in SwipeMenuListView
-         */
-
-        private void deleteBtnClickListener () {
-            //click listener for garbage can icon
-            postList.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
-                    switch (index) {
-                        case 0:
-                            deleteMoodEventFromDB(documentReference, position);
-                            break;
+    /**
+     * This deletes a MoodEvent from the DB
+     * @param documentReference
+     *     This is documentReference of MoodEvent in DB
+     * @param position
+     *     This is the position of MoodEvent in postDataList
+     */
+    //delete from database
+    private void deleteMoodEventFromDB (DocumentReference documentReference,int position){
+        documentReference.collection("MoodActivities")
+                .document(postDataList.get(position).getDocumentId())
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Mood was successfully deleted");
                     }
-                    return false;
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "Mood was not deleted", e);
+                    }
+                });
+
+        postDataList.remove(position);
+        postAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * This creates the deleteButton for SwipeMenuListView
+     *
+     * The MIT License (MIT)
+     *
+     * Copyright (c) 2014 baoyongzhang
+     *
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+     *
+     * The above copyright notice and this permission notice shall be included in all
+     * copies or substantial portions of the Software.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     * SOFTWARE.
+     */
+    private void createDeleteButtonOnSwipe () {
+        //adding delete button to SwipeMenu
+        SwipeMenuCreator creator = new SwipeMenuCreator() {
+
+            @Override
+            public void create(SwipeMenu menu) {
+
+                //init delete button
+                SwipeMenuItem deleteItem = new SwipeMenuItem(getApplicationContext());
+
+                //custom design for delete button
+                deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9, 0x3F, 0x25)));
+                deleteItem.setWidth(200);
+                deleteItem.setIcon(R.drawable.ic_delete_forever);
+
+                //add button
+                menu.addMenuItem(deleteItem);
+            }
+        };
+
+        // set creator
+        postList.setMenuCreator(creator);
+    }
+
+    /**
+     * This is a basic Array Adapter setup based on the lab lectures
+     */
+
+    private void arrayAdapterSetup () {
+        //basic ArrayAdapter init
+        postDataList = new ArrayList<>();
+        postList = findViewById(R.id.posts_list);
+        postAdapter = new MoodEventsAdapter(postDataList, this);
+        postList.setAdapter(postAdapter);
+    }
+
+    /**
+     * This is a click listener for each delete button in SwipeMenuListView
+     */
+
+    private void deleteBtnClickListener () {
+        //click listener for garbage can icon
+        postList.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+                switch (index) {
+                    case 0:
+                        deleteMoodEventFromDB(documentReference, position);
+                        break;
                 }
-            });
-        }
+                return false;
+            }
+        });
+    }
 
-        /**
-         * This is a click listener for create post. Will redirect to CreateEventActivity
-         */
-        private void createPostBtnClickListener ( final String accountName){
-            final FloatingActionButton createPostBtn = findViewById(R.id.fab);
-            createPostBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
+    /**
+     * This is a click listener for create post. Will redirect to CreateEventActivity
+     */
+    private void createPostBtnClickListener ( final String accountName){
+        final FloatingActionButton createPostBtn = findViewById(R.id.fab);
+        createPostBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-                    Intent intent = new Intent(getApplicationContext(), CreateEventActivity.class);
-                    intent.putExtra("key", accountName);
-                    startActivity(intent);
+                Intent intent = new Intent(getApplicationContext(), CreateEventActivity.class);
+                intent.putExtra("key", accountName);
+                startActivity(intent);
 
-                }
-            });
-        }
+            }
+        });
+    }
 
 
 
-        /**
-         * This is a click listener for show event. Will redirect to ShowEventActivity
-         */
-        private void showEventClickListener () {
-            //click listener for each item -> ShowEventActivity
-            postList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+    /**
+     * This is a click listener for show event. Will redirect to ShowEventActivity
+     */
+    private void showEventClickListener () {
+        //click listener for each item -> ShowEventActivity
+        postList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                    Intent intent = new Intent(UserFeedActivity.this, ShowEventActivity.class);
-                    intent.putExtra(MOOD_EVENT, postDataList.get(i));
-                    startActivity(intent);
+                Intent intent = new Intent(UserFeedActivity.this, ShowEventActivity.class);
+                intent.putExtra(MOOD_EVENT, postDataList.get(i));
+                startActivity(intent);
 
-                }
-            });
-        }
+            }
+        });
+    }
 
     /**
      * This is SearchView that will filter through adapter for the Mood entered and display it
      */
     private void filterMood () {
-            userSearchView = findViewById(R.id.userSearchView);
+        userSearchView = findViewById(R.id.userSearchView);
 
-            userSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String s) {
-                    textSubmitted=s.toUpperCase();
-                    collectionReference
-                            .orderBy("timeStamp", Query.Direction.DESCENDING)
-                            .whereEqualTo("emotionalState", textSubmitted)
-                            .get()
-                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                    postDataList.clear();
-                                    for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                        String author = (String) documentSnapshot.getData().get("author");
-                                        String date = (String) documentSnapshot.getData().get("date");
-                                        String time = (String) documentSnapshot.getData().get("time");
-                                        String emotionalState = (String) documentSnapshot.getData().get("emotionalState");
-                                        String imageURl = (String) documentSnapshot.getData().get("imageUrl");
-                                        String reason = (String) documentSnapshot.getData().get("reason");
-                                        String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
-                                        MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation);
-                                        moodEvent.setDocumentId(documentSnapshot.getId());
-                                        postDataList.add(moodEvent); //add to data list
-                                    }
-                                    postAdapter.notifyDataSetChanged();
+        userSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                textSubmitted=s.toUpperCase();
+                collectionReference
+                        .orderBy("timeStamp", Query.Direction.DESCENDING)
+                        .whereEqualTo("emotionalState", textSubmitted)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                postDataList.clear();
+                                for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                    String author = (String) documentSnapshot.getData().get("author");
+                                    String date = (String) documentSnapshot.getData().get("date");
+                                    String time = (String) documentSnapshot.getData().get("time");
+                                    String emotionalState = (String) documentSnapshot.getData().get("emotionalState");
+                                    String imageURl = (String) documentSnapshot.getData().get("imageUrl");
+                                    String reason = (String) documentSnapshot.getData().get("reason");
+                                    String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
+                                    MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation);
+                                    moodEvent.setDocumentId(documentSnapshot.getId());
+                                    postDataList.add(moodEvent); //add to data list
                                 }
-                            });
-                    return false;
+                                postAdapter.notifyDataSetChanged();
+                            }
+                        });
+                return false;
 
-                }
+            }
 
-                @Override
-                public boolean onQueryTextChange(String s) {
-                    return false;
-                }
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
 
-            });
+        });
 
         userSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override

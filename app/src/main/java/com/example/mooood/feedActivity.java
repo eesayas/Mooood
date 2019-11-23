@@ -74,6 +74,13 @@ public class feedActivity extends AppCompatActivity {
 
         searchUsers(name);
         selectUser(name);
+        notificationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                notificationCheck(name);
+            }
+        });
+
     } //End of onCreate
 
     @Override
@@ -127,6 +134,14 @@ public class feedActivity extends AppCompatActivity {
 
 
     }
+
+    private void notificationCheck(String userName){
+        Intent intent = new Intent(feedActivity.this, NotificationActivity.class);
+        intent.putExtra("accountKey", userName);
+        startActivity(intent);
+    }
+
+
 
     private void arrayAdapterSetup () {
         //basic ArrayAdapter init
@@ -226,32 +241,5 @@ public class feedActivity extends AppCompatActivity {
         });
     }
 
-    //This will update the following list of the user
-/*    private void updateFollowingList(final String name, final String participant, final MoodEvent moodEvent){
-
-        feedCollectionReference
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                            String nameOfFollower= documentSnapshot.getId();
-                            Log.d("nameRN", participant);
-                            Log.d("nameofFollower", nameOfFollower);
-                            if (participant.equals(nameOfFollower)){
-                                Log.d("matching", "matched!");
-                                ;
-                            }
-                            else{
-                                Log.d("MESSAGE", "Is not the same");
-                            }
-                        }
-                    }
-                });
-    }*/
-/*    private void createUsers(final String name){
-
-
-    }*/
 
 }
