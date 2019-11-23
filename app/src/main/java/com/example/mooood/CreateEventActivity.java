@@ -122,6 +122,12 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_event);
 
+        //connecting variables to their respective element (should be in setup, need to edit CreateEventActivity)
+        reason = findViewById(R.id.reason);
+        socialSituation = findViewById(R.id.social_situation);
+        imageUpload = findViewById(R.id.image_reason);
+        dateAndTimeMood = findViewById((R.id.date_and_time));
+
         //Acquire the account name of the current User
         Intent intent = getIntent();
         final String accountName = intent.getStringExtra("key");
@@ -238,7 +244,6 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
      * This is a listener for social situation
      **/
     private void socialSituationClickListener(){
-        socialSituation = findViewById(R.id.social_situation);
         socialSituation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -277,7 +282,6 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
      */
     private void dateAndTimePickerClickListener(){
         simpleDateFormat = new SimpleDateFormat("MMM/dd/yyyy h:mm a", Locale.getDefault());
-        dateAndTimeMood = findViewById((R.id.date_and_time));
         dateAndTimeMood.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -325,7 +329,6 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
      * This opens the image gallery of the phone for image upload
      * */
     private void imageUploadClickListener(){
-        imageUpload = findViewById(R.id.image_reason);
         imageUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -698,7 +701,6 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
      * This obtains the reason for MoodEvent
      **/
     private void obtainReason(){
-        reason = findViewById(R.id.reason);
         moodEvent.setReason(reason.getText().toString());
     }
 
