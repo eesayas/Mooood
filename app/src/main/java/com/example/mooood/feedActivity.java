@@ -65,8 +65,13 @@ public class feedActivity extends AppCompatActivity {
         collectionReference = db.collection("MoodEvents");
         feedDataList = new ArrayList<>();
 
-        createUsers(name);
+        //Will go through Each participant in the participant collection. For each one it will get the most recent mood and Add it to the User collection
+        //The User Collection will have the most recent Mood event for the user.
+
+
+        //createUsers(name);
         arrayAdapterSetup();
+
         searchUsers(name);
         selectUser(name);
     } //End of onCreate
@@ -74,41 +79,53 @@ public class feedActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
-        //Displaying most recent Mood events that the User is following
-
         feedCollectionReference
-                .orderBy("timeStamp", Query.Direction.DESCENDING)
+                //.orderBy("timeStamp", Query.Direction.DESCENDING)
                 .addSnapshotListener(this, new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                         feedDataList.clear();
-
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
-                            String author = (String) documentSnapshot.getData().get("author");
-                            String date = (String) documentSnapshot.getData().get("date");
-                            String time = (String) documentSnapshot.getData().get("time");
-                            String emotionalState = (String) documentSnapshot.getData().get("emotionalState");
-                            String imageURl = (String) documentSnapshot.getData().get("imageUrl");
-                            String reason = (String) documentSnapshot.getData().get("reason");
-                            String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
-                            try {
-                                moodTimeStamp = simpleDateFormat.parse(date + ' '+ time);
-                                Log.d("Time1", "changing timestamp in OnStart");
-                            }catch (ParseException a){
-                                Log.d("Time1", "catch exception in Onstart");
-                                a.printStackTrace();
-                            }
-                            MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation);
-                            moodEvent.setDocumentId(documentSnapshot.getId());
-                            moodEvent.setTimeStamp(moodTimeStamp);
+                            final String followers = documentSnapshot.getId();
+                            db.collection("Users").addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                @Override
+                                public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                        String users= documentSnapshot.getId();
+                                        if(followers.equals(users)){
+                                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
+                                            String author = (String) documentSnapshot.getData().get("author");
+                                            String date = (String) documentSnapshot.getData().get("date");
+                                            String time = (String) documentSnapshot.getData().get("time");
+                                            String emotionalState = (String) documentSnapshot.getData().get("emotionalState");
+                                            String imageURl = (String) documentSnapshot.getData().get("imageUrl");
+                                            String reason = (String) documentSnapshot.getData().get("reason");
+                                            String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
+                                            try {
+                                                moodTimeStamp = simpleDateFormat.parse(date + ' '+ time);
+                                                Log.d("Time1", "changing timestamp in OnStart");
+                                            }catch (ParseException a){
+                                                Log.d("Time1", "catch exception in Onstart");
+                                                a.printStackTrace();
+                                            }
+                                            MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation);
+                                            moodEvent.setDocumentId(documentSnapshot.getId());
+                                            moodEvent.setTimeStamp(moodTimeStamp);
 
-                            feedDataList.add(moodEvent); //add to data list
+                                            feedDataList.add(moodEvent); //add to data list
+                                        }
+                                        Adapter.notifyDataSetChanged();
+
+                                    }
+                                }
+                            });
+
                         }
-                        Adapter.notifyDataSetChanged();
+
                     }
                 });
+
+
     }
 
     private void arrayAdapterSetup () {
@@ -175,7 +192,7 @@ public class feedActivity extends AppCompatActivity {
         feedSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                onStart();
+                //onStart();
                 return false;
             }
         });
@@ -191,7 +208,7 @@ public class feedActivity extends AppCompatActivity {
                 MoodEvent mood =feedDataList.get(i);
                 Toast.makeText(getApplicationContext(), "NOW FOLLOWING", Toast.LENGTH_SHORT).show();
                 db.collection("MoodEvents").document(name).collection("Following")
-                        .document(mood.getAuthor()).set(mood);
+                        .document(mood.getAuthor());
             }
         });
     }
@@ -210,7 +227,7 @@ public class feedActivity extends AppCompatActivity {
     }
 
     //This will update the following list of the user
-    private void updateFollowingList(final String name, final String participant, final MoodEvent moodEvent){
+/*    private void updateFollowingList(final String name, final String participant, final MoodEvent moodEvent){
 
         feedCollectionReference
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -223,8 +240,7 @@ public class feedActivity extends AppCompatActivity {
                             Log.d("nameofFollower", nameOfFollower);
                             if (participant.equals(nameOfFollower)){
                                 Log.d("matching", "matched!");
-                                db.collection("MoodEvents").document(name).collection("Following")
-                                        .document(nameOfFollower).set(moodEvent);
+                                ;
                             }
                             else{
                                 Log.d("MESSAGE", "Is not the same");
@@ -232,57 +248,10 @@ public class feedActivity extends AppCompatActivity {
                         }
                     }
                 });
-    }
-    private void createUsers(final String name){
+    }*/
+/*    private void createUsers(final String name){
 
-        //Will go through Each participant in the participant collection. For each one it will get the most recent mood and Add it to the User collection
-        //The User Collection will have the most recent Mood event for the user.
 
-        db.collection("participant").addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                for (QueryDocumentSnapshot doc: queryDocumentSnapshots){
-                    final String participant = doc.getId();
-                    Log.d("display", participant);
-                    collectionReference.document(participant).collection("MoodActivities")
-                            .orderBy("timeStamp", Query.Direction.DESCENDING)
-                            .limit(1)
-                            .get()
-                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                    for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
-
-                                        String author = (String) documentSnapshot.getData().get("author");
-                                        String date = (String) documentSnapshot.getData().get("date");
-                                        String time = (String) documentSnapshot.getData().get("time");
-                                        String emotionalState = (String) documentSnapshot.getData().get("emotionalState");
-                                        String imageURl = (String) documentSnapshot.getData().get("imageUrl");
-                                        String reason = (String) documentSnapshot.getData().get("reason");
-                                        String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
-                                        try {
-                                            moodTimeStamp = simpleDateFormat.parse(date + ' '+ time);
-                                            Log.d("Time1", "changing timestamp in Oncreate");
-                                        }catch (ParseException e){
-                                            Log.d("Time1", "catch exception in Oncreate");
-                                            e.printStackTrace();
-                                        }
-                                        final MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation);
-                                        moodEvent.setDocumentId(documentSnapshot.getId());
-                                        moodEvent.setTimeStamp(moodTimeStamp);
-
-                                        db.collection("Users").document(participant).set(moodEvent);
-                                        Log.d(TAG, "ADDED to database");
-
-                                        //This will update the following list of the user
-                                        updateFollowingList(name, participant, moodEvent);
-                                    }
-                                }
-                            });
-                }
-            }
-        });
-    }
+    }*/
 
 }
