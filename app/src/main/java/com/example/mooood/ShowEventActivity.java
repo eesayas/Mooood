@@ -1,15 +1,18 @@
 package com.example.mooood;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -18,9 +21,11 @@ import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PointOfInterest;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.squareup.picasso.Picasso;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * This is responsible for showing all the details of a selected MoodEvent
@@ -39,6 +44,7 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
     String reason;
     String latitude;
     String longitude;
+    String locationAddress;
     
 
     TextView authorText;
@@ -101,6 +107,7 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
         reason = moodEvent.getReason();
         latitude=moodEvent.getLatitude();
         longitude=moodEvent.getLongitude();
+        locationAddress=moodEvent.getAddress();
     }
 
     /**
@@ -160,7 +167,6 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
     public void onMapReady(GoogleMap googleMap) {
         gmap = googleMap;
 
-        gmap.setMyLocationEnabled(true);
         UiSettings uiSettings = gmap.getUiSettings();
         uiSettings.setMapToolbarEnabled(true);
         uiSettings.setCompassEnabled(true);
@@ -177,8 +183,11 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
 
         CameraPosition cp = camBuilder.build();
 
-        gmap.addMarker(new MarkerOptions().position(myLocation).title("Current Location"));
+        gmap.addMarker(new MarkerOptions().position(myLocation).title(locationAddress));
+        gmap.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
+
     }
+
     @Override
     protected void onResume() {
         super.onResume();

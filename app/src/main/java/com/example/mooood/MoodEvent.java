@@ -32,12 +32,13 @@ public class MoodEvent implements Parcelable{
 
     private String latitude;
     private String longitude;
+    private String address;
 
     public MoodEvent(){
         //public no-arg constructor needed
     }
 
-    public MoodEvent(String author, String date, String time, String emotionalState, String imageReason, String reason, String socialSituation,String latitude,String longitude){
+    public MoodEvent(String author, String date, String time, String emotionalState, String imageReason, String reason, String socialSituation,String latitude,String longitude,String address){
         this.author = author;
         this.date = date;
         this.time = time;
@@ -47,6 +48,7 @@ public class MoodEvent implements Parcelable{
         this.socialSituation = socialSituation;
         this.latitude=latitude;
         this.longitude=longitude;
+        this.address=address;
     }
 
 
@@ -61,6 +63,7 @@ public class MoodEvent implements Parcelable{
         socialSituation = in.readString();
         latitude=in.readString();
         longitude=in.readString();
+        address=in.readString();
 
     }
 
@@ -171,6 +174,14 @@ public class MoodEvent implements Parcelable{
         return 0;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(documentId);
@@ -183,5 +194,6 @@ public class MoodEvent implements Parcelable{
         parcel.writeString(socialSituation);
         parcel.writeString(latitude);
         parcel.writeString(longitude);
+        parcel.writeString(address);
     }
 }

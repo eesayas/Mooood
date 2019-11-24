@@ -91,7 +91,8 @@ public class UserFeedActivity extends AppCompatActivity{
                                 String socialSituation = (String)documentSnapshot.getData().get("socialSituation");
                                 String latitude = (String) documentSnapshot.getData().get("latitude");
                                 String longitude= (String) documentSnapshot.getData().get("longitude");
-                                MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation,latitude,longitude);
+                                String address = (String) documentSnapshot.getData().get("address") ;
+                                MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation,latitude,longitude,address);
                                 moodEvent.setDocumentId(documentSnapshot.getId());
 
                                 postDataList.add(moodEvent); //add to data list
