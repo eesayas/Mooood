@@ -9,45 +9,71 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is an adapter for displaying MoodEvents in UserFeedActivity
- * Implementation is derived from lab lectures
+ * The code is implemented to accommodate RecyclerView
  **/
-public class MoodEventsAdapter extends ArrayAdapter<MoodEvent> {
+public class MoodEventsAdapter extends RecyclerView.Adapter<MoodEventsAdapter.MoodEventViewHolder> {
 
-    private static final String TAG = "For Testing";
-    private ArrayList<MoodEvent> moodEvents;
-    private Context context;
+    private List<MoodEvent> moodEventList;
+    private OnMoodEventListener onMoodEventListener;
 
-    public MoodEventsAdapter(ArrayList<MoodEvent> moodEvents, Context context){
-        super(context, 0, moodEvents);
-        this.moodEvents = moodEvents;
-        this.context = context;
-    }
+    public class MoodEventViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+        private ImageView emoticon;
+        private TextView author, relativeTime;
+        OnMoodEventListener onMoodEventListener;
 
-    @NonNull
-    @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent){
-        View view = convertView;
+        public MoodEventViewHolder(View view, OnMoodEventListener onMoodEventListener){
+            super(view);
 
-        if(view == null){
-            view = LayoutInflater.from(context).inflate(R.layout.content_user_feed, parent,false);
+            author = view.findViewById(R.id.author);
+            emoticon = view.findViewById(R.id.emoticon) ;
+            relativeTime = view.findViewById(R.id.date_and_time);
+
+            this.onMoodEventListener = onMoodEventListener;
+
+            view.setOnClickListener(this);
         }
 
-        MoodEvent moodEvent = moodEvents.get(position);
-
-        //select TextViews
-        ImageView emoticon = view.findViewById(R.id.emoticon);
-        TextView author = view.findViewById(R.id.author);
-        TextView relativeTime = view.findViewById(R.id.date_and_time);
-
-        //setText of TextViews
-        emoticon.setImageResource(new Emoticon(moodEvent.getEmotionalState(), 1).getImageLink());
-        author.setText(moodEvent.getAuthor());
-        relativeTime.setText(moodEvent.getDate());
-
-        return view;
+        @Override
+        public void onClick(View view){
+            onMoodEventListener.onMoodEventClick(getAdapterPosition());
+        }
     }
+
+    public interface OnMoodEventListener{
+        void onMoodEventClick(int position);
+    }
+
+    public MoodEventsAdapter(List<MoodEvent> moodEventList, OnMoodEventListener onMoodEventListener){
+        this.moodEventList = moodEventList;
+        this.onMoodEventListener = onMoodEventListener;
+    }
+
+    @Override
+    public MoodEventViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.content_user_feed, parent, false);
+        return new MoodEventViewHolder(itemView, onMoodEventListener);
+    }
+
+    @Override
+    public void onBindViewHolder(MoodEventViewHolder holder, int position){
+        MoodEvent moodEvent = moodEventList.get(position);
+
+        holder.emoticon.setImageResource(new Emoticon(moodEvent.getEmotionalState(), 1).getImageLink());
+        holder.author.setText(moodEvent.getAuthor());
+        holder.relativeTime.setText(moodEvent.getDate());
+
+    }
+
+    @Override
+    public int getItemCount(){
+        return moodEventList.size();
+    }
+
 }

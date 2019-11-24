@@ -7,11 +7,16 @@
     android:layout_height="match_parent"
     tools:context=".UserFeedActivity">
 
-    <!--    this is the listview of mood posts-->
-    <com.baoyz.swipemenulistview.SwipeMenuListView
+<!--    &lt;!&ndash;    this is the listview of mood posts&ndash;&gt;-->
+<!--    <com.baoyz.swipemenulistview.SwipeMenuListView-->
+<!--        android:id="@+id/posts_list"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"/>-->
+
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/posts_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"/>
 
     <!--    this is the floating action button-->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
