@@ -71,6 +71,8 @@ public class feedActivity extends AppCompatActivity {
 
         //createUsers(name);
         arrayAdapterSetup();
+        feedDataList.clear();
+        Adapter.notifyDataSetChanged();
 
         searchUsers(name);
         selectUser(name);
@@ -86,12 +88,15 @@ public class feedActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        feedDataList.clear();
+        Adapter.notifyDataSetChanged();
         feedCollectionReference
-                //.orderBy("timeStamp", Query.Direction.DESCENDING)
+                .orderBy("timeStamp", Query.Direction.DESCENDING)
                 .addSnapshotListener(this, new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        feedDataList.clear();
+//                        feedDataList.clear();
+//                        Adapter.notifyDataSetChanged();
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                             final String followers = documentSnapshot.getId();
                             db.collection("Users").addSnapshotListener(new EventListener<QuerySnapshot>() {

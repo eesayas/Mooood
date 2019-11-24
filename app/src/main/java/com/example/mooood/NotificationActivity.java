@@ -4,11 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -19,8 +21,8 @@ import java.util.ArrayList;
 
 public class NotificationActivity extends AppCompatActivity {
     ListView listView;
-    ArrayAdapter<MoodEvent> Adapter;
-    ArrayList<MoodEvent> notificationDataList;
+    ArrayAdapter<Notification> Adapter;
+    ArrayList<Notification> notificationDataList;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private CollectionReference notificationCollectionReference;
@@ -34,13 +36,11 @@ public class NotificationActivity extends AppCompatActivity {
         Intent intent = getIntent();
         final String name = intent.getStringExtra("accountKey");
 
-        notificationCollectionReference = db.collection("MoodEvents").document(name).collection("request");
+        notificationCollectionReference = db.collection("MoodEvents").document(name).collection("Request");
 
         notificationDataList = new ArrayList<>();
 
         arrayAdapterSetup();
-
-
     }
 
     @Override
@@ -53,9 +53,22 @@ public class NotificationActivity extends AppCompatActivity {
                         notificationDataList.clear();
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                             final String requestNames = documentSnapshot.getId();
+                            notificationCollectionReference.document(requestNames)
+                                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                                            String name = (String) documentSnapshot.getData().get("Username");
+                                            String date = (String) documentSnapshot.getData().get("Request Time");
 
+                                            Notification notification = new Notification(name, date);
 
+                                            notificationDataList.add(notification);
+
+                                        }
+
+                                    });
                         }
+                        Adapter.notifyDataSetChanged();
                     }
                 });
     }
@@ -66,7 +79,7 @@ public class NotificationActivity extends AppCompatActivity {
         //basic ArrayAdapter init
 
         listView = findViewById(R.id.notificationListView);
-        Adapter = new MoodEventsAdapter(notificationDataList, this);
+        Adapter = new NotificationAdapter(notificationDataList, this);
         listView.setAdapter(Adapter);
     }
 
