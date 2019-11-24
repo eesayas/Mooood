@@ -32,6 +32,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -115,6 +116,12 @@ public class feedActivity extends AppCompatActivity {
 
                                                 feedDataList.add(moodEvent); //add to data list
                                             }
+                                            Adapter.sort(new Comparator<MoodEvent>() {
+                                                @Override
+                                                public int compare(MoodEvent moodEvent, MoodEvent t1) {
+                                                    return moodEvent.getTimeStamp().compareTo(t1.getTimeStamp());
+                                                }
+                                            });
                                             Adapter.notifyDataSetChanged();
                                         }
                                     });
@@ -130,8 +137,16 @@ public class feedActivity extends AppCompatActivity {
         feedDataList = new ArrayList<>();
         listView = findViewById(R.id.feedListView);
         Adapter = new MoodEventsAdapter(feedDataList, this);
+       /* Adapter.sort(new Comparator<MoodEvent>() {
+            @Override
+            public int compare(MoodEvent moodEvent, MoodEvent t1) {
+                return moodEvent.getTimeStamp().compareTo(t1.getTimeStamp());
+            }
+        });*/
         listView.setAdapter(Adapter);
     }
+
+
 
     private void followAdapter(){
         searchUser = new ArrayList<>();
@@ -141,7 +156,7 @@ public class feedActivity extends AppCompatActivity {
     }
 
 
-    private void searchUsers (final String name) {
+    private void searchUsers (final String loginName) {
 
         feedSearchView = findViewById(R.id.feedSearchView);
         feedSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -200,16 +215,18 @@ public class feedActivity extends AppCompatActivity {
                 followListview.setVisibility(View.INVISIBLE);
                 listView.setVisibility(View.VISIBLE);
                 onStart();
-
                 return false;
             }
         });
         followListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
+               /* Log.d("login name", loginName);
+                Log.d("trying to follow", searchUser.get(i).getAuthor());*/
                 Intent intent = new Intent(feedActivity.this, followerActivity.class);
-                intent.putExtra("accountMood", searchUser.get(i));
+                intent.putExtra("accountMood", searchUser.get(i).getAuthor());
+                intent.putExtra("loginName", loginName);
+                intent.putExtra("mood", searchUser.get(i));
                 startActivity(intent);
 
             }
