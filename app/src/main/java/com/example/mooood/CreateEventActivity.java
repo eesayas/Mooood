@@ -88,7 +88,6 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     Calendar calendar;
     TextView dateAndTimeMood;
     Button submitButton;
-    Button locationButton;
 
     //For location services inside the activity
     private MapView mapView;
@@ -510,7 +509,9 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
      * */
     private void submitMoodEventToDB(){
         LatLng moodCoordinates= getMoodLocation();
-        MoodEvent moodEvent = new MoodEvent(moodAuthor, moodDate, moodTime, moodEmotionalState, moodImageUrl, moodReason, moodSocialSituation,moodCoordinates.latitude,moodCoordinates.longitude);
+        String lat= Double.toString(moodCoordinates.latitude);
+        String lon= Double.toString(moodCoordinates.longitude);
+        MoodEvent moodEvent = new MoodEvent(moodAuthor, moodDate, moodTime, moodEmotionalState, moodImageUrl, moodReason, moodSocialSituation,lat,lon);
         moodEvent.setTimeStamp(moodTimeStamp);
         addMoodEventToDB(documentReference, moodEvent);
 

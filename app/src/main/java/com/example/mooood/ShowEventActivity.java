@@ -2,18 +2,31 @@ package com.example.mooood;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PointOfInterest;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.squareup.picasso.Picasso;
 
 /**
  * This is responsible for showing all the details of a selected MoodEvent
  **/
 
-public class ShowEventActivity extends AppCompatActivity {
+public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCallback {
     private static final String TAG = "For Testing";
     public static final String MOOD_EVENT = "Mood Event";
 
@@ -24,6 +37,8 @@ public class ShowEventActivity extends AppCompatActivity {
     String socialSituation;
     String imageUrl;
     String reason;
+    String latitude;
+    String longitude;
     
 
     TextView authorText;
@@ -35,6 +50,11 @@ public class ShowEventActivity extends AppCompatActivity {
     TextView reasonText;
 
     Button editButton;
+
+    MapView mapView;
+    GoogleMap gmap;
+
+    private static final String MAP_VIEW_BUNDLE_KEY="MapViewBundleKey";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +71,16 @@ public class ShowEventActivity extends AppCompatActivity {
         setTextAndImageView();
 
         editBtnClickListener(moodEvent);
+
+        Bundle mapViewBundle = null;
+        if (savedInstanceState != null) {
+            mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        }
+
+        mapView = findViewById(R.id.showMapView);
+        mapView.onCreate(mapViewBundle);
+        mapView.getMapAsync(this);
+
 
     }
 
@@ -69,6 +99,8 @@ public class ShowEventActivity extends AppCompatActivity {
         socialSituation = moodEvent.getSocialSituation();
         imageUrl = moodEvent.getImageUrl();
         reason = moodEvent.getReason();
+        latitude=moodEvent.getLatitude();
+        longitude=moodEvent.getLongitude();
     }
 
     /**
@@ -109,5 +141,74 @@ public class ShowEventActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        Bundle mapViewBundle = outState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        if (mapViewBundle == null) {
+            mapViewBundle = new Bundle();
+            outState.putBundle(MAP_VIEW_BUNDLE_KEY, mapViewBundle);
+        }
+
+        mapView.onSaveInstanceState(mapViewBundle);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        gmap = googleMap;
+
+        gmap.setMyLocationEnabled(true);
+        UiSettings uiSettings = gmap.getUiSettings();
+        uiSettings.setMapToolbarEnabled(true);
+        uiSettings.setCompassEnabled(true);
+        uiSettings.setZoomControlsEnabled(true);
+        Double mapLatitude=Double.parseDouble(latitude);
+        Double mapLongitude=Double.parseDouble(longitude);
+
+        final LatLng myLocation = new LatLng(mapLatitude, mapLongitude);
+        CameraPosition.Builder camBuilder = CameraPosition.builder();
+        camBuilder.bearing(0);
+        camBuilder.tilt(0);
+        camBuilder.target(myLocation);
+        camBuilder.zoom(11);
+
+        CameraPosition cp = camBuilder.build();
+
+        gmap.addMarker(new MarkerOptions().position(myLocation).title("Current Location"));
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mapView.onResume();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mapView.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mapView.onStop();
+    }
+    @Override
+    protected void onPause() {
+        mapView.onPause();
+        super.onPause();
+    }
+    @Override
+    protected void onDestroy() {
+        mapView.onDestroy();
+        super.onDestroy();
+    }
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
     }
 }
