@@ -127,7 +127,7 @@ public class CreateEventActivity extends AppCompatActivity{
 
         submitButton = findViewById(R.id.submit_button);
 
-        inputChecker();
+//        inputChecker();
 
         //==============================================================================================
         // LOCATION BUTTON click listener
@@ -165,6 +165,7 @@ public class CreateEventActivity extends AppCompatActivity{
      */
 
     private void submitBtnClickListener(final String accountName){
+        inputChecker();
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -209,9 +210,9 @@ public class CreateEventActivity extends AppCompatActivity{
 
     private void inputChecker(){
         submitButton.setEnabled(false);
-        if(moodDate != null && moodTime != null){
-            submitButton.setEnabled(true);
-        }
+//        if(moodDate != null && moodTime != null && moodReason == null){
+//            submitButton.setEnabled(true);
+//        }
         final EditText reasonText = findViewById(R.id.reason);
         reasonText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -230,7 +231,9 @@ public class CreateEventActivity extends AppCompatActivity{
                     if (number < 4){
                         moodReason = reasonText.getText().toString();
                         reasonCount = true;
-                        submitButton.setEnabled(true);
+                        if(moodDate != null && moodTime != null){
+                            submitButton.setEnabled(true);
+                        }
                     }
                     else{
                         Toast.makeText(CreateEventActivity.this, "reason cannot be more than 3 words!",
@@ -239,9 +242,15 @@ public class CreateEventActivity extends AppCompatActivity{
                         submitButton.setEnabled(false);
                     }
                 }
+                if (s.length() == 0){
+                    if(moodDate != null && moodTime != null){
+                        submitButton.setEnabled(true);
+                    }
+                }
 
             }
         });
+
     }
 
     /**
@@ -426,13 +435,6 @@ public class CreateEventActivity extends AppCompatActivity{
 
             //get Date
             moodDate = new SimpleDateFormat("MMM dd yyyy", Locale.getDefault()).format(calendar.getTime());
-            if(reasonCount == false){
-                submitButton.setEnabled(false);
-            }
-            else{
-                submitButton.setEnabled(true);
-            }
-
 
             new TimePickerDialog(CreateEventActivity.this, TimeDataSet, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false).show();
         }
@@ -450,6 +452,13 @@ public class CreateEventActivity extends AppCompatActivity{
 
             //set TexView to correspond with input data
             dateAndTimeMood.setText(simpleDateFormat.format(calendar.getTime()));
+            if(moodDate != null && moodTime != null && moodReason == null){
+                submitButton.setEnabled(true);
+            }
+            if(moodDate != null && moodTime != null &&  moodReason != null && reasonCount == true){
+                submitButton.setEnabled(true);
+            }
+
         }
     };
 

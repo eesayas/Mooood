@@ -63,22 +63,20 @@ public class feedActivity extends AppCompatActivity {
 
         feedCollectionReference = db.collection("MoodEvents").document(name).collection("Following");
         collectionReference = db.collection("MoodEvents");
-        feedDataList = new ArrayList<>();
 
-        //Will go through Each participant in the participant collection. For each one it will get the most recent mood and Add it to the User collection
-        //The User Collection will have the most recent Mood event for the user.
-
-
-        //createUsers(name);
         arrayAdapterSetup();
-
+        feedDataList.clear();
+        Adapter.notifyDataSetChanged();
         searchUsers(name);
-        selectUser(name);
+        selectUser();
+
     } //End of onCreate
 
     @Override
     protected void onStart() {
         super.onStart();
+        feedDataList.clear();
+        Adapter.notifyDataSetChanged();
         feedCollectionReference
                 //.orderBy("timeStamp", Query.Direction.DESCENDING)
                 .addSnapshotListener(this, new EventListener<QuerySnapshot>() {
@@ -124,13 +122,11 @@ public class feedActivity extends AppCompatActivity {
 
                     }
                 });
-
-
     }
 
     private void arrayAdapterSetup () {
         //basic ArrayAdapter init
-
+        feedDataList = new ArrayList<>();
         listView = findViewById(R.id.feedListView);
         Adapter = new MoodEventsAdapter(feedDataList, this);
         listView.setAdapter(Adapter);
@@ -141,10 +137,6 @@ public class feedActivity extends AppCompatActivity {
         feedSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-
-                //Will search through the collection "Users" and try to match the Name submitted in the searchView with the name in the database
-                // If it is matched, the name searched up will display the user's most recent mood
-
                 db.collection("Users")
                         .whereEqualTo("author", s)
                         .limit(1)
@@ -192,7 +184,7 @@ public class feedActivity extends AppCompatActivity {
         feedSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                //onStart();
+                onStart();
                 return false;
             }
         });
@@ -201,57 +193,22 @@ public class feedActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                //When the mood of the searched name is clicked, it will show a Toast message that you are "Now Following"
-                //this person and will add the name and there most recent mood under the collection "Following"
-                //This will not be how the User follows people though!
+                Intent intent = new Intent(feedActivity.this, followerActivity.class);
+                intent.putExtra("accountMood", feedDataList.get(i));
+                startActivity(intent);
 
-                MoodEvent mood =feedDataList.get(i);
-                Toast.makeText(getApplicationContext(), "NOW FOLLOWING", Toast.LENGTH_SHORT).show();
-                db.collection("MoodEvents").document(name).collection("Following")
-                        .document(mood.getAuthor());
             }
         });
     }
 
-    private void selectUser(final String accountName){
+    private void selectUser(){
         userButton= findViewById(R.id.userButton);
         userButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
-//                Intent intent = new Intent(feedActivity.this, UserFeedActivity.class);
-//                intent.putExtra("accountKey", accountName);
-//                startActivity(intent);
             }
         });
     }
-
-    //This will update the following list of the user
-/*    private void updateFollowingList(final String name, final String participant, final MoodEvent moodEvent){
-
-        feedCollectionReference
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                            String nameOfFollower= documentSnapshot.getId();
-                            Log.d("nameRN", participant);
-                            Log.d("nameofFollower", nameOfFollower);
-                            if (participant.equals(nameOfFollower)){
-                                Log.d("matching", "matched!");
-                                ;
-                            }
-                            else{
-                                Log.d("MESSAGE", "Is not the same");
-                            }
-                        }
-                    }
-                });
-    }*/
-/*    private void createUsers(final String name){
-
-
-    }*/
 
 }
