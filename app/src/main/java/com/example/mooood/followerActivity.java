@@ -1,5 +1,6 @@
 package com.example.mooood;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,7 +11,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -56,14 +60,23 @@ public class followerActivity extends AppCompatActivity {
         setTime.setText(moodEvent.getTime());
         setAuthor.setText(moodEvent.getAuthor());
 
-       /* collectionReference.document(toFollow).collection("Request")
-                .whereEqualTo("Username", loginName)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        button.setText("REQUEST SENT");
+        collectionReference.document(toFollow).collection("Request").document(loginName)
+                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        followButton.setText("REQUEST SENT");
+                    } else {
+                        Log.d("checking", "Document does not exist!");
                     }
-                });*/
+                } else {
+                    Log.d("checking", "Failed with: ", task.getException());
+                }
+            }
+        });
+
         followUser(toFollow, loginName);
         backToFeed();
     }//End of onCreate
@@ -101,4 +114,5 @@ public class followerActivity extends AppCompatActivity {
             }
         });
     }
+
 }
