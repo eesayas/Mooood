@@ -19,4 +19,10 @@
     <string name="accountCreated">Account created</string>
     <string name="title_activity_maps">Map</string>
 
+
+    <!--feedActivity-->
+    <string name="follow">&#160;&#160;&#160;&#160;FOLLOW&#160;&#160;&#160;&#160;</string>
+    <string name="request_sent">REQUEST SENT</string>
+    <string name="recent_mood">Recent Mood</string>
+
 </resources>
