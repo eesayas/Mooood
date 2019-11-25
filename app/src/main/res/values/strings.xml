@@ -25,4 +25,8 @@
     <string name="request_sent">REQUEST SENT</string>
     <string name="recent_mood">Recent Mood</string>
 
+    <!--UserFeedActivity-->
+    <string name="feed">Feed</string>
+    <string name="user">User</string>
+
 </resources>
