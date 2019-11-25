@@ -32,6 +32,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -57,6 +58,9 @@ public class feedActivity extends AppCompatActivity {
     private CollectionReference collectionReference;
     private CollectionReference feedCollectionReference;
 
+    /**
+     * This implements all methods below accordingly
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +80,9 @@ public class feedActivity extends AppCompatActivity {
 
     } //End of onCreate
 
+    /**
+     * The list of people the User is following is accessed from the database and there most recent mood event is displayed
+     */
     @Override
     protected void onStart() {
         super.onStart();
@@ -117,12 +124,13 @@ public class feedActivity extends AppCompatActivity {
 
                                                 feedDataList.add(moodEvent); //add to data list
                                             }
-                                            Adapter.sort(new Comparator<MoodEvent>() {
-                                                @Override
-                                                public int compare(MoodEvent moodEvent, MoodEvent t1) {
-                                                    return moodEvent.getTimeStamp().compareTo(t1.getTimeStamp());
+
+                                            Collections.sort(feedDataList, new Comparator<MoodEvent>() {
+                                                public int compare(MoodEvent o1, MoodEvent o2) {
+                                                    return o2.getTimeStamp().compareTo(o1.getTimeStamp());
                                                 }
                                             });
+
                                             Adapter.notifyDataSetChanged();
                                         }
                                     });
@@ -133,22 +141,22 @@ public class feedActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Array Adapter Setup is the setup for the List View that will populate the FeedActivity with who the user is following
+     */
     private void arrayAdapterSetup () {
         //basic ArrayAdapter init
         feedDataList = new ArrayList<>();
         listView = findViewById(R.id.feedListView);
         Adapter = new MoodEventsAdapter(feedDataList, this);
-       /* Adapter.sort(new Comparator<MoodEvent>() {
-            @Override
-            public int compare(MoodEvent moodEvent, MoodEvent t1) {
-                return moodEvent.getTimeStamp().compareTo(t1.getTimeStamp());
-            }
-        });*/
         listView.setAdapter(Adapter);
     }
 
 
-
+    /**
+     * Follow Adapter is the setup for the follow List View that will populate the FeedActivity with the
+     * of the account that the User has searched up.
+     */
     private void followAdapter(){
         searchUser = new ArrayList<>();
         followListview= findViewById(R.id.followListView);
@@ -156,7 +164,12 @@ public class feedActivity extends AppCompatActivity {
         followListview.setAdapter(seacrhAdapter);
     }
 
-
+    /**
+     * SearchView for the user to search up accounts. After searching, will display the account user with there most
+     * recent mood event. Can click on there mood to take you to the account/follow page
+     * @param loginName
+     *  This is the account name used to sign in
+     */
     private void searchUsers (final String loginName) {
 
         feedSearchView = findViewById(R.id.feedSearchView);
@@ -232,7 +245,9 @@ public class feedActivity extends AppCompatActivity {
         });
 
     }
-
+    /**
+     * Clicking on User Button will simply take you back to User Activity
+     */
     private void selectUser(){
         userButton= findViewById(R.id.userButton);
         userButton.setOnClickListener(new View.OnClickListener() {

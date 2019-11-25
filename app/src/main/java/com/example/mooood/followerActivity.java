@@ -42,6 +42,10 @@ public class followerActivity extends AppCompatActivity {
     TextView setTime;
     TextView setAuthor;
 
+    /**
+     * This implements all methods below accordingly
+     * Will also check to see if user has already sent a request to change text of button
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +85,13 @@ public class followerActivity extends AppCompatActivity {
         backToFeed();
     }//End of onCreate
 
+    /**
+     * After clicking follow button, will send a request to the account while adding request collection to database
+     * @param toFollow
+     *  This is the account the user searhed up in feed Acitvity and wants to follow
+     * @param loginName
+     *  This is the account name used to sign in
+     */
     private void followUser(final String toFollow, final String loginName) {
         followButton = findViewById(R.id.follow_button);
         Date currentTime = Calendar.getInstance().getTime();
@@ -105,6 +116,9 @@ public class followerActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Will take user back to Feed Activity by clicking on the back button
+     */
     private void backToFeed(){
         backButton= findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -114,5 +128,7 @@ public class followerActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
 }

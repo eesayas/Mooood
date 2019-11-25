@@ -268,7 +268,7 @@ public class UserFeedActivity extends AppCompatActivity {
         }
 
     /**
-     * This is SearchView that will filter through adapter for the Mood entered and display it
+     * This is the SearchView that will filter through Database of the user for the Mood entered and display it
      */
     private void filterMood () {
             userSearchView = findViewById(R.id.userSearchView);
@@ -321,6 +321,12 @@ public class UserFeedActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * This will take the user from the User Activity to the Feed Activity while also updating the database
+     * with the most recent mood event for all accounts
+     * @param accountName
+     *  This is the account name signed up with
+     */
     private void selectFeed(final String accountName){
         feedButton= findViewById(R.id.feedButton);
 
