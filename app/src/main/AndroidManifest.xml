@@ -74,6 +74,10 @@
             android:label="@string/title_activity_user_feed"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".NotificationActivity"
+            android:label="NotificationActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>

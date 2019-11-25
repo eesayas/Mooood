@@ -2,10 +2,6 @@ package com.example.mooood;
 
 import android.content.Intent;
 import android.os.Bundle;
-import com.baoyz.swipemenulistview.SwipeMenu;
-import com.baoyz.swipemenulistview.SwipeMenuCreator;
-import com.baoyz.swipemenulistview.SwipeMenuItem;
-import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -19,7 +15,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.local.QueryResult;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,8 +23,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.SearchView;
 import java.text.ParseException;
@@ -103,7 +96,6 @@ public class UserFeedActivity extends AppCompatActivity {
                         postDataList.clear();
 
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-
 
                                 String author = (String)documentSnapshot.getData().get("author");
                                 String date = (String)documentSnapshot.getData().get("date");
@@ -218,7 +210,6 @@ public class UserFeedActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), CreateEventActivity.class);
                 intent.putExtra("key", accountName);
                 startActivity(intent);
-
             }
         });
     }
@@ -260,18 +251,17 @@ public class UserFeedActivity extends AppCompatActivity {
                                         postDataList.add(moodEvent); //add to data list
                                     }
                                     postAdapter.notifyDataSetChanged();
-                                }
-                            });
+                            }
+                        });
                     return false;
+            }
 
-                }
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
 
-                @Override
-                public boolean onQueryTextChange(String s) {
-                    return false;
-                }
-
-            });
+        });
 
         userSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
@@ -282,7 +272,6 @@ public class UserFeedActivity extends AppCompatActivity {
         });
 
     }
-
 
     private void selectFeed(final String accountName) {
         feedButton = findViewById(R.id.feedButton);
@@ -343,8 +332,6 @@ public class UserFeedActivity extends AppCompatActivity {
             }
         });
     }
-
-
 
     /**
      * This is a click listener for each MoodEvent that goes to ShowEventActivity

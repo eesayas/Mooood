@@ -86,6 +86,8 @@ public class feedActivity extends AppCompatActivity {
         followAdapter();
         searchUsers(name);
         selectUser();
+        notificationCheck(name);
+
 
 
     } //End of onCreate
@@ -157,9 +159,27 @@ public class feedActivity extends AppCompatActivity {
                 });
     }
 
+<<<<<<< HEAD
     /**
      * This is the setup for the list of recent MoodEvents followed by the current User
      */
+=======
+    private void notificationCheck(final String userName){
+        notificationButton = findViewById(R.id.notificationButton);
+        notificationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(feedActivity.this, NotificationActivity.class);
+                intent.putExtra("accountKey", userName);
+                startActivity(intent);
+            }
+        });
+
+    }
+
+
+
+>>>>>>> origin/Fahad
     private void arrayAdapterSetup () {
         //basic ArrayAdapter init
         feedDataList = new ArrayList<>();
