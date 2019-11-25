@@ -159,11 +159,6 @@ public class feedActivity extends AppCompatActivity {
                 });
     }
 
-<<<<<<< HEAD
-    /**
-     * This is the setup for the list of recent MoodEvents followed by the current User
-     */
-=======
     private void notificationCheck(final String userName){
         notificationButton = findViewById(R.id.notificationButton);
         notificationButton.setOnClickListener(new View.OnClickListener() {
@@ -178,8 +173,6 @@ public class feedActivity extends AppCompatActivity {
     }
 
 
-
->>>>>>> origin/Fahad
     private void arrayAdapterSetup () {
         //basic ArrayAdapter init
         feedDataList = new ArrayList<>();
