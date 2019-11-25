@@ -44,7 +44,9 @@ public class NotificationActivity extends AppCompatActivity {
         arrayAdapterSetup();
         showNotification();
     }
-
+    /**
+     * gets the follow request from db adn adds it to the notificationDataList
+     */
     @Override
     protected void onStart() {
         super.onStart();
@@ -64,7 +66,9 @@ public class NotificationActivity extends AppCompatActivity {
         });
     }
 
-
+    /**
+     * sets up the adapter according to the notification adapter with the notificationDataList
+     */
     private void arrayAdapterSetup () {
         //basic ArrayAdapter init
 
@@ -85,6 +89,10 @@ public class NotificationActivity extends AppCompatActivity {
             }
         });
     }
+
+    /**
+     * gets the username in the follow request to be used in the fragment
+     */
     public String getMyData() {
         return requestName2;
     }

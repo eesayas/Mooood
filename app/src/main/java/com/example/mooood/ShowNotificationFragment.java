@@ -12,8 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import java.util.ArrayList;
-
 public class ShowNotificationFragment extends DialogFragment {
     private TextView notificationText;
     private Button confirm;
@@ -50,7 +48,7 @@ public class ShowNotificationFragment extends DialogFragment {
             public void onClick(View view) {
                 // get the document from request collection according to the requestName
                 // delete that document in request
-                // add that document in followers collection under the request name
+                // add that users name in followers collection under the request name
                 // show a toast that request accepted
                 // close fragment
 
