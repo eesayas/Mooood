@@ -1,14 +1,7 @@
 package com.example.mooood;
 
 import android.content.Intent;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import com.baoyz.swipemenulistview.SwipeMenu;
-import com.baoyz.swipemenulistview.SwipeMenuCreator;
-import com.baoyz.swipemenulistview.SwipeMenuItem;
-import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -19,27 +12,21 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.auth.User;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import java.util.ArrayList;
 
 /**
  * FILE PURPOSE: This is for displaying all of User's MoodEvents
  */
 
-public class UserFeedActivity extends AppCompatActivity implements MoodEventsAdapter.OnMoodEventListener {
+public class UserFeedActivity extends AppCompatActivity {
 
     private static final String TAG = "For Testing";
     public static final String MOOD_EVENT = "Mood Event";
@@ -48,6 +35,7 @@ public class UserFeedActivity extends AppCompatActivity implements MoodEventsAda
     RecyclerView postList;
     ArrayList<MoodEvent> postDataList;
     private MoodEventsAdapter postAdapter;
+    private RecyclerTouchListener recyclerTouchListener;
 
     //Firebase setup!
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -66,9 +54,11 @@ public class UserFeedActivity extends AppCompatActivity implements MoodEventsAda
         documentReference = db.collection("MoodEvents").document(accountName);
 
         createPostBtnClickListener(accountName);
-//        showEventClickListener();
+
+        //recycler view setup
         moodEventAdapterSetup();
-        swipeControllerSetup();
+        setRecyclerTouchListener();
+
 
     } //end of onCreate
 
@@ -106,41 +96,54 @@ public class UserFeedActivity extends AppCompatActivity implements MoodEventsAda
                         postAdapter.notifyDataSetChanged();
                     }
 
-
                 });
     }
 
-    /**
-     * This set ups the swipe controller
-     */
-    private void swipeControllerSetup(){
-        final SwipeController swipeController = new SwipeController(new SwipeControllerActions(){
-            @Override
-            public void onRightClicked(int position){
-                Log.d(TAG, "UserFeedActivity - You clicked on the delete button");
-                deleteMoodEventFromDB(documentReference, position);
-            }
-        });
-
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeController);
-        itemTouchHelper.attachToRecyclerView(postList);
-
-        postList.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void onDraw(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-                swipeController.onDraw(c, UserFeedActivity.this);
-            }
-        });
-
-        postList.addItemDecoration(new DividerItemDecoration(postList.getContext(), DividerItemDecoration.VERTICAL));
+    @Override
+    public void onResume() {
+        super.onResume();
+        postList.addOnItemTouchListener(recyclerTouchListener);
     }
+
+    /**
+     * This set ups Recycler Touch Listener
+     */
+    private void setRecyclerTouchListener(){
+        recyclerTouchListener = new RecyclerTouchListener(this, postList);
+        recyclerTouchListener.setClickable(new RecyclerTouchListener.OnRowClickListener() {
+            @Override
+            public void onRowClicked(int position) {
+                showEventClickListener(position);
+            }
+
+            @Override
+            public void onIndependentViewClicked(int independentViewID, int position) {
+
+            }
+
+        }).setSwipeOptionViews(R.id.delete_btn)
+                .setSwipeable(R.id.mood_event, R.id.menu, new RecyclerTouchListener.OnSwipeOptionsClickListener() {
+                    @Override
+                    public void onSwipeOptionClicked(int viewID, int position) {
+                        if(viewID == R.id.delete_btn){
+                            deleteMoodEventFromDB(documentReference, position);
+                        }
+                    }
+                });
+
+        //create a line that separates all MoodEvent inside the RecyclerView
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(postList.getContext(), DividerItemDecoration.VERTICAL);
+        dividerItemDecoration.setDrawable(this.getResources().getDrawable(R.drawable.recyclerview_divider));
+        postList.addItemDecoration(dividerItemDecoration);
+    }
+
     /**
      * This set ups the array adapter for RecyclerView
      */
     private void moodEventAdapterSetup(){
         postDataList = new ArrayList<>();
         postList = findViewById(R.id.posts_list);
-        postAdapter = new MoodEventsAdapter(postDataList, this);
+        postAdapter = new MoodEventsAdapter(postDataList);
 
         postList.setLayoutManager(new LinearLayoutManager(this));
         postList.setAdapter(postAdapter);
@@ -195,8 +198,7 @@ public class UserFeedActivity extends AppCompatActivity implements MoodEventsAda
     /**
      * This is a click listener for each MoodEvent that goes to ShowEventActivity
      */
-    @Override
-    public void onMoodEventClick(int position) {
+    public void showEventClickListener(int position) {
         Intent intent = new Intent(UserFeedActivity.this, ShowEventActivity.class);
         intent.putExtra(MOOD_EVENT, postDataList.get(position));
         startActivity(intent);

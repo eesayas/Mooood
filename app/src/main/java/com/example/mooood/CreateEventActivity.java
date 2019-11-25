@@ -708,7 +708,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
      * This creates timestamp for moodEvent
      **/
     private void createTimeStamp(){
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM/dd/yyyy h:mm a");
 
         try {
             moodEvent.setTimeStamp(simpleDateFormat.parse(moodEvent.getDate() + ' ' + moodEvent.getTime()));
