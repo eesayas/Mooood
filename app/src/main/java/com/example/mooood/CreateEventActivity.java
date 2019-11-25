@@ -258,6 +258,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     private void socialSituationOptions(){
         final CharSequence[] options = {
                 "Alone",
+                "With Someone",
                 "With Group",
                 "With Crowd"
         };
