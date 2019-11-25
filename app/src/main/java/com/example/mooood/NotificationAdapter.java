@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 
 /**
- * This is an adapter for displaying notifications in NOtificationActivity
+ * This is an adapter for displaying notifications in NotificationActivity
  * Implementation is derived from lab lectures
  **/
 public class NotificationAdapter extends ArrayAdapter<Notification> {

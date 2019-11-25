@@ -1,5 +1,7 @@
 package com.example.mooood;
 
+import android.util.Log;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -32,12 +34,14 @@ public class Notification {
     public String getDate(){
         String[] data = this.requestTime.split(" ");
         String date = data[0]+" "+data[1]+" "+data[2];
+        Log.d("newNotification", "date: " + date);
         return date;
     }
 
     public String getTime(){
-        String[] data = this.requestTime.split(" ");
-        String time = data[3]+" "+data[4];
+        String[] data2 = this.requestTime.split(" ");
+        String time = data2[3]+" "+data2[4];
+        Log.d("newNotification", "time: " + time);
         return time;
     }
 

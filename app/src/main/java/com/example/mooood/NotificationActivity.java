@@ -1,16 +1,14 @@
 package com.example.mooood;
-
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -24,55 +22,47 @@ public class NotificationActivity extends AppCompatActivity {
     ArrayAdapter<Notification> Adapter;
     ArrayList<Notification> notificationDataList;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-
+    String userName;
+    String requestName;
+    String requestName2;
     private CollectionReference notificationCollectionReference;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification);
-
+        Log.d("notification activity","inside the onCreate");
 
         Intent intent = getIntent();
-        final String name = intent.getStringExtra("accountKey");
+        userName = intent.getStringExtra("accountKey");
+        Log.d("notification activity","account name: "+ userName);
 
-        notificationCollectionReference = db.collection("MoodEvents").document(name).collection("Request");
+        notificationCollectionReference = db.collection("MoodEvents").document(userName).collection("Request");
 
         notificationDataList = new ArrayList<>();
 
         arrayAdapterSetup();
+        showNotification();
     }
 
     @Override
-    public void onStart() {
+    protected void onStart() {
         super.onStart();
-        notificationCollectionReference
-                .addSnapshotListener(this, new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        notificationDataList.clear();
-                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                            final String requestNames = documentSnapshot.getId();
-                            notificationCollectionReference.document(requestNames)
-                                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                                            String name = (String) documentSnapshot.getData().get("Username");
-                                            String date = (String) documentSnapshot.getData().get("Request Time");
-
-                                            Notification notification = new Notification(name, date);
-
-                                            notificationDataList.add(notification);
-
-                                        }
-
-                                    });
-                        }
-                        Adapter.notifyDataSetChanged();
-                    }
-                });
+        notificationCollectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                for(QueryDocumentSnapshot queryDocumentSnapshot: queryDocumentSnapshots){
+                    requestName = (String) queryDocumentSnapshot.getData().get("Username");
+                    String time= (String) queryDocumentSnapshot.getData().get("Request Time");
+                    Log.d("namefollow ", requestName);
+                    Log.d("timefollow ", time);
+                    Notification notification = new Notification(requestName, time);
+                    notificationDataList.add(notification);
+                }
+                Adapter.notifyDataSetChanged();
+            }
+        });
     }
-
 
 
     private void arrayAdapterSetup () {
@@ -81,6 +71,22 @@ public class NotificationActivity extends AppCompatActivity {
         listView = findViewById(R.id.notificationListView);
         Adapter = new NotificationAdapter(notificationDataList, this);
         listView.setAdapter(Adapter);
+    }
+    /**
+     * This is a click listener for show notification. Will redirect to notification fragment
+     */
+    private void showNotification () {
+        //click listener for each item -> ShowEventActivity
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                requestName2 = notificationDataList.get(i).getUsername();
+                new ShowNotificationFragment().show(getSupportFragmentManager(), "Show Notification");
+            }
+        });
+    }
+    public String getMyData() {
+        return requestName2;
     }
 
 }
