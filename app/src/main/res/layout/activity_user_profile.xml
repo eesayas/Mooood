@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="16dp"
         android:background="#FFFFFFFF"
         android:onClick="backToFeed"
         android:src="?attr/actionModeCloseDrawable"
@@ -24,7 +24,7 @@
         android:id="@+id/activity_user_profile_iv_pic"
         android:layout_width="199dp"
         android:layout_height="213dp"
-        android:layout_marginTop="70dp"
+        android:layout_marginTop="28dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -37,11 +37,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/activity_user_profile_iv_pic" />
+
+
 
 
 
@@ -96,4 +99,23 @@
         app:layout_constraintTop_toBottomOf="@+id/activity_user_profile_tv_date" />
 
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/activity_user_profile_bt_logout"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="#00FFFFFF"
+        android:onClick="logout"
+        android:text="@string/logout"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        app:backgroundTint="#00FFFFFF"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/activity_user_profile_time"
+        app:strokeColor="#FFFFFF"
+        app:strokeWidth="2dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

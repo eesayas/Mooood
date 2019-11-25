@@ -1,5 +1,6 @@
 package com.example.mooood;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,6 +15,9 @@ public class UserProfile extends AppCompatActivity {
     TextView recentDate;
     TextView recentTime;
 
+    /**
+     * This sets up the view
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +44,23 @@ public class UserProfile extends AppCompatActivity {
 
     }
 
+    /**
+     * takes the user back to where they came from
+     */
     public void backToFeed(View view) {
         finish();
+    }
+
+
+    /**
+     * logs out the user and sends the user back to mainactivity
+     */
+    public void logout(View view) {
+
+        finishAffinity();
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+
     }
 }
