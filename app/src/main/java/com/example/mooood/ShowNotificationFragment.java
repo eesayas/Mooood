@@ -3,19 +3,34 @@ package com.example.mooood;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 public class ShowNotificationFragment extends DialogFragment {
+    private static final String TAG = "Notification_Fragment";
     private TextView notificationText;
     private Button confirm;
     private Button reject;
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference userReference;
+    private CollectionReference requestReference;
+    String requestName;
+    String userName;
+
 
     @NonNull
     @Override
@@ -29,8 +44,12 @@ public class ShowNotificationFragment extends DialogFragment {
 
 
         NotificationActivity activity = (NotificationActivity) getActivity();
-        String requestName = activity.getMyData();
+        requestName = activity.getRequestName();
+        userName = activity.getUserName();
         notificationText.setText(requestName +" wants to follow you");
+
+        userReference = db.collection("MoodEvents").document(userName).collection("Request");
+        requestReference = db.collection("MoodEvents").document(requestName).collection("Following");
 
         acceptRequest();
         rejectRequest();
@@ -64,6 +83,23 @@ public class ShowNotificationFragment extends DialogFragment {
                 // delete that document in request
                 // show a toast that request rejected
                 // close fragment
+                userReference
+                        .document(requestName).delete()
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d(TAG, "request was successfully deleted");
+                                Toast.makeText(getActivity(), "reason cannot be more than 3 words!",
+                                        Toast.LENGTH_SHORT).show();
+                                dismiss();
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d(TAG, "request was not deleted", e);
+                            }
+                        });
 
 
             }

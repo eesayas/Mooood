@@ -93,8 +93,12 @@ public class NotificationActivity extends AppCompatActivity {
     /**
      * gets the username in the follow request to be used in the fragment
      */
-    public String getMyData() {
+    public String getRequestName() {
         return requestName2;
+    }
+
+    public String getUserName(){
+        return userName;
     }
 
 }
