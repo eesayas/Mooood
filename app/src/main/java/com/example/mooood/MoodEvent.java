@@ -2,10 +2,8 @@ package com.example.mooood;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import java.util.ArrayList;
 import java.util.Date;
-
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.firestore.Exclude;
 
@@ -17,22 +15,8 @@ import com.google.firebase.firestore.Exclude;
 
 public class MoodEvent implements Parcelable{
 
-    private String documentId;
     private Date timeStamp;
-
-    private String author;
-
-    private String date;
-    private String time;
-    private String emotionalState;
-
-    private String imageUrl;
-    private String reason;
-    private String socialSituation;
-
-    private String latitude;
-    private String longitude;
-    private String address;
+    private String documentId, author, date, time, emotionalState, imageUrl, reason, socialSituation, latitude, longitude, address;
 
     public MoodEvent(){
         //public no-arg constructor needed
@@ -46,9 +30,9 @@ public class MoodEvent implements Parcelable{
         this.imageUrl = imageReason;
         this.reason = reason;
         this.socialSituation = socialSituation;
-        this.latitude=latitude;
-        this.longitude=longitude;
-        this.address=address;
+        this.latitude = latitude;
+        this.longitude =longitude;
+        this.address = address;
     }
 
 

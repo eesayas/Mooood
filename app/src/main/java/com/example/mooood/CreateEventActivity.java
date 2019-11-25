@@ -121,6 +121,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     private Double locationLongitude=-113.5;
     private Marker myMarker;
     CameraPosition.Builder camBuilder;
+    private LatLng moodLocation;
 
     MoodEvent moodEvent;
 
@@ -702,6 +703,24 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         mapView.onLowMemory();
     }
 
+    public LatLng getMoodLocation() {
+        return moodLocation;
+    }
+
+    public void setMoodLocation(LatLng moodLocation) {
+        this.moodLocation = moodLocation;
+    }
+
+    /**
+     * This will set the longitude and latitude of MoodEvent
+     */
+    private void obtainCoordinates(){
+        String latitudeStr = Double.toString(locationLatitude);
+        String longitudeStr = Double.toString(locationLongitude);
+        moodEvent.setLatitude(latitudeStr);
+        moodEvent.setLongitude(longitudeStr);
+    }
+
     //==========================================================================================
     // ASSEMBLING MOODEVENT AND SUBMITTING IT TO DB
     //==========================================================================================
@@ -718,7 +737,10 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
 
                 //necessary methods before MoodEvent submission
                 createTimeStamp();
+
+                //DEV NOTE: This should have change listeners?
                 obtainReason();
+                obtainCoordinates();
 
                 if(uploadTask != null && uploadTask.isInProgress()) {
                     Log.d(TAG, "Upload in Progress");

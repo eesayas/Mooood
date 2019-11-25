@@ -28,29 +28,13 @@ import java.util.Locale;
 /**
  * This is responsible for showing all the details of a selected MoodEvent
  **/
-
 public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCallback {
-    private static final String TAG = "For Testing";
+    private static final String TAG = "Debugging: from ShowEventActivity - ";
     public static final String MOOD_EVENT = "Mood Event";
 
-    String author;
-    String date;
-    String time;
-    String emotionalState;
-    String socialSituation;
-    String imageUrl;
-    String reason;
-    String latitude;
-    String longitude;
-    String locationAddress;
-    TextView authorText;
-    ImageView emoticon;
-    TextView dateText;
-    TextView timeText;
-    TextView socialSituationText;
-    ImageView imageReason;
-    TextView reasonText;
-
+    String author, date ,time ,emotionalState ,socialSituation ,imageUrl ,reason ,latitude ,longitude ,locationAddress;
+    TextView authorText, dateText, timeText, socialSituationText, reasonText;
+    ImageView emoticon, imageReason;
     Button editButton;
 
     MapView mapView;
