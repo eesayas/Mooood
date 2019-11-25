@@ -33,28 +33,45 @@
 
         </LinearLayout>
 
+
+
         <SearchView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/userSearchView"
-            android:queryHint="Filter Your Moooods..." />
+            android:id="@+id/feedSearchView"
+            android:queryHint="Search for Moooders..." />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/posts_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                >
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/feedListView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/followListView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="invisible"/>
 
+            </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+        <!--    this is the floating action button-->
     </LinearLayout>
 
-<!--floating action button-->
+    <!--    this is the listview of mood posts-->
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/notificationButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        app:srcCompat= "@android:drawable/ic_input_add"
+        app:srcCompat="@drawable/ic_add_alert"
         app:backgroundTint="@android:color/holo_red_light"
-        android:tint="@android:color/white" />
+        android:tint="@android:color/white"
+        tools:ignore="VectorDrawableCompat" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

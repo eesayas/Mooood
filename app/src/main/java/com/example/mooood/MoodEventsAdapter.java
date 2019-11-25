@@ -8,6 +8,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
+import androidx.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Comparator;
 
 /**
  * This is an adapter for displaying MoodEvents in UserFeedActivity
@@ -61,4 +64,6 @@ public class MoodEventsAdapter extends RecyclerView.Adapter<MoodEventsAdapter.Mo
         }
 
     }
+
+
 }

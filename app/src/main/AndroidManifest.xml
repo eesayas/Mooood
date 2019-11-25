@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.mooood">
+<<<<<<< HEAD
 
 <!--    <uses-permission android:name="android.permission.INTERNET" />-->
 
@@ -8,6 +9,8 @@
     <uses-feature android:name="android.hardware.camera" android:required="true" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="18"/>
 
+=======
+>>>>>>> origin/newMaaz
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -25,6 +28,7 @@
         android:roundIcon="@mipmap/ic_mooood_logo_versatile_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+<<<<<<< HEAD
 
 
         <!-- Configure File Provider -->
@@ -39,6 +43,10 @@
         </provider>
 
 
+=======
+        <activity android:name=".followerActivity" />
+        <activity android:name=".feedActivity" />
+>>>>>>> origin/newMaaz
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -53,11 +61,11 @@
 
         <activity
             android:name=".MapsActivity"
-            android:label="MapsActivity"></activity>
+            android:label="MapsActivity" />
         <activity
             android:name=".ShowEventActivity"
             android:label="ShowEventActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".CreateEventActivity"
             android:label="CreateEventActivity"
@@ -65,7 +73,7 @@
         <activity
             android:name=".EditEventActivity"
             android:label="@string/title_activity_user_feed"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".UserFeedActivity"
             android:label="@string/title_activity_user_feed"

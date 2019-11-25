@@ -1,6 +1,5 @@
 package com.example.mooood;
 
-
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -123,6 +122,9 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     CameraPosition.Builder camBuilder;
     private LatLng moodLocation;
 
+    Button locationButton, cancelButton;
+
+    //the code will populate this
     MoodEvent moodEvent;
 
     @Override
@@ -163,7 +165,6 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         databaseReference = FirebaseDatabase.getInstance().getReference("reason_image");
 
         imageUploadClickListener();
-
         //==============================================================================================
         // LOCATION services
         //==============================================================================================
@@ -177,7 +178,6 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         mapView = findViewById(R.id.createMapView);
         mapView.onCreate(mapViewBundle);
         mapView.getMapAsync(this);
-
 
         submitBtnClickListener();
 
@@ -226,7 +226,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
      **/
     private void moodSelection(){
 
-        moodEvent.setEmotionalState("HAPPY");
+        moodEvent.setEmotionalState("HAPPY"); //default
 
         //click listener for Emoticon
         moodRoster.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -500,16 +500,6 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
                                     //set up progress bar on later dev
                                 }
                             }, 500);
-
-//                            Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
-//                            Uri downloadUrl = urlTask.getResult();
-
-//                            UploadImage uploadImage = new UploadImage(taskSnapshot.getStorage().getDownloadUrl().toString());
-//
-//
-//                            Log.d(TAG, "uploaded image " + uploadImage.getImageUrl());
-
-
                         }
 
                     })
@@ -538,6 +528,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
                 if (!task.isSuccessful()) {
                     throw task.getException();
                 }
+
                 // Continue with the task to get the download URL
                 return imageReference.getDownloadUrl();
             }
@@ -661,7 +652,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
 
                 Log.d(TAG, "getAddress:  address" + address);
 
-                locationAddress=address;
+                locationAddress = address;
             }
         }
         catch (IOException e) {
@@ -801,7 +792,6 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
                         Log.d(TAG, "CreateEventActivity - Data addition failed" + e.toString());
                     }
                 });
-
         finish();
 
     }

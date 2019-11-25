@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
@@ -21,6 +23,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
@@ -136,8 +139,6 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
         setProperImageReason();
         setProperTimeAndDate();
 
-
-
         //Invoke methods for selection of MoodEvent details
         moodSelection();
         socialSituationClickListener();
@@ -162,7 +163,6 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
         mapView = findViewById(R.id.createMapView);
         mapView.onCreate(mapViewBundle);
         mapView.getMapAsync(this);
-
 
         submitBtnClickListener();
 
@@ -250,6 +250,47 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
             imageUpload.setImageResource(R.drawable.temp_image_upload);
         }
     }
+    /**
+     * This checks if reason is only 3 words or 20 characters
+     */
+
+//    private void inputChecker(){
+//        submitButton.setEnabled(false);
+//        if(moodDate != null && moodTime != null){
+//            submitButton.setEnabled(true);
+//        }
+//        final EditText reasonText = findViewById(R.id.reason);
+//        reasonText.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//            }
+//
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                if (s.length() > 0)
+//                {
+//                    int number = countWords(s.toString());
+//                    if (number < 4){
+//                        moodReason = reasonText.getText().toString();
+//                        reasonCount = true;
+//                        submitButton.setEnabled(true);
+//
+//                    }
+//                    else{
+//                        Toast.makeText(EditEventActivity.this, "reason cannot be more than 3 words!",
+//                                Toast.LENGTH_SHORT).show();
+//                        reasonCount = false;
+//                        submitButton.setEnabled(false);
+//                    }
+//                }
+//
+//            }
+//        });
+//    }
 
     /**
      * This sets the proper time and date for the textView and the dialog picker as well (not null)
@@ -321,6 +362,7 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
     private void socialSituationOptions(){
         final CharSequence[] options = {
                 "Alone",
+                "With Someone",
                 "With Group",
                 "With Crowd"
         };
@@ -583,6 +625,18 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
         }
 
     }
+    /**
+     * This is needed for checking word lengths on text input fields
+     **/
+    public static int countWords(String input) {
+        if (input == null || input.isEmpty()) {
+            return 0;
+        }
+
+        String[] words = input.split("\\s+");
+        return words.length;
+    }
+
 
     /**
      * This gets the url of the uploaded image
