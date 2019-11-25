@@ -1,11 +1,19 @@
 package com.example.mooood;
 
+
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
+import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,7 +36,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.viewpager.widget.ViewPager;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -38,6 +45,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.android.gms.tasks.Continuation;
@@ -56,9 +64,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
-
 import org.w3c.dom.Text;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -104,16 +110,17 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     Calendar calendar;
     TextView dateAndTimeMood;
     Button submitButton;
-    Button locationButton;
 
     //For location services inside the activity
     private static final String MAP_VIEW_BUNDLE_KEY="MapViewBundleKey";
     private MapView mapView;
     private GoogleMap gmap;
     private FusedLocationProviderClient fusedLocationClient;
-    private LatLng moodLocation;
-
-
+    private String locationAddress;
+    private Double locationLatitude=53.5;
+    private Double locationLongitude=-113.5;
+    private Marker myMarker;
+    CameraPosition.Builder camBuilder;
 
     MoodEvent moodEvent;
 
@@ -530,7 +537,6 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
                 if (!task.isSuccessful()) {
                     throw task.getException();
                 }
-
                 // Continue with the task to get the download URL
                 return imageReference.getDownloadUrl();
             }
@@ -573,9 +579,9 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     @Override
     public void onMapReady(GoogleMap googleMap) {
         gmap = googleMap;
-
         gmap.setIndoorEnabled(true);
         gmap.setMyLocationEnabled(true);
+
         UiSettings uiSettings = gmap.getUiSettings();
         uiSettings.setIndoorLevelPickerEnabled(true);
         uiSettings.setMyLocationButtonEnabled(true);
@@ -583,44 +589,86 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         uiSettings.setCompassEnabled(true);
         uiSettings.setZoomControlsEnabled(true);
 
-        final LatLng Edmonton = new LatLng(53.5, -113.5);
-        CameraPosition.Builder camBuilder = CameraPosition.builder();
+
+        camBuilder = CameraPosition.builder();
         camBuilder.bearing(0);
         camBuilder.tilt(0);
-        camBuilder.target(Edmonton);
         camBuilder.zoom(11);
 
-        CameraPosition cp = camBuilder.build();
+        //TODO:I couldn't figure it out, but I suggest we find a way to decouple so many of these functions from this listener.
+        // Response: Yes will apply MVC before we submit - eesayas
+        //Gets the location from gps,places a marker at said location, gives it the title of the address or a default address, and moves the camera to the marker's position.
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
                         if (location != null) {
-                            double myLatitude=location.getLatitude();
-                            double myLongitude= location.getLongitude();
-                            LatLng myLocation= new LatLng(myLatitude,myLongitude);
-                            setMoodLocation(myLocation);
-                            gmap.addMarker(new MarkerOptions().position(myLocation).title("Current Location"));
-
-                        }
-                        else{
-                            gmap.addMarker(new MarkerOptions().position(Edmonton).title("Current Location"));
-                            setMoodLocation(Edmonton);
+                            locationLatitude=location.getLatitude();
+                            locationLongitude=location.getLongitude();
+                            camBuilder.target(new LatLng(locationLatitude,locationLongitude));
+                            CameraPosition cp = camBuilder.build();
+                            gmap.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
+                            //Try to call getAddress. If it fails, the address will just be set to "current location"
+                            try{
+                                getAddress(CreateEventActivity.this,locationLatitude,locationLongitude);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                locationAddress="Current Location";
+                            }
+                            MarkerOptions markerOptions= new MarkerOptions().position(new LatLng(locationLatitude,locationLongitude)).title(locationAddress);
+                            myMarker=gmap.addMarker(markerOptions);
                         }
                     }
                 });
-        gmap.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
-
-        gmap.setOnPoiClickListener(new GoogleMap.OnPoiClickListener() {
+        //Updates marker and moves the camera whenever a new marker is placed on the map by long clicking on the map.
+        gmap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
-            public void onPoiClick(PointOfInterest pointOfInterest) {
-                MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(pointOfInterest.latLng);
-                gmap.addMarker(markerOptions);
-                gmap.moveCamera(CameraUpdateFactory.newLatLng(pointOfInterest.latLng));
+            public void onMapLongClick(LatLng latLng) {
+                locationLatitude=latLng.latitude;
+                locationLongitude=latLng.longitude;
+
+                //Try to call getAddress. If it fails, the address will just be set to "current location"
+                try{
+                    getAddress(CreateEventActivity.this,locationLatitude,locationLongitude);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    locationAddress="Current Location";
+                }
+
+                //Updates marker's address and position.
+                myMarker.setPosition(latLng);
+                myMarker.setTitle(locationAddress);
+
+                //Update the camera's position to the new marker's position
+                camBuilder.target(new LatLng(locationLatitude,locationLongitude));
+                CameraPosition cp = camBuilder.build();
+                gmap.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
             }
         });
     }
+
+    //getAddress updates the location address with a geocoded address string that contains country,state/province,city, postal code, street number, street name.
+    public void getAddress(Context context, double LATITUDE, double LONGITUDE) {
+
+        //Set Address
+        try {
+            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+            List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
+            if (addresses != null && addresses.size() > 0) {
+
+                String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+
+                Log.d(TAG, "getAddress:  address" + address);
+
+                locationAddress=address;
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -653,16 +701,6 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         super.onLowMemory();
         mapView.onLowMemory();
     }
-
-    public LatLng getMoodLocation() {
-        return moodLocation;
-    }
-
-    public void setMoodLocation(LatLng moodLocation) {
-        this.moodLocation = moodLocation;
-    }
-
-
 
     //==========================================================================================
     // ASSEMBLING MOODEVENT AND SUBMITTING IT TO DB
