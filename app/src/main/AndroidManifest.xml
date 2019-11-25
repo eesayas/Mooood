@@ -16,7 +16,8 @@
         android:roundIcon="@mipmap/ic_mooood_logo_versatile_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".feedActivity"></activity>
+        <activity android:name=".followerActivity"></activity>
+        <activity android:name=".feedActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -47,6 +48,10 @@
         <activity
             android:name=".UserFeedActivity"
             android:label="@string/title_activity_user_feed"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".NotificationActivity"
+            android:label="NotificationActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".MainActivity"

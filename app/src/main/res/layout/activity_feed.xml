@@ -41,10 +41,22 @@
             android:id="@+id/feedSearchView"
             android:queryHint="Search for Moooders..." />
 
-        <ListView
-            android:id="@+id/feedListView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                >
+                <ListView
+                    android:id="@+id/feedListView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+                <ListView
+                    android:id="@+id/followListView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="invisible"/>
+
+            </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
 
         <!--    this is the floating action button-->
     </LinearLayout>

@@ -2,15 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="122a0662-8755-48b9-9354-11fc6b507437" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../.idea/assetWizardSettings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/mooood/feedActivity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../app/src/main/res/drawable/ic_add_alert.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../app/src/main/res/layout/activity_feed.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/caches/build_file_checksums.ser" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/caches/gradle_models.ser" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/caches/gradle_models.ser" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/mooood/UserFeedActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/mooood/UserFeedActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/src/main/res/values/styles.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/res/values/styles.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/mooood/feedActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/mooood/feedActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/mooood/followerActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/mooood/followerActivity.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/build/classes/" />
     <ignored path="$PROJECT_DIR$/.gradle/" />
