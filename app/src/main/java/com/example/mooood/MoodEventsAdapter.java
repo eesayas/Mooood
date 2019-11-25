@@ -8,9 +8,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
-import androidx.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Comparator;
 
 /**
  * This is an adapter for displaying MoodEvents in UserFeedActivity
@@ -40,7 +37,7 @@ public class MoodEventsAdapter extends RecyclerView.Adapter<MoodEventsAdapter.Mo
 
         holder.emoticon.setImageResource(new Emoticon(moodEvent.getEmotionalState(), 1).getImageLink());
         holder.author.setText(moodEvent.getAuthor());
-        holder.relativeTime.setText(moodEvent.getDate());
+        holder.relativeTime.setText(new RelativeTime(moodEvent.getDate(), moodEvent.getTime()).getRelativeTime());
     }
 
     //get size of list of MoodEvents
@@ -62,8 +59,5 @@ public class MoodEventsAdapter extends RecyclerView.Adapter<MoodEventsAdapter.Mo
             relativeTime = view.findViewById(R.id.date_and_time);
 
         }
-
     }
-
-
 }

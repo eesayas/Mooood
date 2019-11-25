@@ -24,7 +24,7 @@ public class RelativeTime {
         this.eventTime = time;
 
         //get date of MoodEvent
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm:ss a");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM/dd/yyyy h:mm a");
 
         try{
             Date dateMood = simpleDateFormat.parse(dateAndTimeInput);
@@ -52,19 +52,23 @@ public class RelativeTime {
         //future time; will be refactored later
         if (different < 0){
 
-            SimpleDateFormat oldTimeFormat = new SimpleDateFormat("h:mm:ss a");
+//            SimpleDateFormat oldTimeFormat = new SimpleDateFormat("h:mm a");
+//
+//            try {
+//                Date eventTime = oldTimeFormat.parse(this.eventTime);
+//
+//                SimpleDateFormat newTimeFormat = new SimpleDateFormat("h:mm a");
+//
+//                return this.eventDate + " at " + newTimeFormat.format(eventTime);
+//
+//            } catch (ParseException e){
+//                e.printStackTrace();
+//
+//            }
 
-            try {
-                Date eventTime = oldTimeFormat.parse(this.eventTime);
+            return this.eventDate + "at" + this.eventTime;
 
-                SimpleDateFormat newTimeFormat = new SimpleDateFormat("h:mm a");
 
-                return this.eventDate + " at " + newTimeFormat.format(eventTime);
-
-            } catch (ParseException e){
-                e.printStackTrace();
-
-            }
         }
         //================================================================
 
@@ -125,21 +129,8 @@ public class RelativeTime {
                 } else if (timeDenomination == "SECONDS" && timeData < 50) {
                     return "JUST NOW";
 
-                } else if(timeDenomination == "WEEKS" && timeData > 20){
-
-                    SimpleDateFormat oldTimeFormat = new SimpleDateFormat("h:mm:ss a");
-
-                    try {
-                        Date eventTime = oldTimeFormat.parse(this.eventTime);
-
-                        SimpleDateFormat newTimeFormat = new SimpleDateFormat("h:mm a");
-
-                        return this.eventDate + " at " + newTimeFormat.format(eventTime);
-
-                    } catch (ParseException e){
-                        e.printStackTrace();
-                        return timeData.toString() + " " + timeDenomination + " AGO";
-                    }
+                } else if(timeDenomination == "WEEKS" && timeData > 20){ //if time is more than 20 weeks
+                    return this.eventDate + "at" + this.eventTime;
 
                 }
 
@@ -162,8 +153,8 @@ public class RelativeTime {
     }
 
     /**
-     * Simple getter and setter for relative time
-     * **/
+     * Simple getter and setter for relative time (this is the String that will be displayed)
+     **/
     public String getRelativeTime() {
         return this.relativeTime;
     }
