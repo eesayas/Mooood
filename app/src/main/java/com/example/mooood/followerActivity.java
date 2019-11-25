@@ -29,7 +29,9 @@ import java.util.Map;
 
 
 public class followerActivity extends AppCompatActivity {
-    Button button;
+    Button followButton;
+    Button backButton;
+
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference collectionReference;
     TextView setDate;
@@ -53,19 +55,21 @@ public class followerActivity extends AppCompatActivity {
         setDate.setText(moodEvent.getDate());
         setTime.setText(moodEvent.getTime());
         setAuthor.setText(moodEvent.getAuthor());
-        collectionReference.document(toFollow).collection("Request")
+
+       /* collectionReference.document(toFollow).collection("Request")
                 .whereEqualTo("Username", loginName)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                         button.setText("REQUEST SENT");
                     }
-                });
+                });*/
         followUser(toFollow, loginName);
+        backToFeed();
     }//End of onCreate
 
     private void followUser(final String toFollow, final String loginName) {
-        button = findViewById(R.id.follow_button);
+        followButton = findViewById(R.id.follow_button);
         Date currentTime = Calendar.getInstance().getTime();
         //LocalDateTime now = LocalDateTime.now();
         SimpleDateFormat requestDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
@@ -75,15 +79,25 @@ public class followerActivity extends AppCompatActivity {
         request.put("Username",loginName);
         request.put("Request", "Sent");
         request.put("Request Time", date);
-        button.setOnClickListener(new View.OnClickListener() {
+        followButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d("login name after", loginName);
                 Log.d("trying to follow after", toFollow);
                 collectionReference.document(toFollow).collection("Request").document(loginName).set(request);
-                button.setText("REQUEST SENT");
+                followButton.setText("REQUEST SENT");
                 Log.d("SENT", "request sent");
 
+            }
+        });
+    }
+
+    private void backToFeed(){
+        backButton= findViewById(R.id.backButton);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+             finish();
             }
         });
     }

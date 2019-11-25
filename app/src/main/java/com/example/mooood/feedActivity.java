@@ -87,6 +87,7 @@ public class feedActivity extends AppCompatActivity {
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                             final String followers = documentSnapshot.getId();
+                            Log.d("Nameoffollowers", followers);
                             db.collection("Users")
                                     .whereEqualTo("author", followers)
                                     .get()
@@ -221,8 +222,6 @@ public class feedActivity extends AppCompatActivity {
         followListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-               /* Log.d("login name", loginName);
-                Log.d("trying to follow", searchUser.get(i).getAuthor());*/
                 Intent intent = new Intent(feedActivity.this, followerActivity.class);
                 intent.putExtra("accountMood", searchUser.get(i).getAuthor());
                 intent.putExtra("loginName", loginName);
@@ -243,5 +242,6 @@ public class feedActivity extends AppCompatActivity {
             }
         });
     }
+
 
 }
