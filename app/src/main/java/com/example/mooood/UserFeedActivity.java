@@ -322,8 +322,7 @@ public class UserFeedActivity extends AppCompatActivity {
     }
 
     /**
-     * This will take the user from the User Activity to the Feed Activity while also updating the database
-     * with the most recent mood event for all accounts
+     * This will take the user from the User Activity to the Feed Activity
      * @param accountName
      *  This is the account name signed up with
      */
@@ -341,6 +340,5 @@ public class UserFeedActivity extends AppCompatActivity {
             }
         });
     }
-
 
 }

@@ -159,7 +159,7 @@ public class feedActivity extends AppCompatActivity {
 
     /**
      * Follow Adapter is the setup for the follow List View that will populate the FeedActivity with the
-     * of the account that the User has searched up.
+     *account that the User has searched up.
      */
     private void followAdapter(){
         searchUser = new ArrayList<>();
@@ -231,7 +231,7 @@ public class feedActivity extends AppCompatActivity {
                 return false;
             }
         });
-
+        //Will not allow you go to the follow activity if already following
         followListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
