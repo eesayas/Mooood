@@ -25,6 +25,7 @@ public class NotificationActivity extends AppCompatActivity {
     String userName;
     String requestName;
     String requestName2;
+    int position;
     private CollectionReference notificationCollectionReference;
 
     @Override
@@ -50,6 +51,7 @@ public class NotificationActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        notificationDataList.clear();
         notificationCollectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
@@ -85,7 +87,10 @@ public class NotificationActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 requestName2 = notificationDataList.get(i).getUsername();
+                position = i;
                 new ShowNotificationFragment().show(getSupportFragmentManager(), "Show Notification");
+//                notificationDataList.remove(i);
+//                Adapter.notifyDataSetChanged();
             }
         });
     }
@@ -100,5 +105,13 @@ public class NotificationActivity extends AppCompatActivity {
     public String getUserName(){
         return userName;
     }
+
+    public void notifydata(){
+        Log.d("notify_data", "in notifydata and pos: "+ position);
+        notificationDataList.remove(position);
+        Adapter.notifyDataSetChanged();
+    }
+
+
 
 }
