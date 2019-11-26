@@ -93,14 +93,22 @@ public class FIlterMoodsTest {
        moodImages.add(new Emoticon("AFRAID", 2));
 
        ImageView imageView = (ImageView)solo.getView(R.id.emoticon);
+       int imgEmotionSample = new Emoticon("HAPPY",2).getImageLink();
+
+       imageView.setImageResource(imgEmotionSample);
+
+
+
+
+
+       /*
        int drawable = R.drawable.happy_cow_v2;
        Log.d("draw", String.valueOf(drawable));
        Drawable idImage= imageView.getDrawable();
        int index= moodImages.indexOf(imageView);
        Log.d("printout", moodImages.get(index).getEmotionalState());
-       //assertEquals(moodImages.get(index).getEmotionalState(), "HAPPY");
-
-       }
+       //assertEquals(moodImages.get(index).getEmotionalState(), "HAPPY");*/
+     }
 
     @After
     public void tearDown() throws Exception {

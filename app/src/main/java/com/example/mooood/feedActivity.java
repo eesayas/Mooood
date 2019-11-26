@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 
@@ -121,8 +122,12 @@ public class feedActivity extends AppCompatActivity {
                                                 MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation);
                                                 moodEvent.setDocumentId(documentSnapshot.getId());
                                                 moodEvent.setTimeStamp(moodTimeStamp);
-
-                                                feedDataList.add(moodEvent); //add to data list
+                                                if (!feedDataList.contains(moodEvent)){
+                                                    feedDataList.add(moodEvent); //add to data list
+                                                }
+                                                else{
+                                                    Log.d("duplicates", "Already exist in the list   " + moodEvent.getAuthor());
+                                                }
                                             }
 
                                             Collections.sort(feedDataList, new Comparator<MoodEvent>() {
