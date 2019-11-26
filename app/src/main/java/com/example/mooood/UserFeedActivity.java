@@ -332,8 +332,7 @@ public class UserFeedActivity extends AppCompatActivity {
     }
 
     /**
-     * This will take the user from the User Activity to the Feed Activity while also updating the database
-     * with the most recent mood event for all accounts
+     * This will take the user from the User Activity to the Feed Activity
      * @param accountName
      *  This is the account name signed up with
      */
@@ -344,52 +343,6 @@ public class UserFeedActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                db.collection("participant").addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        for (QueryDocumentSnapshot doc: queryDocumentSnapshots){
-                            final String participant = doc.getId();
-                            Log.d("display", participant);
-                            db.collection("MoodEvents").document(participant).collection("MoodActivities")
-                                    .orderBy("timeStamp", Query.Direction.DESCENDING)
-                                    .limit(1)
-                                    .get()
-                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                            for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
-
-                                                String author = (String) documentSnapshot.getData().get("author");
-                                                String date = (String) documentSnapshot.getData().get("date");
-                                                String time = (String) documentSnapshot.getData().get("time");
-                                                String emotionalState = (String) documentSnapshot.getData().get("emotionalState");
-                                                String imageURl = (String) documentSnapshot.getData().get("imageUrl");
-                                                String reason = (String) documentSnapshot.getData().get("reason");
-                                                String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
-                                                try {
-                                                    moodTimeStamp = simpleDateFormat.parse(date + ' '+ time);
-                                                    Log.d("Time1", "changing timestamp in Oncreate");
-                                                }catch (ParseException e){
-                                                    Log.d("Time1", "catch exception in Oncreate");
-                                                    e.printStackTrace();
-                                                }
-                                                final MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation);
-                                                moodEvent.setDocumentId(documentSnapshot.getId());
-                                                moodEvent.setTimeStamp(moodTimeStamp);
-
-                                                db.collection("Users").document(participant).set(moodEvent);
-                                                Log.d(TAG, "ADDED to database");
-
-                                                //This will update the following list of the user
-                                                //updateFollowingList(name, participant, moodEvent);
-                                            }
-                                        }
-                                    });
-                        }
-
-                    }
-                });
 
                 Intent intent = new Intent(UserFeedActivity.this, feedActivity.class);
                 intent.putExtra("account", accountName);

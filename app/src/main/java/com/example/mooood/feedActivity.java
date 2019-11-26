@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -91,7 +92,6 @@ public class feedActivity extends AppCompatActivity {
         showEventClickListener();
 
 
-
     } //End of onCreate
 
     /**
@@ -102,15 +102,15 @@ public class feedActivity extends AppCompatActivity {
         super.onStart();
         feedDataList.clear();
         Adapter.notifyDataSetChanged();
-        feedCollectionReference
-                .addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+        feedCollectionReference.
+                addSnapshotListener(this, new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                            final String followers = documentSnapshot.getId();
-                            Log.d("Nameoffollowers", followers);
-                            db.collection("Users")
-                                    .whereEqualTo("author", followers)
+                        for (QueryDocumentSnapshot queryDocumentSnapshot : queryDocumentSnapshots){
+                            final String name = queryDocumentSnapshot.getId();
+                            db.collection("MoodEvents").document(name).collection("MoodActivities")
+                                    .orderBy("timeStamp", Query.Direction.DESCENDING)
+                                    .limit(1)
                                     .get()
                                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                         @Override
@@ -125,6 +125,7 @@ public class feedActivity extends AppCompatActivity {
                                                 String imageURl = (String) documentSnapshot.getData().get("imageUrl");
                                                 String reason = (String) documentSnapshot.getData().get("reason");
                                                 String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
+
                                                 try {
                                                     moodTimeStamp = simpleDateFormat.parse(date + ' '+ time);
                                                     Log.d("Time1", "changing timestamp in SearchUsers");
@@ -144,7 +145,6 @@ public class feedActivity extends AppCompatActivity {
                                                 }
 
                                             }
-
                                             Collections.sort(feedDataList, new Comparator<MoodEvent>() {
                                                 public int compare(MoodEvent o1, MoodEvent o2) {
                                                     return o2.getTimeStamp().compareTo(o1.getTimeStamp());
@@ -152,11 +152,11 @@ public class feedActivity extends AppCompatActivity {
                                             });
 
                                             Adapter.notifyDataSetChanged();
+
                                         }
+
                                     });
-
                         }
-
                     }
                 });
     }
@@ -198,10 +198,9 @@ public class feedActivity extends AppCompatActivity {
         listView.setAdapter(Adapter);
     }
 
-
     /**
      * Follow Adapter is the setup for the follow List View that will populate the FeedActivity with the
-     * of the account that the User has searched up.
+     *account that the User has searched up.
      */
     private void followAdapter(){
         searchUser = new ArrayList<>();
@@ -217,7 +216,6 @@ public class feedActivity extends AppCompatActivity {
      *  This is the account name used to sign in
      */
     private void searchUsers (final String loginName) {
-
         feedSearchView = findViewById(R.id.feedSearchView);
         feedSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -254,19 +252,16 @@ public class feedActivity extends AppCompatActivity {
                                     moodEvent.setTimeStamp(moodTimeStamp);
 
                                     searchUser.add(moodEvent); //add to data list
-
                                 }
                                 seacrhAdapter.notifyDataSetChanged();
                             }
                         });
-
                 return false;
             }
             @Override
             public boolean onQueryTextChange(String s) {
                 return false;
             }
-
         });
 
         feedSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
@@ -277,6 +272,7 @@ public class feedActivity extends AppCompatActivity {
                 return false;
             }
         });
+        //Will not allow you go to the follow activity if already following
         followListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
@@ -308,8 +304,8 @@ public class feedActivity extends AppCompatActivity {
 
             }
         });
-
     }
+
     /**
      * Clicking on User Button will simply take you back to User Activity
      */
