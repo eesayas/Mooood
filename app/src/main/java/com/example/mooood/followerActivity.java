@@ -1,7 +1,6 @@
 package com.example.mooood;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -15,18 +14,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 
 
-import org.w3c.dom.Text;
-
-import java.time.LocalDateTime;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,18 +46,23 @@ public class followerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_follower_profile);
 
-        setDate=findViewById(R.id.date);
-        setTime = findViewById(R.id.time);
+        setDate=findViewById(R.id.recentMoodDate);
+        setTime = findViewById(R.id.recentMoodTime);
         setAuthor= findViewById(R.id.author);
         collectionReference=db.collection("MoodEvents");
         Intent intent = getIntent();
         final String toFollow = intent.getStringExtra("accountMood");
         final String loginName= intent.getStringExtra("loginName");
-        final MoodEvent moodEvent = intent.getParcelableExtra("mood");
+        final String date = intent.getStringExtra("moodDate");
+        final String time = intent.getStringExtra("moodTime");
+        final String author = intent.getStringExtra("moodAuthor");
 
-        setDate.setText(moodEvent.getDate());
-        setTime.setText(moodEvent.getTime());
-        setAuthor.setText(moodEvent.getAuthor());
+        Log.d("follower", "date "+ date);
+        Log.d("follower", "time "+ time);
+        Log.d("follower", "Author "+ author);
+        setDate.setText(date);
+        setTime.setText(time);
+        setAuthor.setText(author);
 
         collectionReference.document(toFollow).collection("Request").document(loginName)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {

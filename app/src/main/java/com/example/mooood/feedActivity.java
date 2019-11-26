@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +20,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -272,18 +274,37 @@ public class feedActivity extends AppCompatActivity {
             public boolean onClose() {
                 followListview.setVisibility(View.INVISIBLE);
                 listView.setVisibility(View.VISIBLE);
-                onStart();
                 return false;
             }
         });
         followListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(feedActivity.this, followerActivity.class);
-                intent.putExtra("accountMood", searchUser.get(i).getAuthor());
-                intent.putExtra("loginName", loginName);
-                intent.putExtra("mood", searchUser.get(i));
-                startActivity(intent);
+            public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
+                collectionReference.document(loginName).collection("Following").document(searchUser.get(i).getAuthor())
+                        .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                Toast.makeText(feedActivity.this, "Already Following!",
+                                        Toast.LENGTH_SHORT).show();
+                            } else {
+                                Intent intent = new Intent(feedActivity.this, followerActivity.class);
+                                Log.d("followerActivity", "creating the intent");
+                                intent.putExtra("accountMood", searchUser.get(i).getAuthor());
+                                intent.putExtra("loginName", loginName);
+                                intent.putExtra("moodDate", searchUser.get(i).getDate());
+                                intent.putExtra("moodTime", searchUser.get(i).getTime());
+                                intent.putExtra("moodAuthor", searchUser.get(i).getAuthor());
+                                Log.d("follower", "date "+ searchUser.get(i).getDate());
+                                startActivity(intent);
+                            }
+                        } else {
+                            Log.d("checking", "Failed with: ", task.getException());
+                        }
+                    }
+                });
 
             }
         });
