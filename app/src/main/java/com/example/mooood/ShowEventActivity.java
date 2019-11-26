@@ -32,7 +32,7 @@ public class ShowEventActivity extends AppCompatActivity {
     TextView socialSituationText;
     ImageView imageReason;
     TextView reasonText;
-
+    String edit;
     Button editButton;
 
     @Override
@@ -42,6 +42,7 @@ public class ShowEventActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         final MoodEvent moodEvent = intent.getParcelableExtra(MOOD_EVENT);
+        edit = intent.getStringExtra("bool");
 
         getValuesMoodEvent(moodEvent);
 
@@ -55,10 +56,10 @@ public class ShowEventActivity extends AppCompatActivity {
 
     /**
      * This gets all needed values from MoodEvent to be displayed
-     * @param moodEvent
-     *     This is the MoodEvent object
+     *
+     * @param moodEvent This is the MoodEvent object
      */
-    private void getValuesMoodEvent(MoodEvent moodEvent){
+    private void getValuesMoodEvent(MoodEvent moodEvent) {
         author = moodEvent.getAuthor();
 
         date = moodEvent.getDate();
@@ -73,7 +74,7 @@ public class ShowEventActivity extends AppCompatActivity {
     /**
      * This selects all TextView and ImageView from xml
      */
-    private void getTextAndImageView(){
+    private void getTextAndImageView() {
         authorText = findViewById(R.id.author);
         emoticon = findViewById(R.id.emoticon);
         dateText = findViewById(R.id.date);
@@ -86,7 +87,7 @@ public class ShowEventActivity extends AppCompatActivity {
     /**
      * This sets the values of all selected TextView and ImageView from xml
      */
-    private void setTextAndImageView(){
+    private void setTextAndImageView() {
         authorText.setText(author);
         emoticon.setImageResource(new Emoticon(emotionalState, 2).getImageLink());
         dateText.setText(date);
@@ -99,14 +100,21 @@ public class ShowEventActivity extends AppCompatActivity {
     /**
      * This is a click listener for edit of MoodEvent. Redirect to EditEventActivity
      */
-    private void editBtnClickListener(final MoodEvent moodEvent){
+    private void editBtnClickListener(final MoodEvent moodEvent) {
         editButton = findViewById(R.id.edit_button);
-        editButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(ShowEventActivity.this, EditEventActivity.class);
-                intent.putExtra(MOOD_EVENT, moodEvent);
-                startActivity(intent);
-            }
-        });
+        if (edit.equals("false")) {
+            editButton.setEnabled(false);
+            editButton.setVisibility(View.INVISIBLE);
+        } else {
+            editButton.setEnabled(true);
+            editButton.setVisibility(View.VISIBLE);
+            editButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Intent intent = new Intent(ShowEventActivity.this, EditEventActivity.class);
+                    intent.putExtra(MOOD_EVENT, moodEvent);
+                    startActivity(intent);
+                }
+            });
+        }
     }
 }

@@ -32,14 +32,17 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 
 public class feedActivity extends AppCompatActivity {
 
     private static final String TAG= "Debugging";
+    public static final String MOOD_EVENT = "Mood Event";
     ListView listView;
     ListView followListview;
     ArrayAdapter<MoodEvent> Adapter;
@@ -50,13 +53,16 @@ public class feedActivity extends AppCompatActivity {
     FloatingActionButton notificationButton;
     Button userButton;
     Date moodTimeStamp;
-
+    String edit;
 
     //Firebase setup
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference collectionReference;
     private CollectionReference feedCollectionReference;
 
+    /**
+     * This implements all methods below accordingly
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,11 +79,15 @@ public class feedActivity extends AppCompatActivity {
         searchUsers(name);
         selectUser();
         notificationCheck(name);
+        showEventClickListener();
 
 
 
     } //End of onCreate
 
+    /**
+     * The list of people the User is following is accessed from the database and there most recent mood event is displayed
+     */
     @Override
     protected void onStart() {
         super.onStart();
@@ -89,6 +99,7 @@ public class feedActivity extends AppCompatActivity {
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                             final String followers = documentSnapshot.getId();
+                            Log.d("Nameoffollowers", followers);
                             db.collection("Users")
                                     .whereEqualTo("author", followers)
                                     .get()
@@ -115,15 +126,22 @@ public class feedActivity extends AppCompatActivity {
                                                 MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation);
                                                 moodEvent.setDocumentId(documentSnapshot.getId());
                                                 moodEvent.setTimeStamp(moodTimeStamp);
+                                                if (feedDataList.contains(moodEvent)){
+                                                        Log.d("duplicates", "Already exist in the list   " + moodEvent.getAuthor());
+                                                }
+                                                else {
+                                                    Log.d("duplicates", "added in the list " + moodEvent.getAuthor());
+                                                    feedDataList.add(moodEvent);
+                                                }
 
-                                                feedDataList.add(moodEvent); //add to data list
                                             }
-                                            Adapter.sort(new Comparator<MoodEvent>() {
-                                                @Override
-                                                public int compare(MoodEvent moodEvent, MoodEvent t1) {
-                                                    return moodEvent.getTimeStamp().compareTo(t1.getTimeStamp());
+
+                                            Collections.sort(feedDataList, new Comparator<MoodEvent>() {
+                                                public int compare(MoodEvent o1, MoodEvent o2) {
+                                                    return o2.getTimeStamp().compareTo(o1.getTimeStamp());
                                                 }
                                             });
+
                                             Adapter.notifyDataSetChanged();
                                         }
                                     });
@@ -132,6 +150,20 @@ public class feedActivity extends AppCompatActivity {
 
                     }
                 });
+    }
+    private void showEventClickListener () {
+        //click listener for each item -> ShowEventActivity
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                edit = "false";
+                Intent intent = new Intent(feedActivity.this, ShowEventActivity.class);
+                intent.putExtra(MOOD_EVENT, feedDataList.get(i));
+                intent.putExtra("bool",edit);
+                startActivity(intent);
+
+            }
+        });
     }
 
     private void notificationCheck(final String userName){
@@ -154,17 +186,14 @@ public class feedActivity extends AppCompatActivity {
         feedDataList = new ArrayList<>();
         listView = findViewById(R.id.feedListView);
         Adapter = new MoodEventsAdapter(feedDataList, this);
-       /* Adapter.sort(new Comparator<MoodEvent>() {
-            @Override
-            public int compare(MoodEvent moodEvent, MoodEvent t1) {
-                return moodEvent.getTimeStamp().compareTo(t1.getTimeStamp());
-            }
-        });*/
         listView.setAdapter(Adapter);
     }
 
 
-
+    /**
+     * Follow Adapter is the setup for the follow List View that will populate the FeedActivity with the
+     * of the account that the User has searched up.
+     */
     private void followAdapter(){
         searchUser = new ArrayList<>();
         followListview= findViewById(R.id.followListView);
@@ -172,7 +201,12 @@ public class feedActivity extends AppCompatActivity {
         followListview.setAdapter(seacrhAdapter);
     }
 
-
+    /**
+     * SearchView for the user to search up accounts. After searching, will display the account user with there most
+     * recent mood event. Can click on there mood to take you to the account/follow page
+     * @param loginName
+     *  This is the account name used to sign in
+     */
     private void searchUsers (final String loginName) {
 
         feedSearchView = findViewById(R.id.feedSearchView);
@@ -238,8 +272,6 @@ public class feedActivity extends AppCompatActivity {
         followListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-               /* Log.d("login name", loginName);
-                Log.d("trying to follow", searchUser.get(i).getAuthor());*/
                 Intent intent = new Intent(feedActivity.this, followerActivity.class);
                 intent.putExtra("accountMood", searchUser.get(i).getAuthor());
                 intent.putExtra("loginName", loginName);
@@ -250,7 +282,9 @@ public class feedActivity extends AppCompatActivity {
         });
 
     }
-
+    /**
+     * Clicking on User Button will simply take you back to User Activity
+     */
     private void selectUser(){
         userButton= findViewById(R.id.userButton);
         userButton.setOnClickListener(new View.OnClickListener() {
@@ -260,5 +294,6 @@ public class feedActivity extends AppCompatActivity {
             }
         });
     }
+
 
 }

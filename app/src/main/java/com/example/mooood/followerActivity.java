@@ -1,5 +1,6 @@
 package com.example.mooood;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,7 +11,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -29,13 +33,19 @@ import java.util.Map;
 
 
 public class followerActivity extends AppCompatActivity {
-    Button button;
+    Button followButton;
+    Button backButton;
+
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference collectionReference;
     TextView setDate;
     TextView setTime;
     TextView setAuthor;
 
+    /**
+     * This implements all methods below accordingly
+     * Will also check to see if user has already sent a request to change text of button
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,19 +63,37 @@ public class followerActivity extends AppCompatActivity {
         setDate.setText(moodEvent.getDate());
         setTime.setText(moodEvent.getTime());
         setAuthor.setText(moodEvent.getAuthor());
-        collectionReference.document(toFollow).collection("Request")
-                .whereEqualTo("Username", loginName)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        button.setText("REQUEST SENT");
+
+        collectionReference.document(toFollow).collection("Request").document(loginName)
+                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        followButton.setText("REQUEST SENT");
+                    } else {
+                        Log.d("checking", "Document does not exist!");
                     }
-                });
+                } else {
+                    Log.d("checking", "Failed with: ", task.getException());
+                }
+            }
+        });
+
         followUser(toFollow, loginName);
+        backToFeed();
     }//End of onCreate
 
+    /**
+     * After clicking follow button, will send a request to the account while adding request collection to database
+     * @param toFollow
+     *  This is the account the user searhed up in feed Acitvity and wants to follow
+     * @param loginName
+     *  This is the account name used to sign in
+     */
     private void followUser(final String toFollow, final String loginName) {
-        button = findViewById(R.id.follow_button);
+        followButton = findViewById(R.id.follow_button);
         Date currentTime = Calendar.getInstance().getTime();
         //LocalDateTime now = LocalDateTime.now();
         SimpleDateFormat requestDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
@@ -75,16 +103,32 @@ public class followerActivity extends AppCompatActivity {
         request.put("Username",loginName);
         request.put("Request", "Sent");
         request.put("Request Time", date);
-        button.setOnClickListener(new View.OnClickListener() {
+        followButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d("login name after", loginName);
                 Log.d("trying to follow after", toFollow);
                 collectionReference.document(toFollow).collection("Request").document(loginName).set(request);
-                button.setText("REQUEST SENT");
+                followButton.setText("REQUEST SENT");
                 Log.d("SENT", "request sent");
 
             }
         });
     }
+
+    /**
+     * Will take user back to Feed Activity by clicking on the back button
+     */
+    private void backToFeed(){
+        backButton= findViewById(R.id.backButton);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+             finish();
+            }
+        });
+    }
+
+
+
 }
