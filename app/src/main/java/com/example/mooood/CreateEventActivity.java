@@ -290,7 +290,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
      * This is accesses the fragment that is used to obtain date and time of MoodEvent
      */
     private void dateAndTimePickerClickListener(){
-        simpleDateFormat = new SimpleDateFormat("MMM/dd/yyyy h:mm a", Locale.getDefault());
+        simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a", Locale.getDefault());
         dateAndTimeMood.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -309,7 +309,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
             //get Date
-            moodEvent.setDate( new SimpleDateFormat("MMM/dd/yyyy", Locale.getDefault()).format(calendar.getTime()) );
+            moodEvent.setDate( new SimpleDateFormat("MMM dd yyyy", Locale.getDefault()).format(calendar.getTime()) );
 
             //go to TimePicker
             new TimePickerDialog(CreateEventActivity.this, TimeDataSet, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false).show();
@@ -760,7 +760,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
      * This creates timestamp for moodEvent
      **/
     private void createTimeStamp(){
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM/dd/yyyy h:mm a");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
 
         try {
             moodEvent.setTimeStamp(simpleDateFormat.parse(moodEvent.getDate() + ' ' + moodEvent.getTime()));

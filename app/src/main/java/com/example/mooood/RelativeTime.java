@@ -24,7 +24,7 @@ public class RelativeTime {
         this.eventTime = time;
 
         //get date of MoodEvent
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM/dd/yyyy h:mm a");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
 
         try{
             Date dateMood = simpleDateFormat.parse(dateAndTimeInput);

@@ -3,6 +3,7 @@ package com.example.mooood;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
@@ -41,7 +42,7 @@ import java.util.List;
 
 public class feedActivity extends AppCompatActivity {
 
-    private static final String TAG= "feedActivity - ";
+    private static final String TAG= "feedActivity";
 
 // =========================BEFORE==============================
 //
@@ -71,6 +72,7 @@ public class feedActivity extends AppCompatActivity {
 
     //for RecyclerView
     private RecyclerTouchListener searchResultTouchListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,7 +86,9 @@ public class feedActivity extends AppCompatActivity {
 
         arrayAdapterSetup();
         followAdapter();
-        searchUsers(name);
+        searchResultListener(name);
+
+        searchUsers();
         selectUser();
         notificationCheck(name);
 
@@ -128,7 +132,7 @@ public class feedActivity extends AppCompatActivity {
                                                 String address = (String) documentSnapshot.getData().get("address") ;
                                                 MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation,latitude,longitude,address);
                                                 moodEvent.setDocumentId(documentSnapshot.getId());
-                                                moodEvent.setTimeStamp(moodTimeStamp);
+
 
                                                 try {
                                                     moodTimeStamp = simpleDateFormat.parse(date + ' '+ time);
@@ -138,6 +142,7 @@ public class feedActivity extends AppCompatActivity {
                                                     e.printStackTrace();
                                                 }
 
+                                                moodEvent.setTimeStamp(moodTimeStamp);
                                                 feedDataList.add(moodEvent); //add to data list
                                             }
 
@@ -157,6 +162,12 @@ public class feedActivity extends AppCompatActivity {
 
                     }
                 });
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        searchResultList.addOnItemTouchListener(searchResultTouchListener);
     }
 
     private void notificationCheck(final String userName){
@@ -186,6 +197,7 @@ public class feedActivity extends AppCompatActivity {
             }
         });*/
 
+        moodEventList.setLayoutManager(new LinearLayoutManager(this));
         moodEventList.setAdapter(moodEventAdapter);
     }
 
@@ -197,15 +209,15 @@ public class feedActivity extends AppCompatActivity {
         searchResultList = findViewById(R.id.followListView);
         searchResultAdapter = new MoodEventsAdapter(searchUser);
 
+        searchResultList.setLayoutManager(new LinearLayoutManager(this));
         searchResultList.setAdapter(searchResultAdapter);
     }
 
     /**
      * This fetches a list of Users from DB according to search input
-     * @param loginName
      * The username of the currently logged in user
      */
-    private void searchUsers (final String loginName) {
+    private void searchUsers () {
 
         feedSearchView = findViewById(R.id.feedSearchView);
         feedSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -236,7 +248,7 @@ public class feedActivity extends AppCompatActivity {
                                     String address = (String) documentSnapshot.getData().get("address") ;
                                     MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation,latitude,longitude,address);
                                     moodEvent.setDocumentId(documentSnapshot.getId());
-                                    moodEvent.setTimeStamp(moodTimeStamp);
+
 
                                     try {
                                         moodTimeStamp = simpleDateFormat.parse(date + ' '+ time);
@@ -245,6 +257,8 @@ public class feedActivity extends AppCompatActivity {
                                         Log.d("Time1", "catch exception in searchUsers");
                                         e.printStackTrace();
                                     }
+
+                                    moodEvent.setTimeStamp(moodTimeStamp);
 
                                     searchUser.add(moodEvent); //add to data list
 

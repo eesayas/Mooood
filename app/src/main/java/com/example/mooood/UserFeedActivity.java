@@ -329,6 +329,10 @@ public class UserFeedActivity extends AppCompatActivity {
                         }
                     }
                 });
+
+                Intent intent = new Intent(UserFeedActivity.this, feedActivity.class);
+                intent.putExtra("account", accountName);
+                startActivity(intent);
             }
         });
     }
