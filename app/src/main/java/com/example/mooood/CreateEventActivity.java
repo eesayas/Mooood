@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.ViewFlipper;
@@ -118,6 +119,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     private LatLng moodLocation;
 
     Button locationButton, cancelButton, selectEmoticonBtn;
+    LinearLayout backButton;
 
     //the code will populate this
     MoodEvent moodEvent;
@@ -136,6 +138,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         moodIndicator = findViewById(R.id.emotion_indicator);
 
         viewFlipper = findViewById(R.id.view_flipper);
+//        viewFlipper.setFlipInterval(2000);
 
         //Acquire the account name of the current User
         Intent intent = getIntent();
@@ -154,6 +157,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         swipeMoodAdapterSetup();
         customSwipeMoodStyling();
         emoticonSelectBtnListener();
+        backBtnListener();
 
         //Invoke methods for selection of MoodEvent details
         moodSelection();
@@ -186,10 +190,14 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
 
     // VIEW FLIPPER
     public void previousView(View view){
+        viewFlipper.setInAnimation(this, android.R.anim.slide_in_left);
+        viewFlipper.setOutAnimation(this, android.R.anim.slide_out_right);
         viewFlipper.showPrevious();
     }
 
     public void nextView(View view){
+        viewFlipper.setInAnimation(this, R.anim.slide_in_right);
+        viewFlipper.setOutAnimation(this, R.anim.slide_out_left);
         viewFlipper.showNext();
     }
 
@@ -200,6 +208,19 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
             @Override
             public void onClick(View view) {
                 nextView(view);
+            }
+        });
+    }
+
+
+    private void backBtnListener(){
+        backButton = findViewById(R.id.back_btn);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "Clicked");
+                previousView(view);
             }
         });
     }

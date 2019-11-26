@@ -22,5 +22,6 @@
     <!--CreateEventActivity-->
     <string name="roster_title">How are you feeling?</string>
     <string name="emoticon_choice_btn">SELECT</string>
+    <string name="new_mood_event">New Mood Event</string>
 
 </resources>

@@ -11,7 +11,9 @@
     <ViewFlipper
         android:id="@+id/view_flipper"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:inAnimation="@android:anim/slide_in_left"
+        android:outAnimation="@android:anim/slide_out_right">
 
         <!--MOOD ROSTER-->
         <LinearLayout
@@ -78,9 +80,88 @@
             tools:context=".CreateEventActivity">
 
             <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="wrap_content">
+
+                <!--TITLE BAR-->
+                <LinearLayout
+                    android:id="@+id/rel"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal">
+
+                    <!--BACK BTN-->
+                    <LinearLayout
+                        android:id="@+id/back_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/edit_text_border"
+                        android:orientation="horizontal"
+                        android:clickable="true">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:clickable="false"
+                            android:focusable="true"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_horizontal"
+                                    android:paddingRight="15dp"
+                                    android:paddingLeft="15dp">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_keyboard_arrow_left_24px"/>
+
+                                </LinearLayout>
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+
+
+                    <!--TITLE-->
+                    <LinearLayout
+                        android:id="@+id/mood_event"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="true"
+                        android:orientation="horizontal"
+                        android:visibility="visible"
+                        android:background="@drawable/edit_text_border"
+                        android:gravity="center"
+                        >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="40dp"
+                            android:text="@string/new_mood_event"
+                            android:textColor="#fff"
+                            android:textSize="25sp"
+                            android:fontFamily="@font/roboto"
+                            android:letterSpacing="0.1"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginBottom="10dp">
+
+                        </TextView>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+
+
+
+
 
                 <!--REASON-->
                 <EditText
