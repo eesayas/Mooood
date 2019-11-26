@@ -4,6 +4,18 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.SearchView;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
@@ -21,17 +33,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.local.QueryResult;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.SearchView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -63,6 +64,10 @@ public class UserFeedActivity extends AppCompatActivity {
     private String textSubmitted;
     String edit;
 
+    private TextView userId;
+    private String accountName;
+
+
     /**
      * This implements all methods below accordingly
      */
@@ -72,7 +77,9 @@ public class UserFeedActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user_feed);
 
         Intent intent = getIntent();
-        final String accountName = intent.getStringExtra("accountKey");
+         accountName = intent.getStringExtra("accountKey");
+        userId = findViewById(R.id.activity_user_feed_tv_id);
+        userId.setText(accountName);
         documentReference = db.collection("MoodEvents").document(accountName);
         collectionReference = db.collection("MoodEvents").document(accountName).collection("MoodActivities");
 
@@ -389,6 +396,45 @@ public class UserFeedActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+
+    /**
+     * This is a click listener to go to profile
+     */
+    public void goToProfile(View view) {
+
+        db.collection("Users")
+                .whereEqualTo("author", accountName)
+                .limit(1)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
+
+                            String author = (String) documentSnapshot.getData().get("author");
+                            String date = (String) documentSnapshot.getData().get("date");
+                            String time = (String) documentSnapshot.getData().get("time");
+                            String emotionalState = (String) documentSnapshot.getData().get("emotionalState");
+                            String reason = (String) documentSnapshot.getData().get("reason");
+                            String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
+
+
+                            Intent intent = new Intent(UserFeedActivity.this, UserProfile.class);
+
+                            intent.putExtra("AUTHOR", author);
+                            intent.putExtra("DATE", date);
+                            intent.putExtra("TIME", time);
+                            intent.putExtra("STATE", emotionalState);
+                            intent.putExtra("REASON", reason);
+                            intent.putExtra("SITUATION", socialSituation);
+                            startActivity(intent);
+                        }
+
+                    }
+                });
     }
 
 

@@ -32,6 +32,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+/**
+ * Show profile of searched user and can send request
+ */
 public class followerActivity extends AppCompatActivity {
     Button followButton;
     Button backButton;

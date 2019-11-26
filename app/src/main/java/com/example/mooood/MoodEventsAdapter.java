@@ -49,6 +49,7 @@ public class MoodEventsAdapter extends ArrayAdapter<MoodEvent> {
         author.setText(moodEvent.getAuthor());
         relativeTime.setText(new RelativeTime(moodEvent.getDate(), moodEvent.getTime()).getRelativeTime());
 
+
         return view;
     }
 

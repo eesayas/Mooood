@@ -53,6 +53,10 @@
             android:name=".NotificationActivity"
             android:label="NotificationActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity    
+            android:name=".UserProfile"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
         <activity
             android:name=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">

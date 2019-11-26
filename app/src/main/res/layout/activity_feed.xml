@@ -5,31 +5,102 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UserFeedActivity">
+    tools:context=".feedActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#000000"
         android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/white_border"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/activity_user_feed_tv_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/white_border"
+                android:gravity="center"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:paddingLeft="4sp"
+                android:paddingRight="4sp"/>
+
+
+            <TextView
+                android:id="@+id/activity_feed_show_profile"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/white_border"
+                android:gravity="center"
+                android:onClick="goToProfile"
+                android:paddingLeft="4sp"
+                android:paddingRight="4sp"
+                android:text="@string/profile"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/activity_feed_show_map"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/white_border"
+                android:gravity="center"
+                android:paddingLeft="4sp"
+                android:paddingRight="4sp"
+                android:text="@string/maps"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/feedButton"
+                style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="FEED"/>
+                android:text="@string/feed"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:backgroundTint="#00BCD4"
+                app:cornerRadius="0dp"
+                app:iconPadding="0dp"
+                app:strokeColor="#FFFFFF"
+                app:strokeWidth="2dp" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/userButton"
+                style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="USER"/>
+                android:text="@string/user"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:cornerRadius="0dp"
+                app:strokeColor="#FFFFFF"
+                app:strokeWidth="2dp"
+                app:backgroundTint="#00FFFFFF"
+                />
 
         </LinearLayout>
 
@@ -38,8 +109,11 @@
         <SearchView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/white_border"
             android:id="@+id/feedSearchView"
-            android:queryHint="Search for Moooders..." />
+            android:queryHint="Search for Moooders..."
+            android:theme="@android:style/Theme.Holo" />
+
 
             <androidx.coordinatorlayout.widget.CoordinatorLayout
                 android:layout_width="match_parent"

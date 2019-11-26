@@ -1,9 +1,5 @@
 package com.example.mooood;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,18 +9,19 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.Toast;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -54,22 +51,32 @@ public class feedActivity extends AppCompatActivity {
     Button userButton;
     Date moodTimeStamp;
     String edit;
+    private String name;
+
 
     //Firebase setup
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference collectionReference;
     private CollectionReference feedCollectionReference;
 
+
+    private TextView userId;
+
+    
     /**
      * This implements all methods below accordingly
      */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed);
 
         Intent intent = getIntent();
-        final String name = intent.getStringExtra("account");
+        name = intent.getStringExtra("account");
+
+        userId = findViewById(R.id.activity_user_feed_tv_id);
+        userId.setText(name);
 
         feedCollectionReference = db.collection("MoodEvents").document(name).collection("Following");
         collectionReference = db.collection("MoodEvents");
@@ -294,6 +301,46 @@ public class feedActivity extends AppCompatActivity {
             }
         });
     }
+
+    /**
+     * This is a click listener to go to profile
+     */
+    public void goToProfile(View view) {
+
+        db.collection("Users")
+                .whereEqualTo("author", name)
+                .limit(1)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        feedDataList.clear();
+                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
+
+                            String author = (String) documentSnapshot.getData().get("author");
+                            String date = (String) documentSnapshot.getData().get("date");
+                            String time = (String) documentSnapshot.getData().get("time");
+                            String emotionalState = (String) documentSnapshot.getData().get("emotionalState");
+                            String reason = (String) documentSnapshot.getData().get("reason");
+                            String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
+
+
+                            Intent intent = new Intent(feedActivity.this, UserProfile.class);
+
+                            intent.putExtra("AUTHOR", author);
+                            intent.putExtra("DATE", date);
+                            intent.putExtra("TIME", time);
+                            intent.putExtra("STATE", emotionalState);
+                            intent.putExtra("REASON", reason);
+                            intent.putExtra("SITUATION", socialSituation);
+                            startActivity(intent);
+                        }
+
+                    }
+                });
+    }
+
 
 
 }
