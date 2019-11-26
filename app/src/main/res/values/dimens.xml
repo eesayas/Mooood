@@ -1,3 +1,4 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="roster_title_ltr_spc">10dp</dimen>
 </resources>

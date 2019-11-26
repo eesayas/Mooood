@@ -5,10 +5,6 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
-import android.app.Activity;
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
@@ -19,8 +15,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
@@ -30,11 +24,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
+import android.widget.ViewFlipper;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.viewpager.widget.ViewPager;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -46,16 +42,13 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -63,7 +56,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
-import org.w3c.dom.Text;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -87,11 +80,13 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     SwipeMoodsAdapter moodRosterAdapter;
     List<Emoticon> moodImages;
 
+    ViewFlipper viewFlipper;
+
     //Firebase setup!
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference documentReference;
 
-    TextView socialSituation;
+    TextView socialSituation, moodIndicator;
     EditText reason;
 
     //for image upload
@@ -122,7 +117,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     CameraPosition.Builder camBuilder;
     private LatLng moodLocation;
 
-    Button locationButton, cancelButton;
+    Button locationButton, cancelButton, selectEmoticonBtn;
 
     //the code will populate this
     MoodEvent moodEvent;
@@ -137,6 +132,10 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         socialSituation = findViewById(R.id.social_situation);
         imageUpload = findViewById(R.id.image_reason);
         dateAndTimeMood = findViewById((R.id.date_and_time));
+
+        moodIndicator = findViewById(R.id.emotion_indicator);
+
+        viewFlipper = findViewById(R.id.view_flipper);
 
         //Acquire the account name of the current User
         Intent intent = getIntent();
@@ -154,6 +153,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         createMoodRoster();
         swipeMoodAdapterSetup();
         customSwipeMoodStyling();
+        emoticonSelectBtnListener();
 
         //Invoke methods for selection of MoodEvent details
         moodSelection();
@@ -182,6 +182,27 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         submitBtnClickListener();
 
     } //end of onCreate
+
+
+    // VIEW FLIPPER
+    public void previousView(View view){
+        viewFlipper.showPrevious();
+    }
+
+    public void nextView(View view){
+        viewFlipper.showNext();
+    }
+
+    private void emoticonSelectBtnListener(){
+        selectEmoticonBtn = findViewById(R.id.select_emoticon_btn);
+
+        selectEmoticonBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                nextView(view);
+            }
+        });
+    }
 
     //==============================================================================================
     // Setup CreateEventActivity [VIEW]
@@ -214,8 +235,8 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
      **/
     private void customSwipeMoodStyling(){
         moodRoster.setClipToPadding(false);
-        moodRoster.setPadding(250,0,250,0);
-        moodRoster.setPageMargin(50);
+        moodRoster.setPadding(150,0,150,0);
+//        moodRoster.setPageMargin(50);
     }
 
     //==============================================================================================
@@ -237,7 +258,10 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
 
             @Override
             public void onPageSelected(int position) {
-                moodEvent.setEmotionalState(moodImages.get(position).getEmotionalState());
+                String emotion = moodImages.get(position).getEmotionalState();
+                moodEvent.setEmotionalState(moodImages.get(position).getEmotionalState()); //for the object to be created
+                moodIndicator.setText(moodImages.get(position).getEmotionalState()); //for the indicator in xml
+//                moodIndicator.setTextColor(); FUTURE DEV!!!
             }
 
             @Override

@@ -1,6 +1,7 @@
 package com.example.mooood;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,8 +47,9 @@ public class SwipeMoodsAdapter extends PagerAdapter {
         layoutInflater = LayoutInflater.from(context);
         View view = layoutInflater.inflate(R.layout.content_swipe_moods, container, false);
 
-        ImageView imageView;
+        final ImageView imageView;
         imageView = view.findViewById(R.id.image);
+        imageView.setAdjustViewBounds(true);
         imageView.setImageResource(moodImages.get(position).getImageLink());
 
         container.addView(view, 0);
@@ -58,5 +60,6 @@ public class SwipeMoodsAdapter extends PagerAdapter {
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         container.removeView((View)object);
     }
+
 
 }
