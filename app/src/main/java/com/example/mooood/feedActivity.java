@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -78,7 +79,6 @@ public class feedActivity extends AppCompatActivity {
         searchUsers(name);
         selectUser();
 
-
     } //End of onCreate
 
     /**
@@ -89,15 +89,15 @@ public class feedActivity extends AppCompatActivity {
         super.onStart();
         feedDataList.clear();
         Adapter.notifyDataSetChanged();
-        feedCollectionReference
-                .addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+        feedCollectionReference.
+                addSnapshotListener(this, new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                            final String followers = documentSnapshot.getId();
-                            Log.d("Nameoffollowers", followers);
-                            db.collection("Users")
-                                    .whereEqualTo("author", followers)
+                        for (QueryDocumentSnapshot queryDocumentSnapshot : queryDocumentSnapshots){
+                            final String name = queryDocumentSnapshot.getId();
+                            db.collection("MoodEvents").document(name).collection("MoodActivities")
+                                    .orderBy("timeStamp", Query.Direction.DESCENDING)
+                                    .limit(1)
                                     .get()
                                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                         @Override
@@ -112,6 +112,7 @@ public class feedActivity extends AppCompatActivity {
                                                 String imageURl = (String) documentSnapshot.getData().get("imageUrl");
                                                 String reason = (String) documentSnapshot.getData().get("reason");
                                                 String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
+
                                                 try {
                                                     moodTimeStamp = simpleDateFormat.parse(date + ' '+ time);
                                                     Log.d("Time1", "changing timestamp in SearchUsers");
@@ -129,7 +130,6 @@ public class feedActivity extends AppCompatActivity {
                                                     Log.d("duplicates", "Already exist in the list   " + moodEvent.getAuthor());
                                                 }
                                             }
-
                                             Collections.sort(feedDataList, new Comparator<MoodEvent>() {
                                                 public int compare(MoodEvent o1, MoodEvent o2) {
                                                     return o2.getTimeStamp().compareTo(o1.getTimeStamp());
@@ -137,11 +137,11 @@ public class feedActivity extends AppCompatActivity {
                                             });
 
                                             Adapter.notifyDataSetChanged();
+
                                         }
+
                                     });
-
                         }
-
                     }
                 });
     }
@@ -156,7 +156,6 @@ public class feedActivity extends AppCompatActivity {
         Adapter = new MoodEventsAdapter(feedDataList, this);
         listView.setAdapter(Adapter);
     }
-
 
     /**
      * Follow Adapter is the setup for the follow List View that will populate the FeedActivity with the
@@ -176,7 +175,6 @@ public class feedActivity extends AppCompatActivity {
      *  This is the account name used to sign in
      */
     private void searchUsers (final String loginName) {
-
         feedSearchView = findViewById(R.id.feedSearchView);
         feedSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -213,19 +211,16 @@ public class feedActivity extends AppCompatActivity {
                                     moodEvent.setTimeStamp(moodTimeStamp);
 
                                     searchUser.add(moodEvent); //add to data list
-
                                 }
                                 seacrhAdapter.notifyDataSetChanged();
                             }
                         });
-
                 return false;
             }
             @Override
             public boolean onQueryTextChange(String s) {
                 return false;
             }
-
         });
 
         feedSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
@@ -233,23 +228,39 @@ public class feedActivity extends AppCompatActivity {
             public boolean onClose() {
                 followListview.setVisibility(View.INVISIBLE);
                 listView.setVisibility(View.VISIBLE);
-                onStart();
                 return false;
             }
         });
+
         followListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(feedActivity.this, followerActivity.class);
-                intent.putExtra("accountMood", searchUser.get(i).getAuthor());
-                intent.putExtra("loginName", loginName);
-                intent.putExtra("mood", searchUser.get(i));
-                startActivity(intent);
+            public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
+                collectionReference.document(loginName).collection("Following").document(searchUser.get(i).getAuthor())
+                        .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                Toast.makeText(feedActivity.this, "Already Following!",
+                                        Toast.LENGTH_SHORT).show();
+                            } else {
+                                Intent intent = new Intent(feedActivity.this, followerActivity.class);
+                                intent.putExtra("accountMood", searchUser.get(i).getAuthor());
+                                intent.putExtra("loginName", loginName);
+                                intent.putExtra("mood", searchUser.get(i));
+                                startActivity(intent);
+                            }
+                        } else {
+                            Log.d("checking", "Failed with: ", task.getException());
+                        }
+                    }
+                });
 
             }
         });
-
     }
+
     /**
      * Clicking on User Button will simply take you back to User Activity
      */
