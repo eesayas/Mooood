@@ -24,7 +24,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.SearchView;
+import android.widget.Toast;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,6 +51,7 @@ public class UserFeedActivity extends AppCompatActivity {
 
     SearchView userSearchView;
     Button feedButton;
+    ImageButton mapButton;
     Date moodTimeStamp; //what is this for?
 
     //Firebase setup!
@@ -78,6 +82,9 @@ public class UserFeedActivity extends AppCompatActivity {
         //maaz's filter implementation
         filterMood();
         selectFeed(accountName);
+
+        //Max's map implementation
+        openMoodMap();
 
 
     } //end of onCreate
@@ -344,5 +351,29 @@ public class UserFeedActivity extends AppCompatActivity {
         Intent intent = new Intent(UserFeedActivity.this, ShowEventActivity.class);
         intent.putExtra(MOOD_EVENT, postDataList.get(position));
         startActivity(intent);
+    }
+
+    //TODO: Fix bug where the app crashes when the UserFeedMap activity is started.
+    private void openMoodMap(){
+        mapButton=findViewById(R.id.map_user_feed_button);
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(UserFeedActivity.this, UserFeedActivity.class);
+                if(postDataList.size()>0){
+                    try{
+                        intent.putParcelableArrayListExtra("userMoodList",postDataList);
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                else{
+                    Toast.makeText(UserFeedActivity.this,"You don't have any posts!",Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
     }
 }

@@ -10,19 +10,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
+import android.widget.ImageButton;
 import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -33,10 +29,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
 
 //
 
@@ -63,6 +56,7 @@ public class feedActivity extends AppCompatActivity {
     SearchView feedSearchView;
     FloatingActionButton notificationButton;
     Button userButton;
+    ImageButton mapButton;
     Date moodTimeStamp;
 
     //Firebase setup
@@ -90,6 +84,7 @@ public class feedActivity extends AppCompatActivity {
 
         searchUsers();
         selectUser();
+        openMoodMap();
         notificationCheck(name);
 
 
@@ -337,6 +332,27 @@ public class feedActivity extends AppCompatActivity {
                 intent.putExtra("loginName", loginName);
                 intent.putExtra("mood", searchUser.get(i));
                 startActivity(intent);
+    }
+
+
+    //TODO: Fix bug where the app crashes when the UserFeedMap activity is started.
+    private void openMoodMap(){
+        mapButton=findViewById(R.id.map_feed_button);
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(feedActivity.this, FeedMapActivity.class);
+                if(feedDataList.size()>0){
+                    intent.putParcelableArrayListExtra("moodList",feedDataList);
+                    startActivity(intent);
+                }
+                else{
+                    Toast.makeText(feedActivity.this,"You're not following anyone!",Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
     }
 
     /**

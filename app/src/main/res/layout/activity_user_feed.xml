@@ -20,16 +20,26 @@
             <Button
                 android:id="@+id/feedButton"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:hint="FEED"/>
+                android:hint="FEED" />
 
             <Button
                 android:id="@+id/userButton"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:hint="USER"/>
+                android:hint="USER" />
+            <ImageButton
+                android:id="@+id/map_user_feed_button"
+                android:layout_width="wrap_content"
+                android:layout_height="74dp"
+                android:layout_weight="1"
+                android:adjustViewBounds="false"
+                android:cropToPadding="true"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/world_map" />
+
 
         </LinearLayout>
 
