@@ -70,7 +70,25 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
             String time = mood.getTime();
             String reason = mood.getReason();
             String situation = mood.getSocialSituation();
+            String infoWindow;
             LatLng latlng = new LatLng(latitude,longitude);
+
+            if(reason.equals("")){
+                if(situation == null){
+                    infoWindow=date+" "+time+"\n"+locationAddress;
+                }
+                else{
+                    infoWindow=situation+"\n"+date+" "+time+"\n"+locationAddress;
+                }
+            }
+            else{
+                if(situation == null){
+                    infoWindow=reason+"\n"+date+" "+time+"\n"+locationAddress;
+                }
+                else{
+                    infoWindow=reason+"\n"+situation+"\n"+date+" "+time+"\n"+locationAddress;
+                }
+            }
 
             if(mood.getEmotionalState().equals("HAPPY")){
                 int height = 150;
@@ -81,7 +99,7 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
                 Marker marker = gmap.addMarker(new MarkerOptions()
                         .position(latlng)
                         .title(author)
-                        .snippet(reason+"\n"+situation+"\n"+date+" "+time+"\n"+locationAddress)
+                        .snippet(infoWindow)
                         .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
                 );
 
@@ -95,7 +113,7 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
                 Marker marker = gmap.addMarker(new MarkerOptions()
                         .position(latlng)
                         .title(author)
-                        .snippet(reason+"\n"+situation+"\n"+date+" "+time+"\n"+locationAddress)
+                        .snippet(infoWindow)
                         .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
                 );
 
@@ -109,7 +127,7 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
                 Marker marker = gmap.addMarker(new MarkerOptions()
                         .position(latlng)
                         .title(author)
-                        .snippet(reason+"\n"+situation+"\n"+date+" "+time+"\n"+locationAddress)
+                        .snippet(infoWindow)
                         .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
                 );
             }
@@ -122,7 +140,7 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
                 Marker marker = gmap.addMarker(new MarkerOptions()
                         .position(latlng)
                         .title(author)
-                        .snippet(reason+"\n"+situation+"\n"+date+" "+time+"\n"+locationAddress)
+                        .snippet(infoWindow)
                         .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
                 );
             }
@@ -135,7 +153,7 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
                 Marker marker = gmap.addMarker(new MarkerOptions()
                         .position(latlng)
                         .title(author)
-                        .snippet(reason+"\n"+situation+"\n"+date+" "+time+"\n"+locationAddress)
+                        .snippet(infoWindow)
                         .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
                 );
             }
@@ -148,7 +166,7 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
                 Marker marker = gmap.addMarker(new MarkerOptions()
                         .position(latlng)
                         .title(author)
-                        .snippet(reason+"\n"+situation+"\n"+date+" "+time+"\n"+locationAddress)
+                        .snippet(infoWindow)
                         .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
                 );
             }
@@ -161,7 +179,7 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
                 Marker marker = gmap.addMarker(new MarkerOptions()
                         .position(latlng)
                         .title(author)
-                        .snippet(reason+"\n"+situation+"\n"+date+" "+time+"\n"+locationAddress)
+                        .snippet(infoWindow)
                         .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
                 );
             }
