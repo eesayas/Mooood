@@ -71,7 +71,14 @@ public class NotificationActivity extends AppCompatActivity {
                     Log.d("namefollow ", requestName);
                     Log.d("timefollow ", time);
                     Notification notification = new Notification(requestName, time);
-                    notificationDataList.add(notification);
+
+                    if (notificationDataList.contains(notification)){
+                        Log.d("duplicates", "Already exist in the list   " + notification.getUsername());
+                    }
+                    else {
+                        Log.d("duplicates", "added in the list " + notification.getUsername());
+                        notificationDataList.add(notification);
+                    }
                 }
                 Adapter.notifyDataSetChanged();
             }

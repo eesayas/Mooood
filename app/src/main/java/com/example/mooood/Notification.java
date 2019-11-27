@@ -45,5 +45,19 @@ public class Notification {
         return time;
     }
 
+    @Override
+    public boolean equals(Object o){
+        if(this == o){
+            return true;
+        }
+        if(o == null || getClass() != o.getClass()){
+            return false;
+        }
+        Notification temp = (Notification) o;
+        return username.equals(temp.getUsername()) &&
+                requestTime.equals(temp.getRequestTime());
+
+    }
+
 }
 
