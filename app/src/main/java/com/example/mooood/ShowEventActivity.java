@@ -4,13 +4,20 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -32,9 +39,12 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
     private static final String TAG = "Debugging: from ShowEventActivity - ";
     public static final String MOOD_EVENT = "Mood Event";
 
+    RelativeLayout fullscreenLayout;
     String author, date ,time ,emotionalState ,socialSituation ,imageUrl ,reason ,latitude ,longitude ,locationAddress;
     TextView authorText, dateText, timeText, socialSituationText, reasonText;
     ImageView emoticon, imageReason;
+    LinearLayout backBtn, moreDetailsLayout;
+
     Button editButton;
 
     MapView mapView;
@@ -47,6 +57,12 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_event);
 
+        fullscreenLayout = findViewById(R.id.fullscreen_ll);
+        moreDetailsLayout = findViewById(R.id.more_detail_ll);
+
+        makeFullscreen(fullscreenLayout);
+//        setMinimumHeight(moreDetailsLayout);
+
         Intent intent = getIntent();
         final MoodEvent moodEvent = intent.getParcelableExtra(MOOD_EVENT);
 
@@ -57,6 +73,8 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
         setTextAndImageView();
 
         editBtnClickListener(moodEvent);
+
+        goBackListener();
 
         Bundle mapViewBundle = null;
         if (savedInstanceState != null) {
@@ -69,6 +87,61 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
 
 
     }
+
+    /**
+     * This is a listener for any element that directs User back to Feed
+     */
+    private void goBackListener(){
+        backBtn = findViewById(R.id.back_btn);
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+    }
+
+    /**
+     * This get the status bar height in the device
+     * @return int
+     * This is the status bar height
+     */
+    private int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
+    /**
+     * This makes the first layout fullscreen
+     */
+    private void makeFullscreen(RelativeLayout layout){
+        //get device screen height
+        Point size = new Point();
+        getWindowManager().getDefaultDisplay().getSize(size);
+        int screenHeight = size.y;
+
+        ViewGroup.LayoutParams params = layout.getLayoutParams();
+        params.height = screenHeight - getStatusBarHeight();
+
+    }
+
+    private void setMinimumHeight(LinearLayout layout){
+        //get device screen height
+        Point size = new Point();
+        getWindowManager().getDefaultDisplay().getSize(size);
+        int screenHeight = size.y;
+
+        ViewGroup.LayoutParams params = layout.getLayoutParams();
+        params.height = screenHeight - getStatusBarHeight();
+
+        layout.setMinimumHeight(params.height);
+    }
+
 
     /**
      * This gets all needed values from MoodEvent to be displayed
@@ -94,6 +167,8 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
      * This selects all TextView and ImageView from xml
      */
     private void getTextAndImageView(){
+
+
         authorText = findViewById(R.id.author);
         emoticon = findViewById(R.id.emoticon);
         dateText = findViewById(R.id.date);

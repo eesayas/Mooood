@@ -1,83 +1,312 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:fillViewport="true"
+    android:background="#2f2f2f">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/author"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:layout_gravity="center_horizontal">
-        </TextView>
-
-        <TextView
-            android:text="felt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:layout_gravity="center_horizontal">
-        </TextView>
-
-        <ImageView
-            android:id="@+id/emoticon"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:layout_gravity="center_horizontal">
-        </ImageView>
-
-        <TextView
-            android:id="@+id/date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal">
-        </TextView>
-
-        <TextView
-            android:id="@+id/time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal">
-        </TextView>
-
-        <TextView
-            android:id="@+id/social_situation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal">
-        </TextView>
-
-        <ImageView
-            android:id="@+id/image_reason"
-            android:layout_width="200dp"
-            android:layout_height="200dp"></ImageView>
-
-
-        <TextView
-            android:id="@+id/reason"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal">
-        </TextView>
-
-        <com.google.android.gms.maps.MapView
-            android:id="@+id/showMapView"
-            android:layout_width="match_parent"
-            android:layout_height="150dp" />
-
-        <Button
-            android:id="@+id/edit_button"
+        <RelativeLayout
+            android:id="@+id/fullscreen_ll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="EDIT THIS POST"
+            android:orientation="vertical"
             android:layout_gravity="center_horizontal">
-        </Button>
+
+            <!--BACK BUTTON-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/back_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="15dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_chevron_left">
+                    </ImageView>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="40dp"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <!--User Name-->
+                    <TextView
+                        android:id="@+id/author"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:fontFamily="@font/roboto"
+                        android:letterSpacing="0.1"
+                        android:text="John Doe"
+                        android:textAlignment="center"
+                        android:textColor="#fff"
+                        android:textSize="30sp" />
+
+                    <!--felt-->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:fontFamily="@font/roboto"
+                        android:text="felt"
+                        android:textAlignment="center"
+                        android:textColor="#fff"
+                        android:textSize="20sp" />
+
+                    <!--[emoticon]-->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_margin="15dp">
+
+                        <ImageView
+                            android:id="@+id/emoticon"
+                            android:layout_width="200dp"
+                            android:layout_height="200dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                        </ImageView>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <!--on-->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:fontFamily="@font/roboto"
+                        android:text="on"
+                        android:textAlignment="center"
+                        android:textColor="#fff"
+                        android:textSize="20sp" />
+
+                    <!--DATE-->
+                    <TextView
+                        android:id="@+id/date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/roboto"
+                        android:text="Jan 14, 2100"
+                        android:textColor="#fff"
+                        android:textSize="20sp" />
+
+                    <!--TIME-->
+                    <TextView
+                        android:id="@+id/time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="20dp"
+                        android:fontFamily=""
+                        android:text="9:00 pm"
+                        android:textColor="#fff"
+                        android:textSize="20sp" />
+
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <!-- more details indicator -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_expand_more_black_24dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </RelativeLayout> <!--end of initialfullscreen layout -->
+
+
+        <!--MORE DETAILS!!!-->
+        <LinearLayout
+            android:id="@+id/more_detail_ll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+                    <!--at-->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:fontFamily="@font/roboto"
+                        android:text="at"
+                        android:textAlignment="center"
+                        android:textColor="#fff"
+                        android:textSize="20sp" />
+
+                    <!--GPS preview-->
+                    <com.google.android.gms.maps.MapView
+                        android:id="@+id/showMapView"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginBottom="15dp"/>
+
+                    <!--GPS address-->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto"
+                        android:textSize="20sp"
+                        android:layout_marginRight="35dp"
+                        android:layout_marginLeft="35dp"
+                        android:layout_marginBottom="40dp"
+                        android:textAlignment="center"
+                        android:textColor="#fff"
+                        android:text="9156 153 St NW, Edmonton, AB T5R 1P6, Canada">
+
+                    </TextView>
+
+                    <!--with-->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="15dp"
+                        android:fontFamily="@font/roboto"
+                        android:text="with"
+                        android:textAlignment="center"
+                        android:textColor="#fff"
+                        android:textSize="20sp" />
+
+                    <!--Social Situation-->
+                    <TextView
+                        android:id="@+id/social_situation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:textSize="25sp"
+                        android:letterSpacing="0.1"
+                        android:textColor="#fff"
+                        android:layout_marginBottom="50dp">
+                    </TextView>
+
+                    <!--because-->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:fontFamily="@font/roboto"
+                        android:text="because"
+                        android:textAlignment="center"
+                        android:textColor="#fff"
+                        android:textSize="20sp" />
+
+                    <!--[image]-->
+                    <ImageView
+                        android:id="@+id/image_reason"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:scaleType="centerCrop"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginLeft="20dp" />
+
+                    <TextView
+                        android:id="@+id/reason"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginBottom="15dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:textSize="20sp"
+                        android:textColor="#fff">
+                    </TextView>
+
+                    <TextView
+                        android:text="- eesayas"
+                        android:layout_marginBottom="40dp"
+                        android:layout_marginLeft="45dp"
+                        android:layout_marginRight="45dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="20sp"
+                        android:textAlignment="textEnd"
+                        android:textColor="#fff">
+                    </TextView>
+
+
+                <!--EDIT BUTTON-->
+                <Button
+                    android:id="@+id/edit_button"
+                    android:text="EDIT THIS POST"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/round_gray"
+                    android:textColor="#FFF"
+                    android:padding="10dp"
+                    android:fontFamily="@font/roboto">
+                </Button>
+
+                <!--EDIT BUTTON-->
+                <Button
+                    android:text="GO BACK TO USER"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/round"
+                    android:textColor="#FFF"
+                    android:padding="10dp"
+                    android:fontFamily="@font/roboto">
+                </Button>
+
+        </LinearLayout>
+
+
     </LinearLayout>
+
 
 </ScrollView>
