@@ -61,8 +61,8 @@ public class followerActivity extends AppCompatActivity {
         setAuthor= findViewById(R.id.author);
         collectionReference=db.collection("MoodEvents");
         Intent intent = getIntent();
-        final String toFollow = intent.getStringExtra("accountMood");
-        final String loginName= intent.getStringExtra("loginName");
+        toFollow = intent.getStringExtra("accountMood");
+        loginName= intent.getStringExtra("loginName");
         final String date = intent.getStringExtra("moodDate");
         final String time = intent.getStringExtra("moodTime");
         final String author = intent.getStringExtra("moodAuthor");
