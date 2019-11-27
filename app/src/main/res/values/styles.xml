@@ -17,4 +17,9 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="SwitchThemeOverlay" parent="">
+        <!-- active thumb & track color (30% transparency) -->
+        <item name="colorControlActivated">#00c4ff</item>
+    </style>
+
 </resources>

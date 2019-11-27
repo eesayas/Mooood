@@ -19,16 +19,19 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.ViewFlipper;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.content.FileProvider;
 import androidx.viewpager.widget.ViewPager;
 
@@ -83,6 +86,10 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
 
     ViewFlipper viewFlipper;
 
+    ImageView chosenEmoticon;
+
+    int chosenEmotionPos = 0;
+
     //Firebase setup!
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference documentReference;
@@ -105,6 +112,9 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     Calendar calendar;
     TextView dateAndTimeMood;
     Button submitButton;
+
+    SwitchCompat toggleImagePreview, toggleGPSPreview;
+    LinearLayout gpsPreviewCont, imgReasonCont;
 
     //For location services inside the activity
     private static final String MAP_VIEW_BUNDLE_KEY="MapViewBundleKey";
@@ -137,8 +147,13 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
 
         moodIndicator = findViewById(R.id.emotion_indicator);
 
+
         viewFlipper = findViewById(R.id.view_flipper);
-//        viewFlipper.setFlipInterval(2000);
+
+        chosenEmoticon = findViewById(R.id.chosen_emoticon);
+
+        gpsPreviewCont = findViewById(R.id.gps_preview_cont);
+        imgReasonCont = findViewById(R.id.img_reason_cont);
 
         //Acquire the account name of the current User
         Intent intent = getIntent();
@@ -156,13 +171,21 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         createMoodRoster();
         swipeMoodAdapterSetup();
         customSwipeMoodStyling();
-        emoticonSelectBtnListener();
+        setCurrentDateAndTime();
         backBtnListener();
 
-        //Invoke methods for selection of MoodEvent details
+
         moodSelection();
+
+
+        emoticonSelectBtnListener();
+
+        //Invoke methods for selection of MoodEvent details
+
         socialSituationClickListener();
         dateAndTimePickerClickListener();
+
+        togglePreviews();
 
         //setup for image upload
         storageReference = FirebaseStorage.getInstance().getReference("reason_image");
@@ -185,6 +208,13 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
 
         submitBtnClickListener();
 
+        LinearLayout ll = new LinearLayout(this);
+
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        layoutParams.setMargins(30, 20, 30, 0);
+
     } //end of onCreate
 
 
@@ -201,16 +231,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         viewFlipper.showNext();
     }
 
-    private void emoticonSelectBtnListener(){
-        selectEmoticonBtn = findViewById(R.id.select_emoticon_btn);
 
-        selectEmoticonBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                nextView(view);
-            }
-        });
-    }
 
 
     private void backBtnListener(){
@@ -258,6 +279,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         moodRoster.setClipToPadding(false);
         moodRoster.setPadding(150,0,150,0);
 //        moodRoster.setPageMargin(50);
+        imageUpload.setAdjustViewBounds(true);
     }
 
     //==============================================================================================
@@ -279,10 +301,13 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
 
             @Override
             public void onPageSelected(int position) {
+
                 String emotion = moodImages.get(position).getEmotionalState();
-                moodEvent.setEmotionalState(moodImages.get(position).getEmotionalState()); //for the object to be created
-                moodIndicator.setText(moodImages.get(position).getEmotionalState()); //for the indicator in xml
+                moodEvent.setEmotionalState(emotion); //for the object to be created
+                moodIndicator.setText(emotion); //for the indicator in xml
+
 //                moodIndicator.setTextColor(); FUTURE DEV!!!
+
             }
 
             @Override
@@ -291,6 +316,20 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
             }
         });
 
+    }
+
+    private void emoticonSelectBtnListener(){
+        selectEmoticonBtn = findViewById(R.id.select_emoticon_btn);
+
+        selectEmoticonBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, moodEvent.getEmotionalState());
+
+                chosenEmoticon.setImageResource(new Emoticon(moodEvent.getEmotionalState(), 1).getImageLink());
+                nextView(view);
+            }
+        });
     }
 
     /**
@@ -329,6 +368,21 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         });
 
         builder.show();
+    }
+
+    /**
+     * This sets the date/time field to the current time and date
+     */
+    private void setCurrentDateAndTime(){
+        calendar = Calendar.getInstance(); //now
+
+        simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a", Locale.getDefault());
+
+        moodEvent.setDate( new SimpleDateFormat("MMM dd yyyy", Locale.getDefault()).format(calendar.getTime()) );
+        moodEvent.setTime( new SimpleDateFormat("h:mm a", Locale.getDefault()).format(calendar.getTime()) );
+
+        String displayText = moodEvent.getDate() + " at " + moodEvent.getTime();
+        dateAndTimeMood.setText(displayText);
     }
 
     /**
@@ -372,9 +426,47 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
             moodEvent.setTime( new SimpleDateFormat("h:mm a", Locale.getDefault()).format(calendar.getTime()) );
 
             //set TexView to correspond with input data
-            dateAndTimeMood.setText(simpleDateFormat.format(calendar.getTime()));
+            String displayText = moodEvent.getDate() + " at " + moodEvent.getTime();
+            dateAndTimeMood.setText(displayText);
         }
     };
+
+    //TOGGLES
+
+    /**
+     * This toggles (shows/hides) the previewers for gps and image upload
+     */
+    private void togglePreviews(){
+        toggleImagePreview = findViewById(R.id.toggle_image_preview);
+        toggleGPSPreview = findViewById(R.id.toggle_gps_preview);
+
+        toggleImagePreview.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if(isChecked){
+                    imageUpload.setVisibility(View.VISIBLE);
+
+                } else{
+                    imageUpload.setVisibility(View.GONE);
+
+
+                    //RESET PREVIEW
+                }
+            }
+        });
+
+        toggleGPSPreview.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if(isChecked){
+                    gpsPreviewCont.setVisibility(View.VISIBLE);
+
+                } else{
+                    gpsPreviewCont.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
 
     //==========================================================================================
     // UPLOAD IMAGE METHODS (Note: Use design pattern to put all this into a different file)
