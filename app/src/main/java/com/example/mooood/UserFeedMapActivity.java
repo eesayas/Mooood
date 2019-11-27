@@ -2,25 +2,38 @@ package com.example.mooood;
 
 import androidx.fragment.app.FragmentActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class UserFeedMapActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    private static final String TAG = "Debugging";
+
     GoogleMap gmap;
     ArrayList<MoodEvent> moodsList;
+    String locationAddress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,14 +53,92 @@ public class UserFeedMapActivity extends FragmentActivity implements OnMapReadyC
     public void populateLocationsData(GoogleMap gmap){
         for (int counter = 0; counter < moodsList.size(); counter++) {
             MoodEvent mood = moodsList.get(counter);
+            System.out.println(moodsList.size());
+            System.out.println(mood.getLatitude());
             Double latitude = Double.parseDouble(mood.getLatitude());
             Double longitude = Double.parseDouble(mood.getLongitude());
-            String address = mood.getAddress();
+            getAddress(UserFeedMapActivity.this,latitude,longitude);
             String author = mood.getAuthor();
             String emotion = mood.getEmotionalState();
             LatLng latlng = new LatLng(latitude,longitude);
-            gmap.addMarker(new MarkerOptions().position(latlng).title(
-                    author+" seen at: "+address));
+            if(mood.getEmotionalState().equals("HAPPY")){
+                int height = 150;
+                int width = 150;
+                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.happy_cow_v1);
+                Bitmap b=bitmapdraw.getBitmap();
+                Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+                gmap.addMarker(new MarkerOptions().position(latlng).title(
+                        author+" seen at: "+ locationAddress)).setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+
+            }
+            if(mood.getEmotionalState().equals("SAD")){
+                int height = 150;
+                int width = 150;
+                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.sad_cow_v1);
+                Bitmap b=bitmapdraw.getBitmap();
+                Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+                gmap.addMarker(new MarkerOptions().position(latlng).title(
+                        author+" seen at: "+ locationAddress)).setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+
+            }
+            if(mood.getEmotionalState().equals("LAUGHING")){
+                int height = 150;
+                int width = 150;
+                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.laughing_cow_v1);
+                Bitmap b=bitmapdraw.getBitmap();
+                Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+                gmap.addMarker(new MarkerOptions().position(latlng).title(
+                        author+" seen at: "+ locationAddress)).setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+
+            }
+            if(mood.getEmotionalState().equals("IN LOVE")){
+                int height = 150;
+                int width = 150;
+                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.in_love_cow_v1);
+                Bitmap b=bitmapdraw.getBitmap();
+                Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+                gmap.addMarker(new MarkerOptions().position(latlng).title(
+                        author+" seen at: "+ locationAddress)).setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+
+            }
+            if(mood.getEmotionalState().equals("ANGRY")){
+                int height = 150;
+                int width = 150;
+                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.angry_cow_v1);
+                Bitmap b=bitmapdraw.getBitmap();
+                Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+                gmap.addMarker(new MarkerOptions().position(latlng).title(
+                        author+" seen at: "+ locationAddress)).setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+
+            }
+            if(mood.getEmotionalState().equals("SICK")){
+                int height = 150;
+                int width = 150;
+                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.sick_cow_v1);
+                Bitmap b=bitmapdraw.getBitmap();
+                Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+                gmap.addMarker(new MarkerOptions().position(latlng).title(
+                        author+" seen at: "+ locationAddress)).setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+
+            }
+            if(mood.getEmotionalState().equals("AFRAID")){
+                int height = 150;
+                int width = 150;
+                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.afraid_cow_v1);
+                Bitmap b=bitmapdraw.getBitmap();
+                Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+                gmap.addMarker(new MarkerOptions().position(latlng).title(
+                        author+" seen at: "+ locationAddress)).setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+
+            }
+            System.out.println(mood.getEmotionalState());
+//            int height = 200;
+//            int width = 200;
+//            BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.happy_cow_v1);
+//            Bitmap b=bitmapdraw.getBitmap();
+//            Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+//            gmap.addMarker(new MarkerOptions().position(latlng).title(
+//                    author+" seen at: "+ locationAddress)).setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
         }
     }
 
@@ -85,4 +176,24 @@ public class UserFeedMapActivity extends FragmentActivity implements OnMapReadyC
         CameraPosition cp = camBuilder.build();
         gmap.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
     }
+    public void getAddress(Context context, double LATITUDE, double LONGITUDE) {
+
+        //Set Address
+        try {
+            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+            List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
+            if (addresses != null && addresses.size() > 0) {
+
+                String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+
+                Log.d(TAG, "getAddress:  address" + address);
+
+                locationAddress = address;
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

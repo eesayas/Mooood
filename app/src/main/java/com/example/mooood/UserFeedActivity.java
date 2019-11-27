@@ -362,6 +362,7 @@ public class UserFeedActivity extends AppCompatActivity {
                 Intent intent = new Intent(UserFeedActivity.this, UserFeedMapActivity.class);
                 if(postDataList.size()>0){
                     try{
+                        intent.putExtra("UserFeed","UserFeed");
                         intent.putParcelableArrayListExtra("userMoodList",postDataList);
                         startActivity(intent);
                     } catch (Exception e) {
