@@ -139,6 +139,20 @@ public class MoodEvent implements Parcelable{
     }
 
     @Override
+    public boolean equals(Object o){
+        if(this == o){
+            return true;
+        }
+        if(o == null || getClass() != o.getClass()){
+            return false;
+        }
+        MoodEvent temp = (MoodEvent) o;
+        return author.equals(temp.getAuthor()) &&
+                timeStamp.equals(temp.getTimeStamp());
+
+    }
+
+    @Override
     public int describeContents() {
         return 0;
     }

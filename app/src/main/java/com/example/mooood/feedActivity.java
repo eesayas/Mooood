@@ -25,6 +25,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -83,14 +84,15 @@ public class feedActivity extends AppCompatActivity {
 
         feedCollectionReference = db.collection("MoodEvents").document(name).collection("Following");
         collectionReference = db.collection("MoodEvents");
-
+        feedDataList = new ArrayList<>();
         arrayAdapterSetup();
         followAdapter();
         searchUsers(name);
         selectUser();
         notificationCheck(name);
         showEventClickListener();
-
+        feedDataList.clear();
+        Adapter.notifyDataSetChanged();
 
     } //End of onCreate
 
@@ -219,43 +221,62 @@ public class feedActivity extends AppCompatActivity {
         feedSearchView = findViewById(R.id.feedSearchView);
         feedSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onQueryTextSubmit(String s) {
+            public boolean onQueryTextSubmit(final String s) {
                 listView.setVisibility(View.INVISIBLE);
                 followListview.setVisibility(View.VISIBLE);
-                db.collection("Users")
-                        .whereEqualTo("author", s)
-                        .limit(1)
-                        .get()
-                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                searchUser.clear();
-                                for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
+                db.collection("MoodEvents").document(s)
+                        .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            Log.d("readingdocument", s);
+                            Log.d("readingdocument111111", document.getId());
+                            if (document.getId().equals(s)) {
+                                db.collection("MoodEvents").document(s).collection("MoodActivities")
+                                        .orderBy("timeStamp", Query.Direction.DESCENDING)
+                                        .limit(1)
+                                        .get()
+                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                searchUser.clear();
+                                                for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
 
-                                    String author = (String) documentSnapshot.getData().get("author");
-                                    String date = (String) documentSnapshot.getData().get("date");
-                                    String time = (String) documentSnapshot.getData().get("time");
-                                    String emotionalState = (String) documentSnapshot.getData().get("emotionalState");
-                                    String imageURl = (String) documentSnapshot.getData().get("imageUrl");
-                                    String reason = (String) documentSnapshot.getData().get("reason");
-                                    String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
-                                    try {
-                                        moodTimeStamp = simpleDateFormat.parse(date + ' '+ time);
-                                        Log.d("Time1", "changing timestamp in SearchUsers");
-                                    }catch (ParseException e){
-                                        Log.d("Time1", "catch exception in searchUsers");
-                                        e.printStackTrace();
-                                    }
-                                    MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation);
-                                    moodEvent.setDocumentId(documentSnapshot.getId());
-                                    moodEvent.setTimeStamp(moodTimeStamp);
+                                                    String author = (String) documentSnapshot.getData().get("author");
+                                                    String date = (String) documentSnapshot.getData().get("date");
+                                                    String time = (String) documentSnapshot.getData().get("time");
+                                                    String emotionalState = (String) documentSnapshot.getData().get("emotionalState");
+                                                    String imageURl = (String) documentSnapshot.getData().get("imageUrl");
+                                                    String reason = (String) documentSnapshot.getData().get("reason");
+                                                    String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
+                                                    try {
+                                                        moodTimeStamp = simpleDateFormat.parse(date + ' ' + time);
+                                                        Log.d("Time1", "changing timestamp in SearchUsers");
+                                                    } catch (ParseException e) {
+                                                        Log.d("Time1", "catch exception in searchUsers");
+                                                        e.printStackTrace();
+                                                    }
+                                                    MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation);
+                                                    moodEvent.setDocumentId(documentSnapshot.getId());
+                                                    moodEvent.setTimeStamp(moodTimeStamp);
 
-                                    searchUser.add(moodEvent); //add to data list
-                                }
-                                seacrhAdapter.notifyDataSetChanged();
+                                                    searchUser.add(moodEvent); //add to data list
+                                                }
+                                                seacrhAdapter.notifyDataSetChanged();
+                                            }
+                                        });
+                            } else {
+                                Log.d("documentexist", "not exist");
                             }
-                        });
+
+                        } else {
+                            Log.d("checking", "Failed with: ", task.getException());
+                        }
+                    }
+                });
+
                 return false;
             }
             @Override
@@ -314,49 +335,51 @@ public class feedActivity extends AppCompatActivity {
         userButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                feedDataList.clear();
+                Adapter.notifyDataSetChanged();
                 finish();
             }
         });
     }
 
-    /**
-     * This is a click listener to go to profile
-     */
-    public void goToProfile(View view) {
-
-        db.collection("Users")
-                .whereEqualTo("author", name)
-                .limit(1)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        feedDataList.clear();
-                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
-
-                            String author = (String) documentSnapshot.getData().get("author");
-                            String date = (String) documentSnapshot.getData().get("date");
-                            String time = (String) documentSnapshot.getData().get("time");
-                            String emotionalState = (String) documentSnapshot.getData().get("emotionalState");
-                            String reason = (String) documentSnapshot.getData().get("reason");
-                            String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
-
-
-                            Intent intent = new Intent(feedActivity.this, UserProfile.class);
-
-                            intent.putExtra("AUTHOR", author);
-                            intent.putExtra("DATE", date);
-                            intent.putExtra("TIME", time);
-                            intent.putExtra("STATE", emotionalState);
-                            intent.putExtra("REASON", reason);
-                            intent.putExtra("SITUATION", socialSituation);
-                            startActivity(intent);
-                        }
-
-                    }
-                });
-    }
+//    /**
+//     * This is a click listener to go to profile
+//     */
+//    public void goToProfile(View view) {
+//
+//        db.collection("Users")
+//                .whereEqualTo("author", name)
+//                .limit(1)
+//                .get()
+//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                        feedDataList.clear();
+//                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+//                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
+//
+//                            String author = (String) documentSnapshot.getData().get("author");
+//                            String date = (String) documentSnapshot.getData().get("date");
+//                            String time = (String) documentSnapshot.getData().get("time");
+//                            String emotionalState = (String) documentSnapshot.getData().get("emotionalState");
+//                            String reason = (String) documentSnapshot.getData().get("reason");
+//                            String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
+//
+//
+//                            Intent intent = new Intent(feedActivity.this, UserProfile.class);
+//
+//                            intent.putExtra("AUTHOR", author);
+//                            intent.putExtra("DATE", date);
+//                            intent.putExtra("TIME", time);
+//                            intent.putExtra("STATE", emotionalState);
+//                            intent.putExtra("REASON", reason);
+//                            intent.putExtra("SITUATION", socialSituation);
+//                            startActivity(intent);
+//                        }
+//
+//                    }
+//                });
+//    }
 
 
 
