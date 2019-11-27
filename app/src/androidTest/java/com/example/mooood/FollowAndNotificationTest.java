@@ -65,8 +65,8 @@ public class FollowAndNotificationTest {
         solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
 
         //Signs into Account
-        solo.enterText((EditText)solo.getView(R.id.activity_main_et__username), "maaz");
-        solo.waitForText("maaz1",1,2000);
+        solo.enterText((EditText)solo.getView(R.id.activity_main_et__username), "hero");
+        solo.waitForText("hero",1,2000);
         solo.enterText((EditText)solo.getView(R.id.activity_main_et__password), "1");
         solo.waitForText("1",1,2000);
         solo.clickOnView(solo.getView(R.id.activity_main_btn_submit));
@@ -109,10 +109,10 @@ public class FollowAndNotificationTest {
         solo.waitForActivity(UserProfile.class);
 
         //Signs into Account
-        solo.enterText((EditText)solo.getView(R.id.activity_main_et__username), "kirby");
-        solo.waitForText("kirby",1,2000);
-        solo.enterText((EditText)solo.getView(R.id.activity_main_et__password), "1");
-        solo.waitForText("1",1,2000);
+        solo.enterText((EditText)solo.getView(R.id.activity_main_et__username), "test2");
+        solo.waitForText("test2",1,2000);
+        solo.enterText((EditText)solo.getView(R.id.activity_main_et__password), "2");
+        solo.waitForText("2",1,2000);
         solo.clickOnView(solo.getView(R.id.activity_main_btn_submit));
         solo.waitForActivity(UserFeedActivity.class);
 
