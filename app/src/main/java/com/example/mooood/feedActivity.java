@@ -342,44 +342,44 @@ public class feedActivity extends AppCompatActivity {
         });
     }
 
-//    /**
-//     * This is a click listener to go to profile
-//     */
-//    public void goToProfile(View view) {
-//
-//        db.collection("Users")
-//                .whereEqualTo("author", name)
-//                .limit(1)
-//                .get()
-//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        feedDataList.clear();
-//                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-//                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
-//
-//                            String author = (String) documentSnapshot.getData().get("author");
-//                            String date = (String) documentSnapshot.getData().get("date");
-//                            String time = (String) documentSnapshot.getData().get("time");
-//                            String emotionalState = (String) documentSnapshot.getData().get("emotionalState");
-//                            String reason = (String) documentSnapshot.getData().get("reason");
-//                            String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
-//
-//
-//                            Intent intent = new Intent(feedActivity.this, UserProfile.class);
-//
-//                            intent.putExtra("AUTHOR", author);
-//                            intent.putExtra("DATE", date);
-//                            intent.putExtra("TIME", time);
-//                            intent.putExtra("STATE", emotionalState);
-//                            intent.putExtra("REASON", reason);
-//                            intent.putExtra("SITUATION", socialSituation);
-//                            startActivity(intent);
-//                        }
-//
-//                    }
-//                });
-//    }
+    /**
+     * This is a click listener to go to profile
+     */
+    public void goToProfile(View view) {
+
+        db.collection("Users")
+                .whereEqualTo("author", name)
+                .limit(1)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        feedDataList.clear();
+                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
+
+                            String author = (String) documentSnapshot.getData().get("author");
+                            String date = (String) documentSnapshot.getData().get("date");
+                            String time = (String) documentSnapshot.getData().get("time");
+                            String emotionalState = (String) documentSnapshot.getData().get("emotionalState");
+                            String reason = (String) documentSnapshot.getData().get("reason");
+                            String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
+
+
+                            Intent intent = new Intent(feedActivity.this, UserProfile.class);
+
+                            intent.putExtra("AUTHOR", author);
+                            intent.putExtra("DATE", date);
+                            intent.putExtra("TIME", time);
+                            intent.putExtra("STATE", emotionalState);
+                            intent.putExtra("REASON", reason);
+                            intent.putExtra("SITUATION", socialSituation);
+                            startActivity(intent);
+                        }
+
+                    }
+                });
+    }
 
 
 
