@@ -42,7 +42,6 @@
                 android:layout_weight="1"
                 android:background="@drawable/white_border"
                 android:gravity="center"
-                android:onClick="goToProfile"
                 android:paddingLeft="4sp"
                 android:paddingRight="4sp"
                 android:text="@string/profile"

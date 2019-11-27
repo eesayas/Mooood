@@ -56,13 +56,13 @@ public class feedActivity extends AppCompatActivity {
     Date moodTimeStamp;
     String edit;
     private String name;
+    TextView userProfile;
 
 
     //Firebase setup
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference collectionReference;
     private CollectionReference feedCollectionReference;
-
 
     private TextView userId;
 
@@ -91,12 +91,14 @@ public class feedActivity extends AppCompatActivity {
         selectUser();
         notificationCheck(name);
         showEventClickListener();
+        goToProfile();
         feedDataList.clear();
         Adapter.notifyDataSetChanged();
 
+
     } //End of onCreate
 
-    /**
+/**
      * The list of people the User is following is accessed from the database and there most recent mood event is displayed
      */
     @Override
@@ -108,6 +110,7 @@ public class feedActivity extends AppCompatActivity {
                 addSnapshotListener(this, new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                        feedDataList.clear();
                         for (QueryDocumentSnapshot queryDocumentSnapshot : queryDocumentSnapshots){
                             final String name = queryDocumentSnapshot.getId();
                             db.collection("MoodEvents").document(name).collection("MoodActivities")
@@ -139,7 +142,7 @@ public class feedActivity extends AppCompatActivity {
                                                 moodEvent.setDocumentId(documentSnapshot.getId());
                                                 moodEvent.setTimeStamp(moodTimeStamp);
                                                 if (feedDataList.contains(moodEvent)){
-                                                        Log.d("duplicates", "Already exist in the list   " + moodEvent.getAuthor());
+                                                    Log.d("duplicates", "Already exist in the list   " + moodEvent.getAuthor());
                                                 }
                                                 else {
                                                     Log.d("duplicates", "added in the list " + moodEvent.getAuthor());
@@ -161,6 +164,7 @@ public class feedActivity extends AppCompatActivity {
                         }
                     }
                 });
+
     }
     private void showEventClickListener () {
         //click listener for each item -> ShowEventActivity
@@ -268,9 +272,9 @@ public class feedActivity extends AppCompatActivity {
                                             }
                                         });
                             } else {
-                                Log.d("documentexist", "not exist");
-                            }
 
+                                        Log.d("documentexist", "not exist");
+                                    }
                         } else {
                             Log.d("checking", "Failed with: ", task.getException());
                         }
@@ -345,41 +349,51 @@ public class feedActivity extends AppCompatActivity {
     /**
      * This is a click listener to go to profile
      */
-    public void goToProfile(View view) {
+    public void goToProfile(){
+        userProfile= findViewById(R.id.activity_feed_show_profile);
+        userProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                collectionReference.document(name).collection("MoodActivities")
+                        .orderBy("timeStamp", Query.Direction.DESCENDING)
+                        .limit(1)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                feedDataList.clear();
+                                for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
 
-        db.collection("Users")
-                .whereEqualTo("author", name)
-                .limit(1)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        feedDataList.clear();
-                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
-
-                            String author = (String) documentSnapshot.getData().get("author");
-                            String date = (String) documentSnapshot.getData().get("date");
-                            String time = (String) documentSnapshot.getData().get("time");
-                            String emotionalState = (String) documentSnapshot.getData().get("emotionalState");
-                            String reason = (String) documentSnapshot.getData().get("reason");
-                            String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
+                                    String author = (String) documentSnapshot.getData().get("author");
+                                    String date = (String) documentSnapshot.getData().get("date");
+                                    String time = (String) documentSnapshot.getData().get("time");
+                                    String emotionalState = (String) documentSnapshot.getData().get("emotionalState");
+                                    String reason = (String) documentSnapshot.getData().get("reason");
+                                    String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
 
 
-                            Intent intent = new Intent(feedActivity.this, UserProfile.class);
+                                    Intent intent = new Intent(feedActivity.this, UserProfile.class);
 
-                            intent.putExtra("AUTHOR", author);
-                            intent.putExtra("DATE", date);
-                            intent.putExtra("TIME", time);
-                            intent.putExtra("STATE", emotionalState);
-                            intent.putExtra("REASON", reason);
-                            intent.putExtra("SITUATION", socialSituation);
-                            startActivity(intent);
-                        }
+                                    intent.putExtra("AUTHOR", author);
+                                    intent.putExtra("DATE", date);
+                                    intent.putExtra("TIME", time);
+                                    intent.putExtra("STATE", emotionalState);
+                                    intent.putExtra("REASON", reason);
+                                    intent.putExtra("SITUATION", socialSituation);
+                                    startActivity(intent);
+                                }
 
-                    }
-                });
+                            }
+                        });
+            }
+
+        });
+
     }
+
+
+
 
 
 

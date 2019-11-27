@@ -94,10 +94,7 @@ public class FIlterMoodsTest {
 
        ImageView imageView = (ImageView)solo.getView(R.id.emoticon);
        int imgEmotionSample = new Emoticon("HAPPY",2).getImageLink();
-
        imageView.setImageResource(imgEmotionSample);
-
-
 
 
 

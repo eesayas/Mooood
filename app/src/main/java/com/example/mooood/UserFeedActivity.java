@@ -55,8 +55,7 @@ public class UserFeedActivity extends AppCompatActivity {
     SearchView userSearchView;
     Button feedButton;
     Date moodTimeStamp;
-
-
+    TextView userProfile;
     //Firebase setup!
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference documentReference;
@@ -91,7 +90,7 @@ public class UserFeedActivity extends AppCompatActivity {
         createPostBtnClickListener(accountName);
         showEventClickListener();
         selectFeed(accountName);
-
+        goToProfile();
 
 
     } //end of onCreate
@@ -355,41 +354,46 @@ public class UserFeedActivity extends AppCompatActivity {
     /**
      * This is a click listener to go to profile
      */
-    public void goToProfile(View view) {
+    public void goToProfile() {
         //make it go to Moodevents match the account name and collect the most recent mood Event
+        userProfile= findViewById(R.id.activity_user_feed_show_profile);
+        userProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                collectionReference
+                        .orderBy("timeStamp", Query.Direction.DESCENDING)
+                        .limit(1)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
+
+                                    String author = (String) documentSnapshot.getData().get("author");
+                                    String date = (String) documentSnapshot.getData().get("date");
+                                    String time = (String) documentSnapshot.getData().get("time");
+                                    String emotionalState = (String) documentSnapshot.getData().get("emotionalState");
+                                    String reason = (String) documentSnapshot.getData().get("reason");
+                                    String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
 
 
-        db.collection("Users")
-                .whereEqualTo("author", accountName)
-                .limit(1)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
+                                    Intent intent = new Intent(UserFeedActivity.this, UserProfile.class);
 
-                            String author = (String) documentSnapshot.getData().get("author");
-                            String date = (String) documentSnapshot.getData().get("date");
-                            String time = (String) documentSnapshot.getData().get("time");
-                            String emotionalState = (String) documentSnapshot.getData().get("emotionalState");
-                            String reason = (String) documentSnapshot.getData().get("reason");
-                            String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
+                                    intent.putExtra("AUTHOR", author);
+                                    intent.putExtra("DATE", date);
+                                    intent.putExtra("TIME", time);
+                                    intent.putExtra("STATE", emotionalState);
+                                    intent.putExtra("REASON", reason);
+                                    intent.putExtra("SITUATION", socialSituation);
+                                    startActivity(intent);
+                                }
 
+                            }
+                        });
+            }
+        });
 
-                            Intent intent = new Intent(UserFeedActivity.this, UserProfile.class);
-
-                            intent.putExtra("AUTHOR", author);
-                            intent.putExtra("DATE", date);
-                            intent.putExtra("TIME", time);
-                            intent.putExtra("STATE", emotionalState);
-                            intent.putExtra("REASON", reason);
-                            intent.putExtra("SITUATION", socialSituation);
-                            startActivity(intent);
-                        }
-
-                    }
-                });
     }
 
 
