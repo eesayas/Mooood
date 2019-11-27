@@ -1,24 +1,33 @@
 package com.example.mooood;
 
 import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.LinearSmoothScroller;
 
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
@@ -57,15 +66,24 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
             Double longitude = Double.parseDouble(mood.getLongitude());
             getAddress(MoodsMapActivity.this,latitude,longitude);
             String author = mood.getAuthor();
+            String date = mood.getDate();
+            String time = mood.getTime();
+            String reason = mood.getReason();
+            String situation = mood.getSocialSituation();
             LatLng latlng = new LatLng(latitude,longitude);
+
             if(mood.getEmotionalState().equals("HAPPY")){
                 int height = 150;
                 int width = 150;
-                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.happy_cow_v1);
+                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.mooood_logo);
                 Bitmap b=bitmapdraw.getBitmap();
                 Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
-                gmap.addMarker(new MarkerOptions().position(latlng).title(
-                        author+" seen at: "+ locationAddress)).setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+                Marker marker = gmap.addMarker(new MarkerOptions()
+                        .position(latlng)
+                        .title(author)
+                        .snippet(reason+"\n"+situation+"\n"+date+" "+time+"\n"+locationAddress)
+                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+                );
 
             }
             if(mood.getEmotionalState().equals("SAD")){
@@ -74,8 +92,12 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
                 BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.sad_cow_v1);
                 Bitmap b=bitmapdraw.getBitmap();
                 Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
-                gmap.addMarker(new MarkerOptions().position(latlng).title(
-                        author+" seen at: "+ locationAddress)).setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+                Marker marker = gmap.addMarker(new MarkerOptions()
+                        .position(latlng)
+                        .title(author)
+                        .snippet(reason+"\n"+situation+"\n"+date+" "+time+"\n"+locationAddress)
+                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+                );
 
             }
             if(mood.getEmotionalState().equals("LAUGHING")){
@@ -84,9 +106,12 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
                 BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.laughing_cow_v1);
                 Bitmap b=bitmapdraw.getBitmap();
                 Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
-                gmap.addMarker(new MarkerOptions().position(latlng).title(
-                        author+" seen at: "+ locationAddress)).setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
-
+                Marker marker = gmap.addMarker(new MarkerOptions()
+                        .position(latlng)
+                        .title(author)
+                        .snippet(reason+"\n"+situation+"\n"+date+" "+time+"\n"+locationAddress)
+                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+                );
             }
             if(mood.getEmotionalState().equals("IN LOVE")){
                 int height = 150;
@@ -94,9 +119,12 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
                 BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.in_love_cow_v1);
                 Bitmap b=bitmapdraw.getBitmap();
                 Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
-                gmap.addMarker(new MarkerOptions().position(latlng).title(
-                        author+" seen at: "+ locationAddress)).setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
-
+                Marker marker = gmap.addMarker(new MarkerOptions()
+                        .position(latlng)
+                        .title(author)
+                        .snippet(reason+"\n"+situation+"\n"+date+" "+time+"\n"+locationAddress)
+                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+                );
             }
             if(mood.getEmotionalState().equals("ANGRY")){
                 int height = 150;
@@ -104,9 +132,12 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
                 BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.angry_cow_v1);
                 Bitmap b=bitmapdraw.getBitmap();
                 Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
-                gmap.addMarker(new MarkerOptions().position(latlng).title(
-                        author+" seen at: "+ locationAddress)).setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
-
+                Marker marker = gmap.addMarker(new MarkerOptions()
+                        .position(latlng)
+                        .title(author)
+                        .snippet(reason+"\n"+situation+"\n"+date+" "+time+"\n"+locationAddress)
+                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+                );
             }
             if(mood.getEmotionalState().equals("SICK")){
                 int height = 150;
@@ -114,9 +145,12 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
                 BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.sick_cow_v1);
                 Bitmap b=bitmapdraw.getBitmap();
                 Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
-                gmap.addMarker(new MarkerOptions().position(latlng).title(
-                        author+" seen at: "+ locationAddress)).setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
-
+                Marker marker = gmap.addMarker(new MarkerOptions()
+                        .position(latlng)
+                        .title(author)
+                        .snippet(reason+"\n"+situation+"\n"+date+" "+time+"\n"+locationAddress)
+                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+                );
             }
             if(mood.getEmotionalState().equals("AFRAID")){
                 int height = 150;
@@ -124,9 +158,12 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
                 BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.afraid_cow_v1);
                 Bitmap b=bitmapdraw.getBitmap();
                 Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
-                gmap.addMarker(new MarkerOptions().position(latlng).title(
-                        author+" seen at: "+ locationAddress)).setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
-
+                Marker marker = gmap.addMarker(new MarkerOptions()
+                        .position(latlng)
+                        .title(author)
+                        .snippet(reason+"\n"+situation+"\n"+date+" "+time+"\n"+locationAddress)
+                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+                );
             }
         }
     }
@@ -164,7 +201,37 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
 
         CameraPosition cp = camBuilder.build();
         gmap.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
+        gmap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+            @Override
+            public View getInfoWindow(Marker arg0) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+
+                LinearLayout info = new LinearLayout(MoodsMapActivity.this);
+                info.setOrientation(LinearLayout.VERTICAL);
+
+                TextView title = new TextView(MoodsMapActivity.this);
+                title.setTextColor(Color.BLACK);
+                title.setGravity(Gravity.CENTER);
+                title.setTypeface(null, Typeface.BOLD);
+                title.setText(marker.getTitle());
+
+                TextView snippet = new TextView(MoodsMapActivity.this);
+                snippet.setTextColor(Color.GRAY);
+                snippet.setText(marker.getSnippet());
+
+                info.addView(title);
+                info.addView(snippet);
+
+                return info;
+            }
+        });
     }
+
     public void getAddress(Context context, double LATITUDE, double LONGITUDE) {
 
         //Set Address
