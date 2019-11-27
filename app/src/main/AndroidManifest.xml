@@ -44,7 +44,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".UserFeedMapActivity"
+            android:name=".MoodsMapActivity"
             android:label="@string/title_activity_user_feed_map"></activity>
         <activity
             android:name=".FeedMapActivity"

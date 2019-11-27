@@ -341,7 +341,7 @@ public class feedActivity extends AppCompatActivity {
         mapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(feedActivity.this, FeedMapActivity.class);
+                Intent intent = new Intent(feedActivity.this, MoodsMapActivity.class);
                 if(feedDataList.size()>0){
                     intent.putParcelableArrayListExtra("moodList",feedDataList);
                     startActivity(intent);

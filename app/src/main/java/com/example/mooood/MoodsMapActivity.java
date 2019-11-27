@@ -16,7 +16,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -27,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class UserFeedMapActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private static final String TAG = "Debugging";
 
@@ -44,7 +43,8 @@ public class UserFeedMapActivity extends FragmentActivity implements OnMapReadyC
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         Intent intent = getIntent();
-        moodsList = intent.getParcelableArrayListExtra("userMoodList");
+        moodsList = intent.getParcelableArrayListExtra("moodList");
+
 
 
 
@@ -53,13 +53,10 @@ public class UserFeedMapActivity extends FragmentActivity implements OnMapReadyC
     public void populateLocationsData(GoogleMap gmap){
         for (int counter = 0; counter < moodsList.size(); counter++) {
             MoodEvent mood = moodsList.get(counter);
-            System.out.println(moodsList.size());
-            System.out.println(mood.getLatitude());
             Double latitude = Double.parseDouble(mood.getLatitude());
             Double longitude = Double.parseDouble(mood.getLongitude());
-            getAddress(UserFeedMapActivity.this,latitude,longitude);
+            getAddress(MoodsMapActivity.this,latitude,longitude);
             String author = mood.getAuthor();
-            String emotion = mood.getEmotionalState();
             LatLng latlng = new LatLng(latitude,longitude);
             if(mood.getEmotionalState().equals("HAPPY")){
                 int height = 150;
@@ -131,14 +128,6 @@ public class UserFeedMapActivity extends FragmentActivity implements OnMapReadyC
                         author+" seen at: "+ locationAddress)).setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
 
             }
-            System.out.println(mood.getEmotionalState());
-//            int height = 200;
-//            int width = 200;
-//            BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.happy_cow_v1);
-//            Bitmap b=bitmapdraw.getBitmap();
-//            Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
-//            gmap.addMarker(new MarkerOptions().position(latlng).title(
-//                    author+" seen at: "+ locationAddress)).setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
         }
     }
 
