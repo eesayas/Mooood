@@ -359,7 +359,7 @@ public class UserFeedActivity extends AppCompatActivity {
         mapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(UserFeedActivity.this, UserFeedActivity.class);
+                Intent intent = new Intent(UserFeedActivity.this, UserFeedMapActivity.class);
                 if(postDataList.size()>0){
                     try{
                         intent.putParcelableArrayListExtra("userMoodList",postDataList);
