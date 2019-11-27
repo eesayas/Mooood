@@ -1,5 +1,6 @@
 package com.example.mooood;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -84,14 +85,27 @@ public class EditEventActivityTest {
 //        imageUpload = findViewById(R.id.image_reason);
         EditText reason =(EditText)solo.getView(R.id.reason) ;
         TextView dateAndTimeMood = (TextView)solo.getView(R.id.date_and_time);
+        Log.d("datetime", "current date time: "+ dateAndTimeMood.getText());
         View submitButton = solo.getView(R.id.submit_button);
+
+
 
         //edit the reason and the social situation
         solo.enterText(reason, "");
-        solo.enterText(reason, "New Reason");
-        solo.waitForText("New Reason",1,2000);
+        // try entering a reason more than 3 words
+        solo.enterText(reason, "New Reason more 3w");
+
+        solo.waitForText("New Reason more 3w",1,2000);
         solo.clickOnView(socialSituation);
         solo.clickOnText("With Group");
+
+        assertFalse(submitButton.isEnabled());
+        solo.enterText(reason, "");
+        // try entering a reason less than 3 words
+        solo.enterText(reason, "New Reason");
+
+        solo.waitForText("New Reason",1,2000);
+        assertTrue(submitButton.isEnabled());
         solo.clickOnView(submitButton);
 
         solo.waitForActivity(UserFeedActivity.class);
@@ -100,8 +114,12 @@ public class EditEventActivityTest {
         solo.waitForActivity(ShowEventActivity.class);
         TextView moodSocialSituation = (TextView)solo.getView(R.id.social_situation);
         TextView moodReason =(TextView)solo.getView(R.id.reason);
+        TextView moodDate = (TextView)solo.getView(R.id.date);
+        TextView moodTime = (TextView)solo.getView(R.id.time);
+        //tests
         assertEquals(moodSocialSituation.getText().toString(),"With Group");
-
+        assertEquals(moodDate.getText().toString(),date);
+        assertEquals(moodTime.getText().toString(),time);
         assertEquals(moodReason.getText().toString(),"New Reason");
 
     }
@@ -127,9 +145,6 @@ public class EditEventActivityTest {
         View cancelButton = solo.getView(R.id.cancel_button);
         solo.clickOnView(cancelButton);
         solo.waitForActivity(ShowEventActivity.class);
-
-
-
     }
 
 

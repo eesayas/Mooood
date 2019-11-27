@@ -8,8 +8,19 @@
          location permissions for the 'MyLocation' functionality.
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- <uses-permission android:name="android.permission.INTERNET" /> -->
+    <!-- for camera feature -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="18" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
+
     <uses-feature android:name="android.hardware.location.gps" />
 
     <application
@@ -33,12 +44,35 @@
             android:value="@string/google_maps_key" />
 
         <activity
+            android:name=".MoodsMapActivity"
+            android:label="@string/title_activity_user_feed_map"></activity>
+        <activity
+            android:name=".FeedMapActivity"
+            android:label="@string/title_activity_mood_map" /> <!-- Configure File Provider -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.android.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity android:name=".followerActivity" />
+        <activity android:name=".feedActivity" />
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
+
+        <activity
             android:name=".MapsActivity"
-            android:label="MapsActivity"></activity>
+            android:label="MapsActivity" />
         <activity
             android:name=".ShowEventActivity"
             android:label="ShowEventActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".CreateEventActivity"
             android:label="CreateEventActivity"
@@ -46,10 +80,14 @@
         <activity
             android:name=".EditEventActivity"
             android:label="@string/title_activity_user_feed"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".UserFeedActivity"
             android:label="@string/title_activity_user_feed"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".NotificationActivity"
+            android:label="NotificationActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".MainActivity"

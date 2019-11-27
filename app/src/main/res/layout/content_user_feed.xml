@@ -1,52 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!--a lot more things will be added here-->
-<LinearLayout
+<RelativeLayout
+    android:id="@+id/rel"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:orientation="horizontal"
-    android:padding="20dp">
+    android:orientation="horizontal">
 
-    <!--EMOTICON-->
-    <ImageView
-        android:id="@+id/emoticon"
-        android:layout_width="100dp"
-        android:layout_height="100dp"></ImageView>
-
+    <!--DELETE BTN-->
     <LinearLayout
+        android:id="@+id/menu"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:layout_alignTop="@+id/mood_event"
+        android:layout_alignBottom="@+id/mood_event"
+        android:layout_alignParentEnd="true"
+        android:paddingRight="20dp"
+        android:paddingLeft="20dp"
+        android:gravity="right"
+        android:background="#fc4242"
+        android:orientation="horizontal">
 
-        <!--AUTHOR OF MOOD EVENT-->
-        <TextView
-            android:id="@+id/author"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="20sp">
-        </TextView>
+        <RelativeLayout
+            android:id="@+id/delete_btn"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/img_delete"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_delete_btn"/>
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <!--THE MOOD EVENT ITEM-->
+    <LinearLayout
+        android:id="@+id/mood_event"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        android:background="#2f2f2f">
+
+        <!--EMOTICON-->
+        <ImageView
+            android:id="@+id/emoticon"
+            android:layout_width="100dp"
+            android:layout_height="100dp"></ImageView>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <!--DATE AND TIME-->
+            <!--AUTHOR OF MOOD EVENT-->
             <TextView
-                android:id="@+id/date_and_time"
-                android:layout_width="wrap_content"
+                android:id="@+id/author"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp">
             </TextView>
 
-        </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
+                <!--DATE AND TIME-->
+                <TextView
+                    android:id="@+id/date_and_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp">
+                </TextView>
+
+            </LinearLayout>
+
+        </LinearLayout>
     </LinearLayout>
 
-
-</LinearLayout>
-
+</RelativeLayout>
 
 
 

@@ -38,6 +38,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import org.w3c.dom.Document;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private Button prompt;
     private TextView errorMsg;
     private ConstraintLayout background;
+
 
     // 0 means logging in, 1 means sign up
     private Integer checkBtn = 0;
@@ -198,7 +200,10 @@ public class MainActivity extends AppCompatActivity {
                             intent.putExtra("accountKey", accountName);
                             startActivity(intent);
                             finish();
-                        }
+
+                            }
+
+
                         // if inputted password is wrong, set the password field empty and
                         // show error message
                         else {
