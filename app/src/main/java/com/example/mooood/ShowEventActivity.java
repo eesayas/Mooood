@@ -184,6 +184,7 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
     private void setTextAndImageView(){
         authorText.setText(author);
         emoticon.setImageResource(new Emoticon(emotionalState, 2).getImageLink());
+        emoticon.setTag(new Emoticon(emotionalState, 2).getImageLink()); //for testing
         dateText.setText(date);
         timeText.setText(time);
         socialSituationText.setText(socialSituation);
