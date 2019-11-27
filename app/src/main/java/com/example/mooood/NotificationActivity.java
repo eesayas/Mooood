@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,6 +28,7 @@ public class NotificationActivity extends AppCompatActivity {
     String requestName2;
     int position;
     private CollectionReference notificationCollectionReference;
+    Button backButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -44,6 +46,14 @@ public class NotificationActivity extends AppCompatActivity {
 
         arrayAdapterSetup();
         showNotification();
+
+        backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
     /**
      * gets the follow request from db adn adds it to the notificationDataList

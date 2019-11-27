@@ -356,6 +356,8 @@ public class UserFeedActivity extends AppCompatActivity {
      * This is a click listener to go to profile
      */
     public void goToProfile(View view) {
+        //make it go to Moodevents match the account name and collect the most recent mood Event
+
 
         db.collection("Users")
                 .whereEqualTo("author", accountName)

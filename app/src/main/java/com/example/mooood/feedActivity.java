@@ -84,7 +84,7 @@ public class feedActivity extends AppCompatActivity {
 
         feedCollectionReference = db.collection("MoodEvents").document(name).collection("Following");
         collectionReference = db.collection("MoodEvents");
-
+        feedDataList = new ArrayList<>();
         arrayAdapterSetup();
         followAdapter();
         searchUsers(name);
@@ -271,9 +271,9 @@ public class feedActivity extends AppCompatActivity {
                                             }
                                         });
                             } else {
+
                                         Log.d("documentexist", "not exist");
                                     }
-
                         } else {
                             Log.d("checking", "Failed with: ", task.getException());
                         }

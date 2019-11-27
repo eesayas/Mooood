@@ -34,6 +34,8 @@ public class ShowEventActivity extends AppCompatActivity {
     TextView reasonText;
     String edit;
     Button editButton;
+    Button backButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +53,14 @@ public class ShowEventActivity extends AppCompatActivity {
         setTextAndImageView();
 
         editBtnClickListener(moodEvent);
+
+        backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
     }
 
