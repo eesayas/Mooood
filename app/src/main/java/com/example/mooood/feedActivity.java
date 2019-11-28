@@ -287,6 +287,14 @@ public class feedActivity extends AppCompatActivity {
                                                     moodEvent.setTimeStamp(moodTimeStamp);
                                                     searchUser.add(moodEvent); //add to data list
                                                 }
+
+
+                                                Collections.sort(feedDataList, new Comparator<MoodEvent>() {
+                                                    public int compare(MoodEvent o1, MoodEvent o2) {
+                                                        return o2.getTimeStamp().compareTo(o1.getTimeStamp());
+                                                    }
+                                                });
+
                                                 searchResultAdapter.notifyDataSetChanged();
                                             }
                                         });
