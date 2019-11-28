@@ -73,7 +73,7 @@
                 android:id="@+id/feedButton"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="@string/feed"
                 android:textColor="#FFFFFF"
@@ -83,13 +83,15 @@
                 app:cornerRadius="0dp"
                 app:iconPadding="0dp"
                 app:strokeColor="#FFFFFF"
-                app:strokeWidth="2dp" />
+                app:strokeWidth="2dp"
+                android:hint="FEED" />
+
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/userButton"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="@string/user"
                 android:textColor="#FFFFFF"
@@ -99,11 +101,19 @@
                 app:strokeColor="#FFFFFF"
                 app:strokeWidth="2dp"
                 app:backgroundTint="#00FFFFFF"
-                />
+                android:hint="USER" />
+
+            <ImageButton
+                android:id="@+id/map_feed_button"
+                android:layout_width="wrap_content"
+                android:layout_height="74dp"
+                android:layout_weight="1"
+                android:adjustViewBounds="false"
+                android:cropToPadding="true"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/world_map" />
 
         </LinearLayout>
-
-
 
         <SearchView
             android:layout_width="match_parent"
@@ -118,15 +128,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 >
-                <ListView
+
+                <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/feedListView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
-                <ListView
+
+                <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/followListView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:visibility="invisible"/>
+                    android:visibility="invisible" />
 
             </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

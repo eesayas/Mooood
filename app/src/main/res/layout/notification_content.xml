@@ -6,7 +6,8 @@
     <ImageView
         android:id="@+id/user_image"
         android:layout_width="100dp"
-        android:layout_height="100dp"></ImageView>
+        android:layout_height="100dp"
+        android:src="@drawable/ic_person_outline_24px"/>
 
     <LinearLayout
         android:layout_width="match_parent"

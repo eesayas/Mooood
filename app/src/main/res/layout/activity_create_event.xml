@@ -1,107 +1,346 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    tools:context=".CreateEventActivity">
+    android:background="#2f2f2f">
 
-    <LinearLayout
+    <ViewFlipper
+        android:id="@+id/view_flipper"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <!--SELECT MOOD INSTRUCTION TEXT-->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Select a mooood"
-            android:textSize="20sp">
-        </TextView>
+        android:layout_height="match_parent"
+        android:inAnimation="@android:anim/slide_in_left"
+        android:outAnimation="@android:anim/slide_out_right">
 
         <!--MOOD ROSTER-->
-        <androidx.viewpager.widget.ViewPager
-            android:foregroundGravity="center"
-            android:id="@+id/mood_roster"
-            android:layout_centerInParent="true"
-            android:overScrollMode="never"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp">
-        </androidx.viewpager.widget.ViewPager>
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <!--REASON-->
-        <EditText
-            android:id="@+id/reason"
+            <TextView
+                android:id="@+id/mood_roster_title"
+                android:layout_width="match_parent"
+                android:layout_height="113dp"
+                android:fontFamily="@font/roboto"
+                android:letterSpacing="0.1"
+                android:gravity="center"
+                android:text="@string/roster_title"
+                android:textColor="#ffffff"
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/emotion_indicator"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:fontFamily="@font/roboto"
+                android:gravity="center_horizontal"
+                android:letterSpacing="0.1"
+                android:text="HAPPY"
+                android:textColor="#fff"
+                android:textSize="25sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/mood_roster"
+                android:layout_width="match_parent"
+                android:layout_height="331dp"
+                android:clipToPadding="false"
+                android:foregroundGravity="center"
+                android:overScrollMode="never"/>
+
+            <Button
+                android:id="@+id/select_emoticon_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/emoticon_choice_btn"
+                android:fontFamily="@font/roboto"
+                android:letterSpacing="0.3"
+                android:textSize="20sp"
+                android:paddingLeft="30dp"
+                android:paddingRight="30dp"
+                android:layout_marginTop="30dp"
+                android:layout_gravity="center_horizontal"
+                android:textColor="#FFF"
+                android:background="@drawable/round"/>
+
+        </LinearLayout>
+
+        <!--OTHER MOODEVENT DETAILS-->
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:padding="20dp"
-            android:gravity="start|top"
-            android:inputType="textMultiLine"
-            android:hint="Reason"
-            android:maxLength="20"
-            android:background="@drawable/edit_text_border"/>
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            tools:context=".CreateEventActivity">
 
-        <!--SITUATION-->
-        <TextView
-            android:id="@+id/social_situation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Social Situation"
-            android:textSize="20sp"
-            android:padding="20dp"
-            android:background="@drawable/edit_text_border"
-            android:clickable="true">
-        </TextView>
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-        <!--IMAGE UPLOAD-->
-        <ImageView
-            android:layout_gravity="center|center_vertical"
-            android:id="@+id/image_reason"
-            android:layout_height="500dp"
-            android:layout_width="match_parent"
-            android:src="@drawable/temp_image_upload">
-        </ImageView>
+                <!--TITLE BAR-->
+                <RelativeLayout
+                    android:id="@+id/rel"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center_horizontal">
 
-        <!--SET DATE AND TIME-->
-        <TextView
-            android:id="@+id/date_and_time"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Set Date/Time"
-            android:textSize="20sp"
-            android:padding="20dp"
-            android:background="@drawable/edit_text_border"
-            android:clickable="true">
-        </TextView>
+                    <!--BACK BTN-->
+                    <LinearLayout
+                        android:id="@+id/back_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_alignTop="@+id/title"
+                        android:layout_alignBottom="@+id/title"
+                        android:gravity="center_horizontal">
 
-        <!--SUBMIT BUTTON-->
-        <Button
-            android:id="@+id/location_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Location" />
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:clickable="false"
+                            android:focusable="true">
 
-        <Button
-            android:id="@+id/submit_button"
-            android:text="SUBMIT"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:padding="10dp">
-        </Button>
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:paddingRight="15dp"
+                                    android:paddingLeft="15dp">
 
-        <Button
-            android:id="@+id/cancel_button"
-            android:text="CANCEL"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:padding="10dp">
-        </Button>
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_chevron_left"/>
+                                </LinearLayout>
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
 
 
-    </LinearLayout>
-</ScrollView>
+                    <!--TITLE-->
+                    <LinearLayout
+                        android:id="@+id/title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="true"
+                        android:orientation="horizontal"
+                        android:visibility="visible"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/title_txt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="40dp"
+                            android:text="@string/new_mood_event"
+                            android:textColor="#fff"
+                            android:textSize="25sp"
+                            android:fontFamily="@font/roboto"
+                            android:letterSpacing="0.1"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginBottom="10dp">
+
+                        </TextView>
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+
+                <!--CHOSEN EMOTICON DISPLAY-->
+                <ImageView
+                    android:id="@+id/chosen_emoticon"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center_horizontal"/>
+
+
+                <!--DATE AND TIME-->
+                <TextView
+                    android:id="@+id/date_and_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:padding="20dp"
+                    android:background="@drawable/edit_text_border"
+                    android:textColor="#fff"
+                    android:layout_margin="20dp">
+                </TextView>
+
+                <!--REASON-->
+                <EditText
+                    android:id="@+id/reason"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:padding="20dp"
+                    android:gravity="start|top"
+                    android:inputType="textMultiLine"
+                    android:hint="Reason (optional)"
+                    android:textColorHint="#707070"
+                    android:maxLength="20"
+                    android:background="@drawable/edit_text_border"
+                    android:layout_marginBottom="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:textColor="#fff"/>
+
+                <!--SITUATION-->
+                <TextView
+                    android:id="@+id/social_situation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Social Situation (optional)"
+                    android:textSize="20sp"
+                    android:padding="20dp"
+                    android:background="@drawable/edit_text_border"
+                    android:clickable="true"
+                    android:textColorHint="#707070"
+                    android:textColor="#fff"
+                    android:layout_marginBottom="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginLeft="20dp">
+                </TextView>
+
+                <!---SWITCH TOGGLE for Image Reason-->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="10dp">
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/toggle_image_preview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:theme="@style/SwitchThemeOverlay"/>
+
+                    <TextView
+                        android:id="@+id/img_toggle_txt"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Add a Photo"
+                        android:textSize="20sp"
+                        android:textColor="#707070">
+                    </TextView>
+
+                </LinearLayout>
+
+                <!--IMAGE PREVIEWER-->
+
+                <LinearLayout
+                    android:id="@+id/img_reason_cont"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_gravity="center_horizontal">
+
+                    <ImageView
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp"
+                        android:id="@+id/image_reason"
+                        android:layout_height="wrap_content"
+                        android:layout_width="300dp"
+                        android:src="@drawable/temp_img"
+                        android:visibility="gone">
+                    </ImageView>
+
+                </LinearLayout>
+
+                <!---SWITCH TOGGLE for GPS-->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="20dp">
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/toggle_gps_preview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:theme="@style/SwitchThemeOverlay"/>
+
+                    <TextView
+                        android:id="@+id/gps_toggle_txt"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Add Location"
+                        android:textSize="20sp"
+                        android:textColor="#707070">
+                    </TextView>
+
+                </LinearLayout>
+
+                <!--GPS Preview-->
+                <LinearLayout
+                    android:id="@+id/gps_preview_cont"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:visibility="gone">
+
+                    <com.google.android.gms.maps.MapView
+                        android:id="@+id/createMapView"
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="20dp">
+
+                    <Button
+                        android:id="@+id/submit_button"
+                        android:text="SUBMIT"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="20sp"
+                        android:padding="10dp"
+                        android:textColor="#FFF"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:background="@drawable/round_green">
+                    </Button>
+
+                    <Button
+                        android:id="@+id/cancel_button"
+                        android:text="CANCEL"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="20sp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/round_red"
+                        android:textColor="#FFF"
+                        android:padding="10dp">
+                    </Button>
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </ScrollView>
+
+    </ViewFlipper>
+
+</LinearLayout>

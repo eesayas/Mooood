@@ -2,7 +2,9 @@ package com.example.mooood;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import java.util.ArrayList;
 import java.util.Date;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.firestore.Exclude;
 
 /**
@@ -13,24 +15,14 @@ import com.google.firebase.firestore.Exclude;
 
 public class MoodEvent implements Parcelable{
 
-    private String documentId;
     private Date timeStamp;
-
-    private String author;
-
-    private String date;
-    private String time;
-    private String emotionalState;
-
-    private String imageUrl;
-    private String reason;
-    private String socialSituation;
+    private String documentId, author, date, time, emotionalState, imageUrl, reason, socialSituation, latitude, longitude, address;
 
     public MoodEvent(){
         //public no-arg constructor needed
     }
 
-    public MoodEvent(String author, String date, String time, String emotionalState, String imageReason, String reason, String socialSituation){
+    public MoodEvent(String author, String date, String time, String emotionalState, String imageReason, String reason, String socialSituation,String latitude,String longitude,String address){
         this.author = author;
         this.date = date;
         this.time = time;
@@ -38,6 +30,9 @@ public class MoodEvent implements Parcelable{
         this.imageUrl = imageReason;
         this.reason = reason;
         this.socialSituation = socialSituation;
+        this.latitude = latitude;
+        this.longitude =longitude;
+        this.address = address;
     }
 
 
@@ -50,6 +45,10 @@ public class MoodEvent implements Parcelable{
         imageUrl = in.readString();
         reason = in.readString();
         socialSituation = in.readString();
+        latitude=in.readString();
+        longitude=in.readString();
+        address=in.readString();
+
     }
 
     public static final Creator<MoodEvent> CREATOR = new Creator<MoodEvent>() {
@@ -109,6 +108,22 @@ public class MoodEvent implements Parcelable{
         return this.socialSituation;
     }
 
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
     public void setSocialSituation(String socialSituation) {
         this.socialSituation = socialSituation;
     }
@@ -157,6 +172,14 @@ public class MoodEvent implements Parcelable{
         return 0;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(documentId);
@@ -167,5 +190,8 @@ public class MoodEvent implements Parcelable{
         parcel.writeString(imageUrl);
         parcel.writeString(reason);
         parcel.writeString(socialSituation);
+        parcel.writeString(latitude);
+        parcel.writeString(longitude);
+        parcel.writeString(address);
     }
 }

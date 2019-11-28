@@ -35,4 +35,11 @@
 
     <string name="logout">&#160;&#160;&#160;&#160;Logout&#160;&#160;&#160;&#160;</string>
 
+    <!--CreateEventActivity-->
+    <string name="roster_title">How are you feeling?</string>
+    <string name="emoticon_choice_btn">SELECT</string>
+    <string name="new_mood_event">New Mood Event</string>
+    <string name="title_activity_mood_map">Map</string>
+    <string name="title_activity_user_feed_map">Map</string>
+
 </resources>

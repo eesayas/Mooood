@@ -3,13 +3,16 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal|center_vertical">
+    android:gravity="center_horizontal|center_vertical"
+    android:paddingRight="10dp"
+    android:paddingLeft="10dp">
 
     <ImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/afraid_cow_v2">
+        android:src="@drawable/afraid_cow_v2"
+        android:padding="10dp">
     </ImageView>
 
 </LinearLayout>

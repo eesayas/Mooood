@@ -1,8 +1,6 @@
 package com.example.mooood;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,15 +9,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.SearchView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.baoyz.swipemenulistview.SwipeMenu;
-import com.baoyz.swipemenulistview.SwipeMenuCreator;
-import com.baoyz.swipemenulistview.SwipeMenuItem;
-import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,6 +25,18 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.SearchView;
+import android.widget.Toast;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -49,13 +53,21 @@ public class UserFeedActivity extends AppCompatActivity {
     public static final String MOOD_EVENT = "Mood Event";
 
     //Declare the variables for reference later
-    SwipeMenuListView postList;
-    ArrayAdapter<MoodEvent> postAdapter;
+    RecyclerView postList;
     ArrayList<MoodEvent> postDataList;
+
+    private MoodEventsAdapter postAdapter;
+    private RecyclerTouchListener recyclerTouchListener;
+
     SearchView userSearchView;
     Button feedButton;
+
     Date moodTimeStamp;
     TextView userProfile;
+
+    ImageButton mapButton;
+
+
     //Firebase setup!
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference documentReference;
@@ -82,16 +94,21 @@ public class UserFeedActivity extends AppCompatActivity {
         documentReference = db.collection("MoodEvents").document(accountName);
         collectionReference = db.collection("MoodEvents").document(accountName).collection("MoodActivities");
 
-
-        arrayAdapterSetup();
-        createDeleteButtonOnSwipe();
-        filterMood();
-        deleteBtnClickListener();
         createPostBtnClickListener(accountName);
-        showEventClickListener();
+
+        //recycler view setup
+        moodEventAdapterSetup();
+        setRecyclerTouchListener();
+
+        //maaz's filter implementation
+        filterMood();
         selectFeed(accountName);
+
         goToProfile();
 
+
+        //Max's map implementation
+        openMoodMap();
 
     } //end of onCreate
 
@@ -109,25 +126,79 @@ public class UserFeedActivity extends AppCompatActivity {
                         postDataList.clear();
 
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                            String author = (String) documentSnapshot.getData().get("author");
-                            String date = (String) documentSnapshot.getData().get("date");
-                            String time = (String) documentSnapshot.getData().get("time");
-                            String emotionalState = (String) documentSnapshot.getData().get("emotionalState");
-                            String imageURl = (String) documentSnapshot.getData().get("imageUrl");
-                            String reason = (String) documentSnapshot.getData().get("reason");
-                            String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
-                            MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation);
-                            moodEvent.setDocumentId(documentSnapshot.getId());
 
-                            postDataList.add(moodEvent); //add to data list
+                                String author = (String)documentSnapshot.getData().get("author");
+                                String date = (String)documentSnapshot.getData().get("date");
+                                String time = (String)documentSnapshot.getData().get("time");
+                                String emotionalState = (String)documentSnapshot.getData().get("emotionalState");
+                                String imageURl = (String)documentSnapshot.getData().get("imageUrl");
+                                String reason = (String)documentSnapshot.getData().get("reason");
+                                String socialSituation = (String)documentSnapshot.getData().get("socialSituation");
+                                String latitude = (String) documentSnapshot.getData().get("latitude");
+                                String longitude= (String) documentSnapshot.getData().get("longitude");
+                                String address = (String) documentSnapshot.getData().get("address") ;
+                                MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation,latitude,longitude,address);
+                                moodEvent.setDocumentId(documentSnapshot.getId());
+
+                                postDataList.add(moodEvent); //add to data list
+
                         }
 
                         postAdapter.notifyDataSetChanged();
                     }
+
+                });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        postList.addOnItemTouchListener(recyclerTouchListener);
+    }
+
+    /**
+     * This set ups Recycler Touch Listener
+     */
+    private void setRecyclerTouchListener(){
+        recyclerTouchListener = new RecyclerTouchListener(this, postList);
+        recyclerTouchListener.setClickable(new RecyclerTouchListener.OnRowClickListener() {
+            @Override
+            public void onRowClicked(int position) {
+                showEventClickListener(position);
+            }
+
+            @Override
+            public void onIndependentViewClicked(int independentViewID, int position) {
+
+            }
+
+        }).setSwipeOptionViews(R.id.delete_btn)
+                .setSwipeable(R.id.mood_event, R.id.menu, new RecyclerTouchListener.OnSwipeOptionsClickListener() {
+                    @Override
+                    public void onSwipeOptionClicked(int viewID, int position) {
+                        if(viewID == R.id.delete_btn){
+                            deleteMoodEventFromDB(documentReference, position);
+                        }
+                    }
                 });
 
-    } //end of OnStart()
+        //create a line that separates all MoodEvent inside the RecyclerView
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(postList.getContext(), DividerItemDecoration.VERTICAL);
+        dividerItemDecoration.setDrawable(this.getResources().getDrawable(R.drawable.recyclerview_divider));
+        postList.addItemDecoration(dividerItemDecoration);
+    }
 
+    /**
+     * This set ups the array adapter for RecyclerView
+     */
+    private void moodEventAdapterSetup(){
+        postDataList = new ArrayList<>();
+        postList = findViewById(R.id.posts_list);
+        postAdapter = new MoodEventsAdapter(postDataList);
+
+        postList.setLayoutManager(new LinearLayoutManager(this));
+        postList.setAdapter(postAdapter);
+    }
 
     /**
      * This deletes a MoodEvent from the DB
@@ -136,8 +207,7 @@ public class UserFeedActivity extends AppCompatActivity {
      * @param position
      *     This is the position of MoodEvent in postDataList
      */
-    //delete from database
-    private void deleteMoodEventFromDB (DocumentReference documentReference,int position){
+    private void deleteMoodEventFromDB(DocumentReference documentReference, int position) {
         documentReference.collection("MoodActivities")
                 .document(postDataList.get(position).getDocumentId())
                 .delete()
@@ -159,86 +229,6 @@ public class UserFeedActivity extends AppCompatActivity {
     }
 
     /**
-     * This creates the deleteButton for SwipeMenuListView
-     *
-     * The MIT License (MIT)
-     *
-     * Copyright (c) 2014 baoyongzhang
-     *
-     * Permission is hereby granted, free of charge, to any person obtaining a copy
-     * of this software and associated documentation files (the "Software"), to deal
-     * in the Software without restriction, including without limitation the rights
-     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-     * copies of the Software, and to permit persons to whom the Software is
-     * furnished to do so, subject to the following conditions:
-     *
-     * The above copyright notice and this permission notice shall be included in all
-     * copies or substantial portions of the Software.
-     *
-     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-     * SOFTWARE.
-     */
-    private void createDeleteButtonOnSwipe () {
-        //adding delete button to SwipeMenu
-        SwipeMenuCreator creator = new SwipeMenuCreator() {
-
-            @Override
-            public void create(SwipeMenu menu) {
-
-                //init delete button
-                SwipeMenuItem deleteItem = new SwipeMenuItem(getApplicationContext());
-
-                //custom design for delete button
-                deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9, 0x3F, 0x25)));
-                deleteItem.setWidth(200);
-                deleteItem.setIcon(R.drawable.ic_delete_forever);
-
-                //add button
-                menu.addMenuItem(deleteItem);
-            }
-        };
-
-        // set creator
-        postList.setMenuCreator(creator);
-    }
-
-    /**
-     * This is a basic Array Adapter setup based on the lab lectures
-     */
-
-    private void arrayAdapterSetup () {
-        //basic ArrayAdapter init
-        postDataList = new ArrayList<>();
-        postList = findViewById(R.id.posts_list);
-        postAdapter = new MoodEventsAdapter(postDataList, this);
-        postList.setAdapter(postAdapter);
-    }
-
-    /**
-     * This is a click listener for each delete button in SwipeMenuListView
-     */
-
-    private void deleteBtnClickListener () {
-        //click listener for garbage can icon
-        postList.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
-                switch (index) {
-                    case 0:
-                        deleteMoodEventFromDB(documentReference, position);
-                        break;
-                }
-                return false;
-            }
-        });
-    }
-
-    /**
      * This is a click listener for create post. Will redirect to CreateEventActivity
      */
     private void createPostBtnClickListener ( final String accountName){
@@ -246,32 +236,9 @@ public class UserFeedActivity extends AppCompatActivity {
         createPostBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                Intent intent = new Intent(getApplicationContext(), CreateEventActivity.class);
+                Intent intent = new Intent(UserFeedActivity.this, CreateEventActivity.class);
                 intent.putExtra("key", accountName);
                 startActivity(intent);
-
-            }
-        });
-    }
-
-
-
-    /**
-     * This is a click listener for show event. Will redirect to ShowEventActivity
-     */
-    private void showEventClickListener () {
-        //click listener for each item -> ShowEventActivity
-        postList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                edit = "true";
-
-                Intent intent = new Intent(UserFeedActivity.this, ShowEventActivity.class);
-                intent.putExtra(MOOD_EVENT, postDataList.get(i));
-                intent.putExtra("bool",edit);
-                startActivity(intent);
-
             }
         });
     }
@@ -280,37 +247,42 @@ public class UserFeedActivity extends AppCompatActivity {
      * This is the SearchView that will filter through Database of the user for the Mood entered and display it
      */
     private void filterMood () {
-        userSearchView = findViewById(R.id.userSearchView);
+            userSearchView = findViewById(R.id.userSearchView);
 
-        userSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                textSubmitted=s.toUpperCase();
-                collectionReference
-                        .orderBy("timeStamp", Query.Direction.DESCENDING)
-                        .whereEqualTo("emotionalState", textSubmitted)
-                        .get()
-                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                postDataList.clear();
-                                for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                    String author = (String) documentSnapshot.getData().get("author");
-                                    String date = (String) documentSnapshot.getData().get("date");
-                                    String time = (String) documentSnapshot.getData().get("time");
-                                    String emotionalState = (String) documentSnapshot.getData().get("emotionalState");
-                                    String imageURl = (String) documentSnapshot.getData().get("imageUrl");
-                                    String reason = (String) documentSnapshot.getData().get("reason");
-                                    String socialSituation = (String) documentSnapshot.getData().get("socialSituation");
-                                    MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation);
-                                    moodEvent.setDocumentId(documentSnapshot.getId());
-                                    postDataList.add(moodEvent); //add to data list
-                                }
-                                postAdapter.notifyDataSetChanged();
+            userSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String s) {
+                    textSubmitted=s.toUpperCase();
+                    collectionReference
+                            .orderBy("timeStamp", Query.Direction.DESCENDING)
+                            .whereEqualTo("emotionalState", textSubmitted)
+                            .get()
+                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    postDataList.clear();
+                                    for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+
+                                        String author = (String)documentSnapshot.getData().get("author");
+                                        String date = (String)documentSnapshot.getData().get("date");
+                                        String time = (String)documentSnapshot.getData().get("time");
+                                        String emotionalState = (String)documentSnapshot.getData().get("emotionalState");
+                                        String imageURl = (String)documentSnapshot.getData().get("imageUrl");
+                                        String reason = (String)documentSnapshot.getData().get("reason");
+                                        String socialSituation = (String)documentSnapshot.getData().get("socialSituation");
+                                        String latitude = (String) documentSnapshot.getData().get("latitude");
+                                        String longitude= (String) documentSnapshot.getData().get("longitude");
+                                        String address = (String) documentSnapshot.getData().get("address") ;
+
+                                        MoodEvent moodEvent = new MoodEvent(author, date, time, emotionalState, imageURl, reason, socialSituation, latitude,longitude, address);
+                                        moodEvent.setDocumentId(documentSnapshot.getId());
+
+                                        postDataList.add(moodEvent); //add to data list
+                                    }
+                                    postAdapter.notifyDataSetChanged();
                             }
                         });
-                return false;
-
+                    return false;
             }
 
             @Override
@@ -330,6 +302,7 @@ public class UserFeedActivity extends AppCompatActivity {
 
     }
 
+
     /**
      * This will take the user from the User Activity to the Feed Activity
      * @param accountName
@@ -342,12 +315,29 @@ public class UserFeedActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-
                 Intent intent = new Intent(UserFeedActivity.this, feedActivity.class);
                 intent.putExtra("account", accountName);
                 startActivity(intent);
+
             }
         });
+
+
+    }
+
+
+    /**
+     * This is a click listener for each MoodEvent that goes to ShowEventActivity
+     */
+    public void showEventClickListener(int position) {
+
+        edit = "true";
+        Intent intent = new Intent(UserFeedActivity.this, ShowEventActivity.class);
+        intent.putExtra(MOOD_EVENT, postDataList.get(position));
+        intent.putExtra("bool",edit);
+        startActivity(intent);
+
+
     }
 
 
@@ -396,5 +386,28 @@ public class UserFeedActivity extends AppCompatActivity {
 
     }
 
+    //TODO: Fix bug where the app crashes when the UserFeedMap activity is started.
+    private void openMoodMap(){
+        mapButton=findViewById(R.id.map_user_feed_button);
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(UserFeedActivity.this, MoodsMapActivity.class);
+                if(postDataList.size()>0){
+                    try{
+                        intent.putExtra("UserFeed","UserFeed");
+                        intent.putParcelableArrayListExtra("moodList",postDataList);
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                else{
+                    Toast.makeText(UserFeedActivity.this,"You don't have any posts!",Toast.LENGTH_SHORT).show();
+                }
 
+            }
+        });
+
+    }
 }
