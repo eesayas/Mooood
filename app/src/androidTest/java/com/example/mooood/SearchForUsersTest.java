@@ -32,7 +32,7 @@ import java.util.List;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static org.junit.Assert.*;
 
-public class FIlterMoodsTest {
+public class SearchForUsersTest {
     private Solo solo;
 
     @Rule
@@ -60,8 +60,8 @@ public class FIlterMoodsTest {
         Activity activity = rule.getActivity();
     }
 
-   @Test
-    public void checkFilterMood(){
+    @Test
+    public void searchForUsers(){
         solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
         solo.enterText((EditText)solo.getView(R.id.activity_main_et__username), "maaz");
         solo.waitForText("maaz1",1,2000);
@@ -69,43 +69,28 @@ public class FIlterMoodsTest {
         solo.waitForText("1",1,2000);
         solo.clickOnView(solo.getView(R.id.activity_main_btn_submit));
         solo.waitForActivity(UserFeedActivity.class);
-       SearchView userSearchView= (SearchView)solo.getView(R.id.userSearchView);
-       userSearchView.setIconified(false);
-        solo.clickOnView(solo.getView(R.id.userSearchView));
-        SearchView searchView = (SearchView) solo.getView(R.id.userSearchView);
+        solo.clickOnView(solo.getView(R.id.feedButton));
+        solo.waitForActivity(feedActivity.class);
+        SearchView feedSearchView= (SearchView)solo.getView(R.id.feedSearchView);
+        feedSearchView.setIconified(false);
+        solo.clickOnView(solo.getView(R.id.feedSearchView));
+        SearchView searchView = (SearchView) solo.getView(R.id.feedSearchView);
         int id= searchView.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
         EditText editText= searchView.findViewById(id);
-        solo.enterText(editText, "happy");
-       solo.waitForText("happy",1,20000);
+        solo.enterText(editText, "madmax");
+        solo.waitForText("madmax",1,20000);
         solo.sendKey(KeyEvent.KEYCODE_ENTER);
 
-
         solo.clickInList(0);
-        solo.waitForActivity(ShowEventActivity.class);
-
-       List<Emoticon> moodImages= new ArrayList<>();
-       moodImages.add(new Emoticon("HAPPY", 2));
-       moodImages.add(new Emoticon("SAD", 2));
-       moodImages.add(new Emoticon("LAUGHING", 2));
-       moodImages.add(new Emoticon("IN LOVE", 2));
-       moodImages.add(new Emoticon("ANGRY", 2));
-       moodImages.add(new Emoticon("SICK", 2));
-       moodImages.add(new Emoticon("AFRAID", 2));
-
-       ImageView imageView = (ImageView)solo.getView(R.id.emoticon);
-       int imgEmotionSample = new Emoticon("HAPPY",2).getImageLink();
-       imageView.setImageResource(imgEmotionSample);
+        solo.waitForActivity(followerActivity.class);
+        TextView moodAuthor = (TextView)solo.getView(R.id.author);
+        assertEquals(moodAuthor.getText().toString(),"madmax");
 
 
 
-       /*
-       int drawable = R.drawable.happy_cow_v2;
-       Log.d("draw", String.valueOf(drawable));
-       Drawable idImage= imageView.getDrawable();
-       int index= moodImages.indexOf(imageView);
-       Log.d("printout", moodImages.get(index).getEmotionalState());
-       //assertEquals(moodImages.get(index).getEmotionalState(), "HAPPY");*/
-     }
+
+
+    }
 
     @After
     public void tearDown() throws Exception {

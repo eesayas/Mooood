@@ -18,6 +18,22 @@
     <string name="existAccount">Account already exists</string>
     <string name="accountCreated">Account created</string>
     <string name="title_activity_maps">Map</string>
+    <string name="logging_in">logging in</string>
+
+
+    <!--feedActivity-->
+    <string name="follow">&#160;&#160;&#160;&#160;FOLLOW&#160;&#160;&#160;&#160;</string>
+    <string name="request_sent">REQUEST SENT</string>
+    <string name="recent_mood">Recent Mood</string>
+
+    <!--UserFeedActivity-->
+    <string name="feed">Feed</string>
+    <string name="user">User</string>
+    <string name="profile">Profile</string>
+    <string name="maps">Maps</string>
+
+
+    <string name="logout">&#160;&#160;&#160;&#160;Logout&#160;&#160;&#160;&#160;</string>
 
     <!--CreateEventActivity-->
     <string name="roster_title">How are you feeling?</string>

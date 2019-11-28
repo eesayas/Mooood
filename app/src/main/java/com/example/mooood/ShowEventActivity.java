@@ -44,9 +44,9 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
     TextView authorText, dateText, timeText, socialSituationText, reasonText;
     ImageView emoticon, imageReason;
     LinearLayout backBtn, moreDetailsLayout;
-
+    String edit;
     Button editButton;
-
+    Button backButton;
     MapView mapView;
     GoogleMap gmap;
 
@@ -65,6 +65,7 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
 
         Intent intent = getIntent();
         final MoodEvent moodEvent = intent.getParcelableExtra(MOOD_EVENT);
+        edit = intent.getStringExtra("bool");
 
         getValuesMoodEvent(moodEvent);
 
@@ -140,15 +141,16 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
         params.height = screenHeight - getStatusBarHeight();
 
         layout.setMinimumHeight(params.height);
+
     }
 
 
     /**
      * This gets all needed values from MoodEvent to be displayed
-     * @param moodEvent
-     *     This is the MoodEvent object
+     *
+     * @param moodEvent This is the MoodEvent object
      */
-    private void getValuesMoodEvent(MoodEvent moodEvent){
+    private void getValuesMoodEvent(MoodEvent moodEvent) {
         author = moodEvent.getAuthor();
 
         date = moodEvent.getDate();
@@ -166,8 +168,8 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
     /**
      * This selects all TextView and ImageView from xml
      */
-    private void getTextAndImageView(){
 
+    private void getTextAndImageView(){
 
         authorText = findViewById(R.id.author);
         emoticon = findViewById(R.id.emoticon);
@@ -195,15 +197,22 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
     /**
      * This is a click listener for edit of MoodEvent. Redirect to EditEventActivity
      */
-    private void editBtnClickListener(final MoodEvent moodEvent){
+    private void editBtnClickListener(final MoodEvent moodEvent) {
         editButton = findViewById(R.id.edit_button);
-        editButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(ShowEventActivity.this, EditEventActivity.class);
-                intent.putExtra(MOOD_EVENT, moodEvent);
-                startActivity(intent);
-            }
-        });
+        if (edit.equals("false")) {
+            editButton.setEnabled(false);
+            editButton.setVisibility(View.INVISIBLE);
+        } else {
+            editButton.setEnabled(true);
+            editButton.setVisibility(View.VISIBLE);
+            editButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Intent intent = new Intent(ShowEventActivity.this, EditEventActivity.class);
+                    intent.putExtra(MOOD_EVENT, moodEvent);
+                    startActivity(intent);
+                }
+            });
+        }
     }
 
     @Override
@@ -277,3 +286,4 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
         mapView.onLowMemory();
     }
 }
+

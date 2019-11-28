@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -15,15 +14,12 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
-
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -32,15 +28,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-
-import org.w3c.dom.Document;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Scanner;
 
 
 /**
@@ -193,13 +181,11 @@ public class MainActivity extends AppCompatActivity {
                         // if inputted password is correct, let the user log in
                         if (document.getData().get("password").equals(inputtedpassword)){
                             Log.d("debugging", "mainActivity- Logged In");
-                            errorMsg.setVisibility(View.INVISIBLE);
-                            errorMsg.setText("");
-
+                            errorMsg.setText(R.string.logging_in);
+                            errorMsg.setVisibility(View.VISIBLE);
                             Intent intent = new Intent(getApplicationContext(), UserFeedActivity.class);
                             intent.putExtra("accountKey", accountName);
                             startActivity(intent);
-                            finish();
 
                             }
 

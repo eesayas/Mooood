@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,7 +26,9 @@ public class NotificationActivity extends AppCompatActivity {
     String userName;
     String requestName;
     String requestName2;
+    int position;
     private CollectionReference notificationCollectionReference;
+    Button backButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -43,6 +46,14 @@ public class NotificationActivity extends AppCompatActivity {
 
         arrayAdapterSetup();
         showNotification();
+
+        backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
     /**
      * gets the follow request from db adn adds it to the notificationDataList
@@ -50,6 +61,7 @@ public class NotificationActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        notificationDataList.clear();
         notificationCollectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
@@ -85,7 +97,10 @@ public class NotificationActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 requestName2 = notificationDataList.get(i).getUsername();
+                position = i;
                 new ShowNotificationFragment().show(getSupportFragmentManager(), "Show Notification");
+//                notificationDataList.remove(i);
+//                Adapter.notifyDataSetChanged();
             }
         });
     }
@@ -93,8 +108,20 @@ public class NotificationActivity extends AppCompatActivity {
     /**
      * gets the username in the follow request to be used in the fragment
      */
-    public String getMyData() {
+    public String getRequestName() {
         return requestName2;
     }
+
+    public String getUserName(){
+        return userName;
+    }
+
+    public void notifydata(){
+        Log.d("notify_data", "in notifydata and pos: "+ position);
+        notificationDataList.remove(position);
+        Adapter.notifyDataSetChanged();
+    }
+
+
 
 }

@@ -3,19 +3,38 @@ package com.example.mooood;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class ShowNotificationFragment extends DialogFragment {
+    private static final String TAG = "Notification_Fragment";
     private TextView notificationText;
     private Button confirm;
     private Button reject;
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference userReference;
+    private CollectionReference requestReference;
+    String requestName;
+    String userName;
+
 
     @NonNull
     @Override
@@ -29,8 +48,12 @@ public class ShowNotificationFragment extends DialogFragment {
 
 
         NotificationActivity activity = (NotificationActivity) getActivity();
-        String requestName = activity.getMyData();
+        requestName = activity.getRequestName();
+        userName = activity.getUserName();
         notificationText.setText(requestName +" wants to follow you");
+
+        userReference = db.collection("MoodEvents").document(userName).collection("Request");
+        requestReference = db.collection("MoodEvents").document(requestName).collection("Following");
 
         acceptRequest();
         rejectRequest();
@@ -51,6 +74,29 @@ public class ShowNotificationFragment extends DialogFragment {
                 // add that users name in followers collection under the request name
                 // show a toast that request accepted
                 // close fragment
+                userReference
+                        .document(requestName).delete()
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d(TAG, "request was successfully deleted");
+                                Toast.makeText(getActivity(), "confirmed request!",
+                                        Toast.LENGTH_SHORT).show();
+                                NotificationActivity activity = (NotificationActivity) getActivity();
+                                activity.notifydata();
+                                dismiss();
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d(TAG, "request was not deleted", e);
+                            }
+                        });
+
+                final Map<String, Object> request = new HashMap<>();
+                request.put("Username",userName);
+                requestReference.document(userName).set(request);
 
             }
         });
@@ -64,6 +110,25 @@ public class ShowNotificationFragment extends DialogFragment {
                 // delete that document in request
                 // show a toast that request rejected
                 // close fragment
+                userReference
+                        .document(requestName).delete()
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d(TAG, "request was successfully deleted");
+                                Toast.makeText(getActivity(), "rejected request!",
+                                        Toast.LENGTH_SHORT).show();
+                                NotificationActivity activity = (NotificationActivity) getActivity();
+                                activity.notifydata();
+                                dismiss();
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d(TAG, "request was not deleted", e);
+                            }
+                        });
 
 
             }
