@@ -64,7 +64,7 @@ public class FIlterMoodsTest {
     public void checkFilterMood(){
         solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
         solo.enterText((EditText)solo.getView(R.id.activity_main_et__username), "maaz");
-        solo.waitForText("maaz1",1,2000);
+        solo.waitForText("maaz",1,2000);
         solo.enterText((EditText)solo.getView(R.id.activity_main_et__password), "1");
         solo.waitForText("1",1,2000);
         solo.clickOnView(solo.getView(R.id.activity_main_btn_submit));
