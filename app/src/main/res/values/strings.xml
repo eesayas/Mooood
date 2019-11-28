@@ -42,4 +42,10 @@
     <string name="title_activity_mood_map">Map</string>
     <string name="title_activity_user_feed_map">Map</string>
 
+    <!--followerActivity-->
+    <string name="follow_user">Follow</string>
+    <string name="unfollow">Unfollow</string>
+    <string name="request_sent_follower">Request Sent</string>
+    <string name="cancel_request">Cancel Request</string>
+
 </resources>

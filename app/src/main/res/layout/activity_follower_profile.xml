@@ -34,7 +34,6 @@
         android:id="@+id/follow_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="FOLLOW"
         android:layout_gravity="center_horizontal"
         android:height="60dp"
         android:width="170dp"
