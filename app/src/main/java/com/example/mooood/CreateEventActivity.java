@@ -86,8 +86,6 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
 
     ImageView chosenEmoticon;
 
-    int chosenEmotionPos = 0;
-
     //Firebase setup!
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference documentReference;
@@ -142,16 +140,13 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         socialSituation = findViewById(R.id.social_situation);
         imageUpload = findViewById(R.id.image_reason);
         dateAndTimeMood = findViewById((R.id.date_and_time));
-
         moodIndicator = findViewById(R.id.emotion_indicator);
-
-
         viewFlipper = findViewById(R.id.view_flipper);
-
         chosenEmoticon = findViewById(R.id.chosen_emoticon);
-
         gpsPreviewCont = findViewById(R.id.gps_preview_cont);
         imgReasonCont = findViewById(R.id.img_reason_cont);
+        toggleImagePreview = findViewById(R.id.toggle_image_preview);
+        toggleGPSPreview = findViewById(R.id.toggle_gps_preview);
 
         //Acquire the account name of the current User
         Intent intent = getIntent();
@@ -202,14 +197,17 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         mapView.onCreate(mapViewBundle);
         mapView.getMapAsync(this);
 
+
+
+        //SUBMISSION
         submitBtnClickListener();
 
-        LinearLayout ll = new LinearLayout(this);
+//        LinearLayout ll = new LinearLayout(this);
+//
+//        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+//                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
-        layoutParams.setMargins(30, 20, 30, 0);
+//        layoutParams.setMargins(30, 20, 30, 0);
 
     } //end of onCreate
 
@@ -427,8 +425,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
      * This toggles (shows/hides) the previewers for gps and image upload
      */
     private void togglePreviews(){
-        toggleImagePreview = findViewById(R.id.toggle_image_preview);
-        toggleGPSPreview = findViewById(R.id.toggle_gps_preview);
+
 
         toggleImagePreview.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -842,6 +839,22 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     // ASSEMBLING MOODEVENT AND SUBMITTING IT TO DB
     //==========================================================================================
     /**
+     * This checks if GPS or IMAGE UPLOAD is switched on or off and deletes values accordingly
+     */
+    private void checkToggles(){
+        if(!toggleImagePreview.isChecked()){
+            moodEvent.setImageUrl(null);
+        }
+
+        if(!toggleGPSPreview.isChecked()){
+            moodEvent.setLatitude(null);
+            moodEvent.setLongitude(null);
+            moodEvent.setAddress(null);
+        }
+    }
+
+
+    /**
      * This is a click listener for submit button. This actually submits the new MoodEvent ito DB
      * @params accountName
      * This is the accountName of the user that is logged in
@@ -855,9 +868,11 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
                 //necessary methods before MoodEvent submission
                 createTimeStamp();
 
-                //DEV NOTE: This should have change listeners?
+                //order is important
                 obtainReason();
                 obtainCoordinates();
+                checkToggles();
+
 
                 if(uploadTask != null && uploadTask.isInProgress()) {
                     Log.d(TAG, "Upload in Progress");
@@ -879,7 +894,14 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
      * This obtains the reason for MoodEvent
      **/
     private void obtainReason(){
-        moodEvent.setReason(reason.getText().toString());
+
+        if(reason.getText().toString().equals("")){
+            moodEvent.setReason(reason.getText().toString());
+
+        } else{
+            moodEvent.setReason(null);
+        }
+
     }
 
     /**

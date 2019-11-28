@@ -43,7 +43,7 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
     String author, date ,time ,emotionalState ,socialSituation ,imageUrl ,reason ,latitude ,longitude ,locationAddress;
     TextView authorText, dateText, timeText, socialSituationText, reasonText;
     ImageView emoticon, imageReason;
-    LinearLayout backBtn, moreDetailsLayout;
+    LinearLayout backBtn, moreDetailsLayout, mapCont, socialSituationCont, reasonTxtCont, reasonImgCont;
     String edit;
     Button editButton;
     Button backButton;
@@ -59,6 +59,10 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
 
         fullscreenLayout = findViewById(R.id.fullscreen_ll);
         moreDetailsLayout = findViewById(R.id.more_detail_ll);
+
+        socialSituationCont = findViewById(R.id.social_situation_cont);
+        reasonTxtCont = findViewById(R.id.reason_txt_cont);
+        reasonImgCont = findViewById(R.id.reason_img_cont);
 
         makeFullscreen(fullscreenLayout);
 //        setMinimumHeight(moreDetailsLayout);
@@ -86,6 +90,12 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
         mapView.onCreate(mapViewBundle);
         mapView.getMapAsync(this);
 
+        mapCont = findViewById(R.id.map_cont);
+
+        //remove the layouts that has no data
+        removeReason();
+        removeSocialSituation();
+        removeMap();
 
     }
 
@@ -215,6 +225,38 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
         }
     }
 
+    /**
+     * This removes reason if it is null
+     */
+    private void removeReason(){
+        if(reason == null){
+            reasonTxtCont.setVisibility(View.GONE);
+        }
+
+        if(imageUrl == null){
+            reasonImgCont.setVisibility(View.GONE);
+        }
+
+    }
+
+    /**
+     * This removes the social situation layout if ss is null
+     */
+    private void removeSocialSituation(){
+        if(socialSituation == null){
+            socialSituationCont.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * This removes the map layout in ShowEventActivity if lat and long are null
+     */
+    private void removeMap(){
+        if(latitude == null || longitude == null || locationAddress == null){
+            mapCont.setVisibility(View.GONE);
+        }
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -236,8 +278,18 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
         uiSettings.setMapToolbarEnabled(true);
         uiSettings.setCompassEnabled(true);
         uiSettings.setZoomControlsEnabled(true);
-        Double mapLatitude=Double.parseDouble(latitude);
-        Double mapLongitude=Double.parseDouble(longitude);
+
+        double mapLatitude;
+        double mapLongitude;
+
+        if (latitude != null || longitude != null) {
+            mapLatitude = Double.parseDouble(latitude);
+            mapLongitude = Double.parseDouble(longitude);
+
+        } else{
+            mapLatitude = 0;
+            mapLongitude = 0;
+        }
 
         final LatLng myLocation = new LatLng(mapLatitude, mapLongitude);
         CameraPosition.Builder camBuilder = CameraPosition.builder();
@@ -266,7 +318,7 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
 
                 String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
 
-                Log.d(TAG, "getAddress:  address" + address);
+//                Log.d(TAG, "getAddress:  address" + address);
 
                 locationAddress = address;
             }

@@ -168,107 +168,142 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-                    <!--at-->
-                    <TextView
+                    <LinearLayout
+                        android:id="@+id/map_cont"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginBottom="20dp"
-                        android:fontFamily="@font/roboto"
-                        android:text="at"
-                        android:textAlignment="center"
-                        android:textColor="#fff"
-                        android:textSize="20sp" />
+                        android:orientation="vertical">
 
-                    <!--GPS preview-->
-                    <com.google.android.gms.maps.MapView
-                        android:id="@+id/showMapView"
-                        android:layout_width="match_parent"
-                        android:layout_height="150dp"
-                        android:layout_marginRight="20dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginBottom="15dp"/>
+                        <!--at-->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginBottom="20dp"
+                            android:fontFamily="@font/roboto"
+                            android:text="at"
+                            android:textAlignment="center"
+                            android:textColor="#fff"
+                            android:textSize="20sp" />
 
-                    <!--GPS address-->
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto"
-                        android:textSize="20sp"
-                        android:layout_marginRight="35dp"
-                        android:layout_marginLeft="35dp"
-                        android:layout_marginBottom="40dp"
-                        android:textAlignment="center"
-                        android:textColor="#fff"
-                        android:text="9156 153 St NW, Edmonton, AB T5R 1P6, Canada">
+                        <!--GPS preview-->
+                        <com.google.android.gms.maps.MapView
+                            android:id="@+id/showMapView"
+                            android:layout_width="match_parent"
+                            android:layout_height="150dp"
+                            android:layout_marginRight="20dp"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginBottom="15dp"/>
 
-                    </TextView>
+                        <!--GPS address-->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/roboto"
+                            android:textSize="20sp"
+                            android:layout_marginRight="35dp"
+                            android:layout_marginLeft="35dp"
+                            android:layout_marginBottom="40dp"
+                            android:textAlignment="center"
+                            android:textColor="#fff"
+                            android:text="9156 153 St NW, Edmonton, AB T5R 1P6, Canada">
 
-                    <!--with-->
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="15dp"
-                        android:fontFamily="@font/roboto"
-                        android:text="with"
-                        android:textAlignment="center"
-                        android:textColor="#fff"
-                        android:textSize="20sp" />
+                        </TextView>
+                    </LinearLayout>
 
-                    <!--Social Situation-->
-                    <TextView
-                        android:id="@+id/social_situation"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:textSize="25sp"
-                        android:letterSpacing="0.1"
-                        android:textColor="#fff"
-                        android:layout_marginBottom="50dp">
-                    </TextView>
 
-                    <!--because-->
-                    <TextView
+                    <LinearLayout
+                        android:id="@+id/social_situation_cont"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="20dp"
-                        android:fontFamily="@font/roboto"
-                        android:text="because"
-                        android:textAlignment="center"
-                        android:textColor="#fff"
-                        android:textSize="20sp" />
+                        android:orientation="vertical">
 
-                    <!--[image]-->
-                    <ImageView
-                        android:id="@+id/image_reason"
+                        <!--with-->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="15dp"
+                            android:fontFamily="@font/roboto"
+                            android:text="with"
+                            android:textAlignment="center"
+                            android:textColor="#fff"
+                            android:textSize="20sp" />
+
+                        <!--Social Situation-->
+                        <TextView
+                            android:id="@+id/social_situation"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:textSize="25sp"
+                            android:letterSpacing="0.1"
+                            android:textColor="#fff"
+                            android:layout_marginBottom="50dp">
+                        </TextView>
+
+                    </LinearLayout>
+
+
+                    <!--IMAGE REASON CONT -->
+                    <LinearLayout
+                        android:id="@+id/reason_img_cont"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:scaleType="centerCrop"
-                        android:layout_marginRight="20dp"
-                        android:layout_marginLeft="20dp" />
+                        android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/reason"
-                        android:layout_marginTop="15dp"
-                        android:layout_marginBottom="15dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:textSize="20sp"
-                        android:textColor="#fff">
-                    </TextView>
+                        <!--because-->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="20dp"
+                            android:fontFamily="@font/roboto"
+                            android:text="because"
+                            android:textAlignment="center"
+                            android:textColor="#fff"
+                            android:textSize="20sp" />
 
-                    <TextView
-                        android:text="- eesayas"
-                        android:layout_marginBottom="40dp"
-                        android:layout_marginLeft="45dp"
-                        android:layout_marginRight="45dp"
+                        <!--[image]-->
+                        <ImageView
+                            android:id="@+id/image_reason"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:scaleType="centerCrop"
+                            android:layout_marginRight="20dp"
+                            android:layout_marginLeft="20dp" />
+
+                    </LinearLayout>
+
+                    <!--TEXT REASON CONT-->
+                    <LinearLayout
+                        android:id="@+id/reason_txt_cont"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="20sp"
-                        android:textAlignment="textEnd"
-                        android:textColor="#fff">
-                    </TextView>
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/reason"
+                            android:layout_marginTop="15dp"
+                            android:layout_marginBottom="15dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:textSize="20sp"
+                            android:textColor="#fff">
+                        </TextView>
+
+<!--                        <TextView-->
+<!--                            android:text="- eesayas"-->
+<!--                            android:layout_marginBottom="40dp"-->
+<!--                            android:layout_marginLeft="45dp"-->
+<!--                            android:layout_marginRight="45dp"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:textSize="20sp"-->
+<!--                            android:textAlignment="textEnd"-->
+<!--                            android:textColor="#fff">-->
+<!--                        </TextView>-->
+
+                    </LinearLayout>
 
 
                 <!--EDIT BUTTON-->
