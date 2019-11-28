@@ -69,7 +69,7 @@
                 android:id="@+id/feedButton"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="@string/feed"
                 android:textColor="#FFFFFF"
@@ -79,13 +79,15 @@
                 app:cornerRadius="0dp"
                 app:iconPadding="0dp"
                 app:strokeColor="#FFFFFF"
-                app:strokeWidth="2dp" />
+                app:strokeWidth="2dp"
+                android:hint="FEED" />
+
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/userButton"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="@string/user"
                 android:textColor="#FFFFFF"
@@ -94,7 +96,18 @@
                 app:backgroundTint="#00BCD4"
                 app:cornerRadius="0dp"
                 app:strokeColor="#FFFFFF"
-                app:strokeWidth="2dp" />
+                app:strokeWidth="2dp"
+                android:hint="USER" />
+
+            <ImageButton
+                android:id="@+id/map_user_feed_button"
+                android:layout_width="wrap_content"
+                android:layout_height="74dp"
+                android:layout_weight="1"
+                android:adjustViewBounds="false"
+                android:cropToPadding="true"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/world_map" />
 
         </LinearLayout>
 

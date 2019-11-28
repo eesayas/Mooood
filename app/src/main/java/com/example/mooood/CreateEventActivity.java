@@ -172,9 +172,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         setCurrentDateAndTime();
         backBtnListener();
 
-
         moodSelection();
-
 
         emoticonSelectBtnListener();
 
@@ -228,9 +226,6 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         viewFlipper.setOutAnimation(this, R.anim.slide_out_left);
         viewFlipper.showNext();
     }
-
-
-
 
     private void backBtnListener(){
         backButton = findViewById(R.id.back_btn);
@@ -299,12 +294,9 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
 
             @Override
             public void onPageSelected(int position) {
-
                 String emotion = moodImages.get(position).getEmotionalState();
                 moodEvent.setEmotionalState(emotion); //for the object to be created
                 moodIndicator.setText(emotion); //for the indicator in xml
-
-//                moodIndicator.setTextColor(); FUTURE DEV!!!
 
             }
 
@@ -446,7 +438,6 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
 
                 } else{
                     imageUpload.setVisibility(View.GONE);
-
 
                     //RESET PREVIEW
                 }

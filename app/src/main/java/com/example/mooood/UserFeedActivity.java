@@ -34,7 +34,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.SearchView;
+import android.widget.Toast;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -58,8 +61,12 @@ public class UserFeedActivity extends AppCompatActivity {
 
     SearchView userSearchView;
     Button feedButton;
+
     Date moodTimeStamp;
     TextView userProfile;
+
+    ImageButton mapButton;
+
 
     //Firebase setup!
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -96,7 +103,12 @@ public class UserFeedActivity extends AppCompatActivity {
         //maaz's filter implementation
         filterMood();
         selectFeed(accountName);
+
         goToProfile();
+
+
+        //Max's map implementation
+        openMoodMap();
 
     } //end of onCreate
 
@@ -315,7 +327,7 @@ public class UserFeedActivity extends AppCompatActivity {
                                         @Override
                                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                             for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a");
+                                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM. dd yyyy h:mm a");
 
                                                 String author = (String) documentSnapshot.getData().get("author");
                                                 String date = (String) documentSnapshot.getData().get("date");
@@ -414,6 +426,31 @@ public class UserFeedActivity extends AppCompatActivity {
 
                             }
                         });
+            }
+        });
+
+    }
+
+    //TODO: Fix bug where the app crashes when the UserFeedMap activity is started.
+    private void openMoodMap(){
+        mapButton=findViewById(R.id.map_user_feed_button);
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(UserFeedActivity.this, MoodsMapActivity.class);
+                if(postDataList.size()>0){
+                    try{
+                        intent.putExtra("UserFeed","UserFeed");
+                        intent.putParcelableArrayListExtra("moodList",postDataList);
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                else{
+                    Toast.makeText(UserFeedActivity.this,"You don't have any posts!",Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 

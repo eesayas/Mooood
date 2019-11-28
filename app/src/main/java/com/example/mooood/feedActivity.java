@@ -9,10 +9,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
+import android.widget.ImageButton;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +38,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Date;
 
 public class feedActivity extends AppCompatActivity {
 
@@ -64,6 +63,7 @@ public class feedActivity extends AppCompatActivity {
     SearchView feedSearchView;
     FloatingActionButton notificationButton;
     Button userButton;
+    ImageButton mapButton;
     Date moodTimeStamp;
     String edit;
     private String name;
@@ -104,6 +104,7 @@ public class feedActivity extends AppCompatActivity {
 
         searchUsers(name);
         selectUser();
+        openMoodMap();
         notificationCheck(name);
         goToProfile();
         feedDataList.clear();
@@ -373,6 +374,26 @@ public class feedActivity extends AppCompatActivity {
         });
     }
 
+
+    //TODO: Fix bug where the app crashes when the UserFeedMap activity is started.
+    private void openMoodMap(){
+        mapButton=findViewById(R.id.map_feed_button);
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(feedActivity.this, MoodsMapActivity.class);
+                if(feedDataList.size()>0){
+                    intent.putParcelableArrayListExtra("moodList",feedDataList);
+                    startActivity(intent);
+                }
+                else{
+                    Toast.makeText(feedActivity.this,"You're not following anyone!",Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
+    }
 
     /**
      * Clicking on User Button will simply take you back to User Activity

@@ -248,9 +248,32 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
 
         CameraPosition cp = camBuilder.build();
 
+        getAddress(ShowEventActivity.this,mapLatitude,mapLongitude);
+
         gmap.addMarker(new MarkerOptions().position(myLocation).title(locationAddress));
         gmap.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
 
+    }
+
+    //getAddress updates the location address with a geocoded address string that contains country,state/province,city, postal code, street number, street name.
+    public void getAddress(Context context, double LATITUDE, double LONGITUDE) {
+
+        //Set Address
+        try {
+            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+            List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
+            if (addresses != null && addresses.size() > 0) {
+
+                String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+
+                Log.d(TAG, "getAddress:  address" + address);
+
+                locationAddress = address;
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
