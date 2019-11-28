@@ -62,126 +62,128 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
     public void populateLocationsData(GoogleMap gmap){
         for (int counter = 0; counter < moodsList.size(); counter++) {
             MoodEvent mood = moodsList.get(counter);
-            Double latitude = Double.parseDouble(mood.getLatitude());
-            Double longitude = Double.parseDouble(mood.getLongitude());
-            getAddress(MoodsMapActivity.this,latitude,longitude);
-            String author = mood.getAuthor();
-            String date = mood.getDate();
-            String time = mood.getTime();
-            String reason = mood.getReason();
-            String situation = mood.getSocialSituation();
-            String infoWindow;
-            LatLng latlng = new LatLng(latitude,longitude);
+            if(mood.getLatitude()!=null && mood.getLongitude()!=null){
+                Double latitude = Double.parseDouble(mood.getLatitude());
+                Double longitude = Double.parseDouble(mood.getLongitude());
+                getAddress(MoodsMapActivity.this,latitude,longitude);
+                String author = mood.getAuthor();
+                String date = mood.getDate();
+                String time = mood.getTime();
+                String reason = mood.getReason();
+                String situation = mood.getSocialSituation();
+                String infoWindow;
+                LatLng latlng = new LatLng(latitude,longitude);
 
-            if(reason.equals("")){
-                if(situation == null){
-                    infoWindow=date+" "+time+"\n"+locationAddress;
+                if(reason.equals("")){
+                    if(situation == null){
+                        infoWindow=date+" "+time+"\n"+locationAddress;
+                    }
+                    else{
+                        infoWindow=situation+"\n"+date+" "+time+"\n"+locationAddress;
+                    }
                 }
                 else{
-                    infoWindow=situation+"\n"+date+" "+time+"\n"+locationAddress;
+                    if(situation == null){
+                        infoWindow=reason+"\n"+date+" "+time+"\n"+locationAddress;
+                    }
+                    else{
+                        infoWindow=reason+"\n"+situation+"\n"+date+" "+time+"\n"+locationAddress;
+                    }
                 }
-            }
-            else{
-                if(situation == null){
-                    infoWindow=reason+"\n"+date+" "+time+"\n"+locationAddress;
+
+                if(mood.getEmotionalState().equals("HAPPY")){
+                    int height = 150;
+                    int width = 150;
+                    BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.mooood_logo);
+                    Bitmap b=bitmapdraw.getBitmap();
+                    Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+                    Marker marker = gmap.addMarker(new MarkerOptions()
+                            .position(latlng)
+                            .title(author)
+                            .snippet(infoWindow)
+                            .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+                    );
+
                 }
-                else{
-                    infoWindow=reason+"\n"+situation+"\n"+date+" "+time+"\n"+locationAddress;
+                if(mood.getEmotionalState().equals("SAD")){
+                    int height = 150;
+                    int width = 150;
+                    BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.sad_cow_v1);
+                    Bitmap b=bitmapdraw.getBitmap();
+                    Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+                    Marker marker = gmap.addMarker(new MarkerOptions()
+                            .position(latlng)
+                            .title(author)
+                            .snippet(infoWindow)
+                            .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+                    );
+
                 }
-            }
-
-            if(mood.getEmotionalState().equals("HAPPY")){
-                int height = 150;
-                int width = 150;
-                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.mooood_logo);
-                Bitmap b=bitmapdraw.getBitmap();
-                Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
-                Marker marker = gmap.addMarker(new MarkerOptions()
-                        .position(latlng)
-                        .title(author)
-                        .snippet(infoWindow)
-                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
-                );
-
-            }
-            if(mood.getEmotionalState().equals("SAD")){
-                int height = 150;
-                int width = 150;
-                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.sad_cow_v1);
-                Bitmap b=bitmapdraw.getBitmap();
-                Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
-                Marker marker = gmap.addMarker(new MarkerOptions()
-                        .position(latlng)
-                        .title(author)
-                        .snippet(infoWindow)
-                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
-                );
-
-            }
-            if(mood.getEmotionalState().equals("LAUGHING")){
-                int height = 150;
-                int width = 150;
-                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.laughing_cow_v1);
-                Bitmap b=bitmapdraw.getBitmap();
-                Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
-                Marker marker = gmap.addMarker(new MarkerOptions()
-                        .position(latlng)
-                        .title(author)
-                        .snippet(infoWindow)
-                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
-                );
-            }
-            if(mood.getEmotionalState().equals("IN LOVE")){
-                int height = 150;
-                int width = 150;
-                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.in_love_cow_v1);
-                Bitmap b=bitmapdraw.getBitmap();
-                Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
-                Marker marker = gmap.addMarker(new MarkerOptions()
-                        .position(latlng)
-                        .title(author)
-                        .snippet(infoWindow)
-                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
-                );
-            }
-            if(mood.getEmotionalState().equals("ANGRY")){
-                int height = 150;
-                int width = 150;
-                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.angry_cow_v1);
-                Bitmap b=bitmapdraw.getBitmap();
-                Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
-                Marker marker = gmap.addMarker(new MarkerOptions()
-                        .position(latlng)
-                        .title(author)
-                        .snippet(infoWindow)
-                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
-                );
-            }
-            if(mood.getEmotionalState().equals("SICK")){
-                int height = 150;
-                int width = 150;
-                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.sick_cow_v1);
-                Bitmap b=bitmapdraw.getBitmap();
-                Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
-                Marker marker = gmap.addMarker(new MarkerOptions()
-                        .position(latlng)
-                        .title(author)
-                        .snippet(infoWindow)
-                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
-                );
-            }
-            if(mood.getEmotionalState().equals("AFRAID")){
-                int height = 150;
-                int width = 150;
-                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.afraid_cow_v1);
-                Bitmap b=bitmapdraw.getBitmap();
-                Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
-                Marker marker = gmap.addMarker(new MarkerOptions()
-                        .position(latlng)
-                        .title(author)
-                        .snippet(infoWindow)
-                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
-                );
+                if(mood.getEmotionalState().equals("LAUGHING")){
+                    int height = 150;
+                    int width = 150;
+                    BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.laughing_cow_v1);
+                    Bitmap b=bitmapdraw.getBitmap();
+                    Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+                    Marker marker = gmap.addMarker(new MarkerOptions()
+                            .position(latlng)
+                            .title(author)
+                            .snippet(infoWindow)
+                            .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+                    );
+                }
+                if(mood.getEmotionalState().equals("IN LOVE")){
+                    int height = 150;
+                    int width = 150;
+                    BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.in_love_cow_v1);
+                    Bitmap b=bitmapdraw.getBitmap();
+                    Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+                    Marker marker = gmap.addMarker(new MarkerOptions()
+                            .position(latlng)
+                            .title(author)
+                            .snippet(infoWindow)
+                            .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+                    );
+                }
+                if(mood.getEmotionalState().equals("ANGRY")){
+                    int height = 150;
+                    int width = 150;
+                    BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.angry_cow_v1);
+                    Bitmap b=bitmapdraw.getBitmap();
+                    Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+                    Marker marker = gmap.addMarker(new MarkerOptions()
+                            .position(latlng)
+                            .title(author)
+                            .snippet(infoWindow)
+                            .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+                    );
+                }
+                if(mood.getEmotionalState().equals("SICK")){
+                    int height = 150;
+                    int width = 150;
+                    BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.sick_cow_v1);
+                    Bitmap b=bitmapdraw.getBitmap();
+                    Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+                    Marker marker = gmap.addMarker(new MarkerOptions()
+                            .position(latlng)
+                            .title(author)
+                            .snippet(infoWindow)
+                            .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+                    );
+                }
+                if(mood.getEmotionalState().equals("AFRAID")) {
+                    int height = 150;
+                    int width = 150;
+                    BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.afraid_cow_v1);
+                    Bitmap b = bitmapdraw.getBitmap();
+                    Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+                    Marker marker = gmap.addMarker(new MarkerOptions()
+                            .position(latlng)
+                            .title(author)
+                            .snippet(infoWindow)
+                            .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+                    );
+                }
             }
         }
     }

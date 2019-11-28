@@ -1,11 +1,5 @@
 package com.example.mooood;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,14 +9,18 @@ import android.widget.ImageButton;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -30,15 +28,12 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Date;
 
 public class feedActivity extends AppCompatActivity {
@@ -176,6 +171,11 @@ public class feedActivity extends AppCompatActivity {
 
                                             }
 
+                                            Collections.sort(feedDataList, new Comparator<MoodEvent>() {
+                                                public int compare(MoodEvent o1, MoodEvent o2) {
+                                                    return o2.getTimeStamp().compareTo(o1.getTimeStamp());
+                                                }
+                                            });
                                             moodEventAdapter.notifyDataSetChanged();
 
                                         }
@@ -399,31 +399,16 @@ public class feedActivity extends AppCompatActivity {
      */
     private void goToFollowerActivity(final String loginName, final int i){
 
-        collectionReference.document(loginName).collection("Following").document(searchUser.get(i).getAuthor())
-                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Toast.makeText(feedActivity.this, "Already Following!",
-                                Toast.LENGTH_SHORT).show();
-                    } else {
-                        Intent intent = new Intent(feedActivity.this, followerActivity.class);
-                        Log.d("followerActivity", "creating the intent");
-                        intent.putExtra("accountMood", searchUser.get(i).getAuthor());
-                        intent.putExtra("loginName", loginName);
-                        intent.putExtra("moodDate", searchUser.get(i).getDate());
-                        intent.putExtra("moodTime", searchUser.get(i).getTime());
-                        intent.putExtra("moodAuthor", searchUser.get(i).getAuthor());
-                        Log.d("follower", "date "+ searchUser.get(i).getDate());
-                        startActivity(intent);
-                    }
-                } else {
-                    Log.d("checking", "Failed with: ", task.getException());
-                }
-            }
-        });
+        Intent intent = new Intent(feedActivity.this, followerActivity.class);
+        Log.d("followerActivity", "creating the intent");
+        intent.putExtra("accountMood", searchUser.get(i).getAuthor());
+        intent.putExtra("loginName", loginName);
+        intent.putExtra("moodDate", searchUser.get(i).getDate());
+        intent.putExtra("moodTime", searchUser.get(i).getTime());
+        intent.putExtra("moodAuthor", searchUser.get(i).getAuthor());
+        Log.d("follower", "date "+ searchUser.get(i).getDate());
+        startActivity(intent);
+
     }
 
 
