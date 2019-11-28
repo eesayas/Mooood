@@ -833,6 +833,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         String longitudeStr = Double.toString(locationLongitude);
         moodEvent.setLatitude(latitudeStr);
         moodEvent.setLongitude(longitudeStr);
+        moodEvent.setAddress(locationAddress);
     }
 
     //==========================================================================================
