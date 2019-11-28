@@ -18,14 +18,19 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+import android.widget.ViewFlipper;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.content.FileProvider;
 import androidx.viewpager.widget.ViewPager;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -76,12 +81,14 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
     ViewPager moodRoster;
     SwipeMoodsAdapter moodRosterAdapter;
     List<Emoticon> moodImages;
+    ViewFlipper viewFlipper;
+    LinearLayout backButton;
 
     //Firebase setup!
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference documentReference;
 
-    TextView socialSituation;
+    TextView socialSituation, imgToggleTxt, gpsToggleTxt;
     EditText reason;
 
     //for image upload
@@ -97,10 +104,15 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
 
     SimpleDateFormat simpleDateFormat;
     Calendar calendar;
-    TextView dateAndTimeMood;
+    TextView dateAndTimeMood, actTitle;
     Button submitButton;
     Button locationButton;
+    ImageView chosenEmoticon;
 
+    SwitchCompat toggleImagePreview, toggleGPSPreview;
+    LinearLayout gpsPreviewCont, imgReasonCont;
+
+    Button selectEmoticonBtn;
     //For location services inside the activity
     private static final String MAP_VIEW_BUNDLE_KEY="MapViewBundleKey";
     private MapView mapView;
@@ -120,6 +132,24 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
         socialSituation = findViewById(R.id.social_situation);
         imageUpload = findViewById(R.id.image_reason);
         dateAndTimeMood = findViewById((R.id.date_and_time));
+        actTitle = findViewById(R.id.title_txt);
+        viewFlipper = findViewById(R.id.view_flipper);
+        backButton = findViewById(R.id.back_btn);
+        gpsPreviewCont = findViewById(R.id.gps_preview_cont);
+        imgReasonCont = findViewById(R.id.img_reason_cont);
+        toggleImagePreview = findViewById(R.id.toggle_image_preview);
+        toggleGPSPreview = findViewById(R.id.toggle_gps_preview);
+        chosenEmoticon = findViewById(R.id.chosen_emoticon);
+        imgToggleTxt = findViewById(R.id.img_toggle_txt);
+        gpsToggleTxt = findViewById(R.id.gps_toggle_txt);
+
+        //Set title bar to "Edit Mood Activity"
+        String editTitle = "Edit Mood Activity";
+        actTitle.setText(editTitle);
+
+        //flip to second child on ViewFlipper ie don't start with mood roster
+        viewFlipper.setDisplayedChild(1);
+
 
         //Accessing the document
         Intent intent = getIntent();
@@ -131,6 +161,7 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
 
         swipeMoodAdapterSetup();
         customSwipeMoodStyling();
+        backBtnListener();
 
         //Set initial values according to MoodEvent
         setProperEmoticon();
@@ -138,11 +169,18 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
         setProperSocialSituation();
         setProperImageReason();
         setProperTimeAndDate();
+        getToggleState();
 
         //Invoke methods for selection of MoodEvent details
         moodSelection();
+        emoticonSelectBtnListener();
         socialSituationClickListener();
+
 //        dateAndTimePickerClickListener();
+
+        togglePreviews();
+
+
 
         //setup for image upload
         storageReference = FirebaseStorage.getInstance().getReference("reason_image");
@@ -167,6 +205,33 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
         submitBtnClickListener();
 
     } //end of onCreate
+
+
+    // VIEW FLIPPER
+    public void previousView(View view){
+        viewFlipper.setInAnimation(this, android.R.anim.slide_in_left);
+        viewFlipper.setOutAnimation(this, android.R.anim.slide_out_right);
+        viewFlipper.showPrevious();
+    }
+
+    public void nextView(View view){
+        viewFlipper.setInAnimation(this, R.anim.slide_in_right);
+        viewFlipper.setOutAnimation(this, R.anim.slide_out_left);
+        viewFlipper.showNext();
+    }
+
+    private void backBtnListener(){
+        backButton = findViewById(R.id.back_btn);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "Clicked");
+                previousView(view);
+            }
+        });
+    }
+
 
     //==============================================================================================
     // Setup CreateEventActivity [VIEW]
@@ -216,6 +281,8 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
             else pos = 0;
         }
         moodRoster.setCurrentItem(pos);
+
+        chosenEmoticon.setImageResource(new Emoticon(moodEvent.getEmotionalState(), 1).getImageLink());
     }
 
     /**
@@ -293,6 +360,27 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
 //    }
 
     /**
+     * This turns on the toggles if image and gps exists in MoodEvent
+     */
+    private void getToggleState(){
+        if(moodEvent.getImageUrl() != null){
+            toggleImagePreview.setChecked(true);
+            imageUpload.setVisibility(View.VISIBLE);
+
+            String toggleTxt = "Edit Photo";
+            imgToggleTxt.setText(toggleTxt);
+        }
+
+        if(moodEvent.getLatitude() != null && moodEvent.getLongitude() != null && moodEvent.getAddress() != null){
+            toggleGPSPreview.setChecked(true);
+            gpsPreviewCont.setVisibility(View.VISIBLE);
+
+            String toggleTxt = "Edit Location";
+            gpsToggleTxt.setText(toggleTxt);
+        }
+    }
+
+    /**
      * This sets the proper time and date for the textView and the dialog picker as well (not null)
      */
     private void setProperTimeAndDate(){
@@ -342,6 +430,20 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
             }
         });
 
+    }
+
+    private void emoticonSelectBtnListener(){
+        selectEmoticonBtn = findViewById(R.id.select_emoticon_btn);
+
+        selectEmoticonBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, moodEvent.getEmotionalState());
+
+                chosenEmoticon.setImageResource(new Emoticon(moodEvent.getEmotionalState(), 1).getImageLink());
+                nextView(view);
+            }
+        });
     }
 
     /**
@@ -428,6 +530,43 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
             dateAndTimeMood.setText(simpleDateFormat.format(calendar.getTime()));
         }
     };
+
+
+    //TOGGLES
+
+    /**
+     * This toggles (shows/hides) the previewers for gps and image upload
+     */
+    private void togglePreviews(){
+
+
+        toggleImagePreview.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if(isChecked){
+                    imageUpload.setVisibility(View.VISIBLE);
+
+                } else{
+                    imageUpload.setVisibility(View.GONE);
+
+                    //RESET PREVIEW
+                }
+            }
+        });
+
+        toggleGPSPreview.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if(isChecked){
+                    gpsPreviewCont.setVisibility(View.VISIBLE);
+
+                } else{
+                    gpsPreviewCont.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
+
 
     //==========================================================================================
     // UPLOAD IMAGE METHODS (Note: Use design pattern to put all this into a different file)
@@ -780,11 +919,36 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
         this.moodLocation = moodLocation;
     }
 
+    /**
+     * This will set the longitude and latitude of MoodEvent
+     */
+    private void obtainCoordinates(){
+        String latitudeStr = Double.toString(moodLocation.latitude);
+        String longitudeStr = Double.toString(moodLocation.longitude);
+        moodEvent.setLatitude(latitudeStr);
+        moodEvent.setLongitude(longitudeStr);
+    }
+
 
 
     //==========================================================================================
     // ASSEMBLING MOODEVENT AND SUBMITTING IT TO DB
     //==========================================================================================
+    /**
+     * This checks if GPS or IMAGE UPLOAD is switched on or off and deletes values accordingly
+     */
+    private void checkToggles(){
+        if(!toggleImagePreview.isChecked()){
+            moodEvent.setImageUrl(null);
+        }
+
+        if(!toggleGPSPreview.isChecked()){
+            moodEvent.setLatitude(null);
+            moodEvent.setLongitude(null);
+            moodEvent.setAddress(null);
+        }
+    }
+
     /**
      * This is a click listener for submit button. This actually submits the new MoodEvent ito DB
      * @params accountName
@@ -799,6 +963,8 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
                 //necessary methods before MoodEvent submission
                 createTimeStamp();
                 obtainReason();
+                obtainCoordinates();
+                checkToggles();
 
                 if(uploadTask != null && uploadTask.isInProgress()) {
                     Log.d(TAG, "Upload in Progress");
@@ -820,7 +986,13 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
      * This obtains the reason for MoodEvent
      **/
     private void obtainReason(){
-        moodEvent.setReason(reason.getText().toString());
+
+        if(reason.getText().toString().equals("")){
+            moodEvent.setReason(reason.getText().toString());
+
+        } else{
+            moodEvent.setReason(null);
+        }
     }
 
     /**
