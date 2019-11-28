@@ -87,8 +87,8 @@ public class FollowAndNotificationTest {
         solo.waitForText("test2",1,20000);
         solo.sendKey(KeyEvent.KEYCODE_ENTER);
 
-        //Clicks on the moodEvent of the user Searched and clicks on teh follow button to send them a request
-        solo.clickInList(0);
+        //Clicks on the moodEvent of the user Searched and clicks on the follow button to send them a request
+        solo.clickOnView(solo.getView(R.id.followListView));
         solo.waitForActivity(followerActivity.class);
         solo.clickOnView(solo.getView(R.id.follow_button));
 
