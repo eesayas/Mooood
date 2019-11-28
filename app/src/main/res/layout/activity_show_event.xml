@@ -13,13 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-        <Button
-            android:background="@android:color/black"
-            android:id="@+id/backButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/ic_keyboard_backspace" />
-
 
         <RelativeLayout
             android:id="@+id/fullscreen_ll"

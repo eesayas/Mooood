@@ -3,6 +3,7 @@ package com.example.mooood;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
@@ -43,6 +44,7 @@ import java.util.Date;
 public class feedActivity extends AppCompatActivity {
 
     private static final String TAG= "feedActivity";
+    public static final String MOOD_EVENT = "Mood Event";
 
 // =========================BEFORE==============================
 //
@@ -77,6 +79,7 @@ public class feedActivity extends AppCompatActivity {
 
     //for RecyclerView
     private RecyclerTouchListener searchResultTouchListener;
+    private RecyclerTouchListener recentMoodsTouchListener;
 
     private TextView userId;
 
@@ -101,6 +104,8 @@ public class feedActivity extends AppCompatActivity {
         arrayAdapterSetup();
         followAdapter();
         searchResultListener(name);
+        recentMoodsListener();
+
 
         searchUsers(name);
         selectUser();
@@ -122,12 +127,10 @@ public class feedActivity extends AppCompatActivity {
         feedDataList.clear();
         moodEventAdapter.notifyDataSetChanged();
         feedCollectionReference
-
-                .orderBy("timestamp", Query.Direction.DESCENDING) //added by eesayas because the sorting below has cannot be resolved
-
                 .addSnapshotListener(this, new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+
                         feedDataList.clear();
                         for (QueryDocumentSnapshot queryDocumentSnapshot : queryDocumentSnapshots){
                             final String name = queryDocumentSnapshot.getId();
@@ -171,7 +174,6 @@ public class feedActivity extends AppCompatActivity {
                                                     feedDataList.add(moodEvent);
                                                 }
 
-                                                feedDataList.add(moodEvent); //add to data list
                                             }
 
                                             moodEventAdapter.notifyDataSetChanged();
@@ -189,6 +191,7 @@ public class feedActivity extends AppCompatActivity {
     public void onResume(){
         super.onResume();
         searchResultList.addOnItemTouchListener(searchResultTouchListener);
+        moodEventList.addOnItemTouchListener(recentMoodsTouchListener);
     }
 
     private void notificationCheck(final String userName){
@@ -337,6 +340,47 @@ public class feedActivity extends AppCompatActivity {
             public void onIndependentViewClicked(int independentViewID, int position) {
             }
         });
+
+        //create a line that separates all MoodEvent inside the RecyclerView
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(searchResultList.getContext(), DividerItemDecoration.VERTICAL);
+        dividerItemDecoration.setDrawable(this.getResources().getDrawable(R.drawable.recyclerview_divider));
+        moodEventList.addItemDecoration(dividerItemDecoration);
+
+
+    }
+
+    /**
+     */
+    private void recentMoodsListener(){
+        recentMoodsTouchListener = new RecyclerTouchListener(this, moodEventList);
+        recentMoodsTouchListener.setClickable(new RecyclerTouchListener.OnRowClickListener() {
+            @Override
+            public void onRowClicked(int position) {
+                Log.d(TAG, "Traveling to showEventActivity");
+                goToShowEventActivity(position);
+
+            }
+
+            @Override
+            public void onIndependentViewClicked(int independentViewID, int position) {
+            }
+        });
+
+        //create a line that separates all MoodEvent inside the RecyclerView
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(moodEventList.getContext(), DividerItemDecoration.VERTICAL);
+        dividerItemDecoration.setDrawable(this.getResources().getDrawable(R.drawable.recyclerview_divider));
+        moodEventList.addItemDecoration(dividerItemDecoration);
+
+
+    }
+
+    private void goToShowEventActivity (int i) {
+
+        edit = "false";
+        Intent intent = new Intent(feedActivity.this, ShowEventActivity.class);
+        intent.putExtra(MOOD_EVENT, feedDataList.get(i));
+        intent.putExtra("bool",edit);
+        startActivity(intent);
     }
 
     /**
