@@ -42,26 +42,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 /**
- * This test case is for
- *
- * US 01.01.01
- * As a participant, I want to add a mood event to my mood history, each event with the current date
- * and time, a required emotional state, optional reason, and optional social situation.
- *
- * US 01.03.01
- * As a participant, I want to view a given mood event and all its available details.
- *
- * US 02.01.01
- * As a participant, I want to express the reason why for a mood event using a brief textual
- * explanation (no more than 20 characters or 3 words).
- *
- * US 02.02.01
- * As a participant, I want to express the reason why for a mood event using a photograph.
- *
- * US 02.03.01
- * As a participant, I want to specify the social situation for a mood event to be one of: alone,
- * with one other person, with two to several people, or with a crowd.
- *
+ *This test case is for
+ * US 06.02.01
+ *As a participant, I want to see a map of the mood events (showing their emotional states)
+ * from my mood history list (that have locations).
+ * So the participant can see where the participant was feeling all the mood events.
  */
 
 @RunWith(AndroidJUnit4.class)
@@ -92,13 +77,12 @@ public class UserMoodMapTest {
     }
 
     /**
-     * This creates a MoodEvent with all details filled out
-     * Then checks if the MoodEvent is in the UserFeedActvity
-     * and if ShowEventActivity displays all details
+     * This creates a MoodEvent with all details filled out including location
+     * Then checks if the MoodEvent contains a latitude and longitude both in the UserFeed
+     * and in the maps activity where it's called.
      *
      * Tackles:
-     *  - US 01.01.01
-     *  - US 01.03.01
+     *  - US 06.02.01
      */
     @Test
     public void checkAdd(){
@@ -152,9 +136,6 @@ public class UserMoodMapTest {
         //access the RecyclerView where the created MoodEvent should've been added
         UserFeedActivity activity = (UserFeedActivity) solo.getCurrentActivity();
 
-        //TODO: I had to hack this because the onView method was not working.
-        //click on first item
-        //onView(withId(R.id.posts_list)).perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         ArrayList<MoodEvent> userFeedMoods = activity.getPostDataList();
         solo.clickOnView(solo.getView(R.id.map_user_feed_button));
         solo.clickOnImageButton(0);
