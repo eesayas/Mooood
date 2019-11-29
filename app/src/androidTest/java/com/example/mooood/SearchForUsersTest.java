@@ -64,6 +64,7 @@ public class SearchForUsersTest {
         Activity activity = rule.getActivity();
     }
 
+
     @Test
     public void searchForUsers(){
         solo.assertCurrentActivity("Wrong Activity", MainActivity.class);

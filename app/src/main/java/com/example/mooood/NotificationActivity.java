@@ -47,7 +47,7 @@ public class NotificationActivity extends AppCompatActivity {
         arrayAdapterSetup();
         showNotification();
 
-        backButton = findViewById(R.id.backButton);
+        backButton = findViewById(R.id.backButton1);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
