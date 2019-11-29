@@ -201,6 +201,7 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
         timeText.setText(time);
         socialSituationText.setText(socialSituation);
         Picasso.get().load(imageUrl).into(imageReason);
+        imageReason.setTag(imageUrl);
         reasonText.setText(reason);
     }
 
