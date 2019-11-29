@@ -942,4 +942,12 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         finish();
 
     }
+
+    public Double getLocationLatitude() {
+        return locationLatitude;
+    }
+
+    public Double getLocationLongitude() {
+        return locationLongitude;
+    }
 }

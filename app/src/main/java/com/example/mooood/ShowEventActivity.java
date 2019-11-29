@@ -360,5 +360,13 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
         super.onLowMemory();
         mapView.onLowMemory();
     }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
 }
 

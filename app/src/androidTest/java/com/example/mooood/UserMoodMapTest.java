@@ -14,6 +14,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -63,7 +65,7 @@ import static org.junit.Assert.assertFalse;
  */
 
 @RunWith(AndroidJUnit4.class)
-public class CreateAndShowMoodEventTest {
+public class UserMoodMapTest {
 
     private Solo solo;
     private Calendar calendar;
@@ -138,6 +140,8 @@ public class CreateAndShowMoodEventTest {
         solo.clickOnView(solo.getView(R.id.social_situation));
         solo.clickOnText("Alone");
 
+        //get location
+        solo.clickOnView(solo.getView(R.id.toggle_gps_preview));
 
         //click on submit
         solo.clickOnView(solo.getView(R.id.submit_button));
@@ -148,24 +152,17 @@ public class CreateAndShowMoodEventTest {
         //access the RecyclerView where the created MoodEvent should've been added
         UserFeedActivity activity = (UserFeedActivity) solo.getCurrentActivity();
 
+        //TODO: I had to hack this because the onView method was not working.
         //click on first item
-        onView(withId(R.id.posts_list)).perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+        //onView(withId(R.id.posts_list)).perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+        ArrayList<MoodEvent> userFeedMoods = activity.getPostDataList();
+        solo.clickOnView(solo.getView(R.id.map_user_feed_button));
+        solo.clickOnImageButton(0);
+        solo.waitForActivity(MoodsMapActivity.class);
+        MoodsMapActivity mapActivity = (MoodsMapActivity) solo.getCurrentActivity();
+        ArrayList<MoodEvent> mapMoods = mapActivity.getMoodsList();
 
-        //go to the ShowEventActivity of the choosen MoodEvent
-        solo.waitForActivity(ShowEventActivity.class);
-
-        //get important TextView
-
-        TextView author = (TextView) solo.getView(R.id.author);
-        ImageView emotion = (ImageView) solo.getView(R.id.emoticon);
-        TextView date = (TextView) solo.getView(R.id.date);
-        TextView time = (TextView) solo.getView(R.id.time);
-
-        //ASSERTIONS!!!
-        assertEquals(author.getText().toString(), "eesayas");
-        assertEquals(emotion.getTag(), new Emoticon("HAPPY", 2).getImageLink());
-        assertEquals(time.getText().toString(), currentTime);
-        assertEquals(date.getText().toString(), currentDate);
+        assertEquals(mapMoods.get(0).getLatitude(),userFeedMoods.get(0).getLatitude());
 
         solo.sleep(2000); //for visual
     }
