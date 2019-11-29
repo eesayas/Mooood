@@ -121,7 +121,6 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     private Double locationLatitude=53.5;
     private Double locationLongitude=-113.5;
     private Marker myMarker;
-    CameraPosition.Builder camBuilder;
     private LatLng moodLocation;
 
     Button locationButton, cancelButton, selectEmoticonBtn;
@@ -704,12 +703,6 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         uiSettings.setCompassEnabled(true);
         uiSettings.setZoomControlsEnabled(true);
 
-
-        camBuilder = CameraPosition.builder();
-        camBuilder.bearing(0);
-        camBuilder.tilt(0);
-        camBuilder.zoom(11);
-
         //TODO:I couldn't figure it out, but I suggest we find a way to decouple so many of these functions from this listener.
         // Response: Yes will apply MVC before we submit - eesayas
         //Gets the location from gps,places a marker at said location, gives it the title of the address or a default address, and moves the camera to the marker's position.
@@ -720,6 +713,12 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
                         if (location != null) {
                             locationLatitude=location.getLatitude();
                             locationLongitude=location.getLongitude();
+
+                            CameraPosition.Builder camBuilder;
+                            camBuilder = CameraPosition.builder();
+                            camBuilder.bearing(0);
+                            camBuilder.tilt(0);
+                            camBuilder.zoom(11);
                             camBuilder.target(new LatLng(locationLatitude,locationLongitude));
                             CameraPosition cp = camBuilder.build();
                             gmap.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
