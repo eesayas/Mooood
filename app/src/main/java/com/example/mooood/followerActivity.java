@@ -80,11 +80,11 @@ public class followerActivity extends AppCompatActivity {
 
 
         checkButtonContent();
-//        followUser();
+
 
 
         backToFeed();
-    }//End of onCreate
+    }
 
 
 
@@ -106,12 +106,7 @@ public class followerActivity extends AppCompatActivity {
      */
     private void checkButtonContent() {
 
-        /*
-         if !hyeon69.Request.Fahad && Fahad.Following.Hyeon => Unfollow
-         if !hyeon69.Request.Fahad && !Fahad.Following.Hyeon => Follow
-         if hyeon69.Request.Fahad && !Fahad.Following.Hyeon => Request Sent => onlick =>Cancel Req
-         if
-        */
+
         collectionReference.document(toFollow).collection("Request").document(loginName)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -235,7 +230,11 @@ public class followerActivity extends AppCompatActivity {
 
     }
 
-    public void Test(View view) {
+
+    /**
+     * calls follow user whenever the button to follow, unfollow, or cancel request is clicked
+     */
+    public void Click(View view) {
         Log.d("aaa", "clicked");
         followUser();
     }

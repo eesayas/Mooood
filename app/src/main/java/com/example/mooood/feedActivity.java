@@ -170,12 +170,6 @@ public class feedActivity extends AppCompatActivity {
                                                 }
 
                                             }
-                                            Collections.sort(feedDataList, new Comparator<MoodEvent>() {
-                                                public int compare(MoodEvent o1, MoodEvent o2) {
-                                                    return o2.getTimeStamp().compareTo(o1.getTimeStamp());
-                                                }
-                                            });
-
 
                                             Collections.sort(feedDataList, new Comparator<MoodEvent>() {
                                                 public int compare(MoodEvent o1, MoodEvent o2) {
@@ -499,10 +493,5 @@ public class feedActivity extends AppCompatActivity {
         });
 
     }
-
-
-
-
-
 
 }

@@ -40,7 +40,7 @@
         android:layout_gravity="center_horizontal"
         android:width="170dp"
         android:height="60dp"
-        android:onClick="Test">
+        android:onClick="Click">
 
     </Button>
 
