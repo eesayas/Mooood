@@ -1,6 +1,6 @@
-# Welcome to the *test* branch!!!
+# Welcome to the *design* branch!!!
 
-## This is branch has all test cases
+## This branch is where we make the app pretty
 
-next branch is *design*
+next branch is *final*
 
