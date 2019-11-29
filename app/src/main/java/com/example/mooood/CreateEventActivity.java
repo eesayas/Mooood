@@ -78,7 +78,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     private static final String TAG = "Debugging";
 
     //Declare variables for later use
-    ViewPager moodRoster;
+    private ViewPager moodRoster;
     SwipeMoodsAdapter moodRosterAdapter;
     List<Emoticon> moodImages;
 
