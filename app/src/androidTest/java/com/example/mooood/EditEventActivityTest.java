@@ -12,9 +12,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-
-import javax.microedition.khronos.egl.EGLDisplay;
-
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -126,7 +123,7 @@ public class EditEventActivityTest {
         assertEquals(date.getText().toString(), currentDate);
 
         assertEquals(socialSituation.getText().toString(), "Alone");
-        assertEquals(reasonTxt.getText().toString(), "reason");
+        assertEquals(reasonTxt.getTag().toString(), "reason");
         assertEquals(reasonImg.getTag().toString(), "https://upload.wikimedia.org/wikipedia/en/7/7d/Lenna_%28test_image%29.png");
 
         solo.sleep(2000); //for visual
@@ -203,7 +200,7 @@ public class EditEventActivityTest {
         //ASSERTIONS!!!
         assertEquals(author.getText().toString(), "eesayas");
         assertEquals(socialSituation.getText().toString(), "With Someone");
-        assertEquals(reasonTxt.getText().toString(), "new reason");
+        assertEquals(reasonTxt.getTag().toString(), "new reason");
         assertEquals(reasonImg.getTag().toString(), "https://ohsheglows.com/gs_images/2019/03/Simple-Meal-Prep-Power-Bowls-00923-5-256x256.jpg");
 
         solo.sleep(2000); //for visual

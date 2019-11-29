@@ -123,7 +123,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     private Marker myMarker;
     private LatLng moodLocation;
 
-    private Button locationButton, cancelButton, selectEmoticonBtn, submitButton;
+    private Button cancelButton, selectEmoticonBtn, submitButton;
     private LinearLayout backButton;
 
     //the code will populate this
@@ -146,6 +146,8 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         imgReasonCont = findViewById(R.id.img_reason_cont);
         toggleImagePreview = findViewById(R.id.toggle_image_preview);
         toggleGPSPreview = findViewById(R.id.toggle_gps_preview);
+        cancelButton = findViewById(R.id.cancel_button);
+        backButton = findViewById(R.id.back_btn);
 
         //Acquire the account name of the current User
         Intent intent = getIntent();
@@ -230,9 +232,15 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
      * Redirects User to UserFeedActivity
      */
     private void backBtnListener() {
-        backButton = findViewById(R.id.back_btn);
 
         backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();

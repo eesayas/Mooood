@@ -160,7 +160,7 @@ public class CreateAndShowMoodEventTest {
         assertEquals(date.getText().toString(), currentDate);
 
         assertEquals(socialSituation.getText().toString(), "Alone");
-        assertEquals(reasonTxt.getText().toString(), "reason");
+        assertEquals(reasonTxt.getTag().toString(), "reason");
         assertEquals(reasonImg.getTag().toString(), "https://upload.wikimedia.org/wikipedia/en/7/7d/Lenna_%28test_image%29.png");
 
         solo.sleep(2000); //for visual
