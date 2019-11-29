@@ -94,7 +94,7 @@ public class UserFeedActivity extends AppCompatActivity {
         //get user
         Intent intent = getIntent();
         accountName = intent.getStringExtra("accountKey");
-        
+
         userId.setText(accountName);
         documentReference = db.collection("MoodEvents").document(accountName);
         collectionReference = db.collection("MoodEvents").document(accountName).collection("MoodActivities");
