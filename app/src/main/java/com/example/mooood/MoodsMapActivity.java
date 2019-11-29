@@ -39,9 +39,9 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
 
     private static final String TAG = "Debugging";
 
-    GoogleMap gmap;
-    ArrayList<MoodEvent> moodsList;
-    String locationAddress;
+    private GoogleMap gmap;
+    private ArrayList<MoodEvent> moodsList;
+    private String locationAddress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

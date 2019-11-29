@@ -35,13 +35,10 @@ public class followerActivity extends AppCompatActivity {
 
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference collectionReference;
-    TextView setDate;
-    TextView setTime;
-    TextView setAuthor;
-    String loginName;
-    String toFollow;
+    private TextView setDate, setTime, setAuthor;
+    private String loginName, toFollow, userState;
     ImageView recentEmoji;
-    String userState;
+
 
     /**
      * This implements all methods below accordingly

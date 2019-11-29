@@ -53,20 +53,20 @@ public class UserFeedActivity extends AppCompatActivity {
     public static final String MOOD_EVENT = "Mood Event";
 
     //Declare the variables for reference later
-    RecyclerView postList;
-    ArrayList<MoodEvent> postDataList;
+    private RecyclerView postList;
+    private ArrayList<MoodEvent> postDataList;
 
     private MoodEventsAdapter postAdapter;
     private RecyclerTouchListener recyclerTouchListener;
 
 
-    SearchView userSearchView;
-    Button feedButton;
+    private  SearchView userSearchView;
+    private Button feedButton;
 
-    Date moodTimeStamp;
-    TextView userProfile;
+    private Date moodTimeStamp;
+    private TextView userProfile;
 
-    ImageButton mapButton;
+    private ImageButton mapButton;
 
 
     //Firebase setup!

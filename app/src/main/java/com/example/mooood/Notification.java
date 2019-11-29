@@ -7,8 +7,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class Notification {
-    String username;
-    String requestTime;
+    private String username;
+    private String requestTime;
 
     public Notification(String username, String requestTime) {
         this.username = username;

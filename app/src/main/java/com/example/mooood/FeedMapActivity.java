@@ -18,8 +18,8 @@ import java.util.ArrayList;
 
 public class FeedMapActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    GoogleMap gmap;
-    ArrayList<MoodEvent> moodsList;
+    private GoogleMap gmap;
+    private ArrayList<MoodEvent> moodsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

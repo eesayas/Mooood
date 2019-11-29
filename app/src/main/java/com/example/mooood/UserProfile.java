@@ -9,11 +9,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class UserProfile extends AppCompatActivity {
-    ImageView profilePic;
-    TextView userName;
-    ImageView recent;
-    TextView recentDate;
-    TextView recentTime;
+    private ImageView profilePic, recent;
+    private TextView userName, recentDate, recentTime;
 
     /**
      * This sets up the view
