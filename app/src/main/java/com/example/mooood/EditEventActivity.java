@@ -317,47 +317,6 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
             imageUpload.setImageResource(R.drawable.temp_image_upload);
         }
     }
-    /**
-     * This checks if reason is only 3 words or 20 characters
-     */
-
-//    private void inputChecker(){
-//        submitButton.setEnabled(false);
-//        if(moodDate != null && moodTime != null){
-//            submitButton.setEnabled(true);
-//        }
-//        final EditText reasonText = findViewById(R.id.reason);
-//        reasonText.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//            }
-//
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                if (s.length() > 0)
-//                {
-//                    int number = countWords(s.toString());
-//                    if (number < 4){
-//                        moodReason = reasonText.getText().toString();
-//                        reasonCount = true;
-//                        submitButton.setEnabled(true);
-//
-//                    }
-//                    else{
-//                        Toast.makeText(EditEventActivity.this, "reason cannot be more than 3 words!",
-//                                Toast.LENGTH_SHORT).show();
-//                        reasonCount = false;
-//                        submitButton.setEnabled(false);
-//                    }
-//                }
-//
-//            }
-//        });
-//    }
 
     /**
      * This turns on the toggles if image and gps exists in MoodEvent
@@ -956,13 +915,14 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
      */
     private void submitBtnClickListener(){
         submitButton = findViewById(R.id.submit_button);
+        obtainReason();
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 //necessary methods before MoodEvent submission
                 createTimeStamp();
-                obtainReason();
+//                obtainReason();
                 obtainCoordinates();
                 checkToggles();
 
@@ -983,16 +943,42 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
     }
 
     /**
-     * This obtains the reason for MoodEvent
+     * This obtains the reason for MoodEvent and checks if the reason meets the requirements
      **/
     private void obtainReason(){
+        reason.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-        if(reason.getText().toString().equals("")){
-            moodEvent.setReason(reason.getText().toString());
+            }
 
-        } else{
-            moodEvent.setReason(null);
-        }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.d("reason123","inside onTextChanged");
+//                submitButton.setEnabled(false);
+                if (s.length() > 0)
+                {
+                    int number = countWords(s.toString());
+                    if (number < 4){
+                        moodEvent.setReason(reason.getText().toString());
+//                        submitButton.setBackgroundColor(0x00A21F);
+                        submitButton.setEnabled(true);
+                    }
+                    else{
+                        Toast.makeText(EditEventActivity.this, "reason cannot be more than 3 words!",
+                                Toast.LENGTH_SHORT).show();
+                        submitButton.setEnabled(false);
+//                        submitButton.setBackgroundColor(0x2F2F2F);
+                    }
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     /**
@@ -1037,4 +1023,5 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
         intent.putExtra("accountKey", moodEvent.getAuthor());
         startActivity(intent);
     }
+
 }

@@ -15,6 +15,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
@@ -859,6 +861,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
      */
     private void submitBtnClickListener(){
         submitButton = findViewById(R.id.submit_button);
+        obtainReason();
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -867,7 +870,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
                 createTimeStamp();
 
                 //order is important
-                obtainReason();
+
                 obtainCoordinates();
                 checkToggles();
 
@@ -890,17 +893,41 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     }
 
     /**
-     * This obtains the reason for MoodEvent
+     * This obtains the reason for MoodEvent and checks if the reason meets the requirements
      **/
-    private void obtainReason(){
+    private void obtainReason() {
+        reason.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-        if(reason.getText().toString().equals("")){
-            moodEvent.setReason(reason.getText().toString());
+            }
 
-        } else{
-            moodEvent.setReason(null);
-        }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.d("reason123", "inside onTextChanged");
+//                submitButton.setEnabled(false);
+                if (s.length() > 0) {
+                    int number = countWords(s.toString());
+                    if (number < 4) {
+                        moodEvent.setReason(reason.getText().toString());
+//                        submitButton.setBackgroundColor(0x00A21F);
+                        submitButton.setEnabled(true);
+                    } else {
+                        Toast.makeText(CreateEventActivity.this, "reason cannot be more than 3 words!",
+                                Toast.LENGTH_SHORT).show();
+                        submitButton.setEnabled(false);
+//                        submitButton.setBackgroundColor(0x2F2F2F);
 
+                    }
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     /**
@@ -941,5 +968,14 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
                 });
         finish();
 
+    }
+
+    public static int countWords(String input) {
+        if (input == null || input.isEmpty()) {
+            return 0;
+        }
+
+        String[] words = input.split("\\s+");
+        return words.length;
     }
 }
