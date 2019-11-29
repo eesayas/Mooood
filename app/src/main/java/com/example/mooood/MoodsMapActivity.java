@@ -41,8 +41,11 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
 
     GoogleMap gmap;
     ArrayList<MoodEvent> moodsList;
-    String locationAddress;
 
+    /**
+     * This method generates the activity and retrieves the mood events from the User Feed Activity
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,43 +57,27 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
         Intent intent = getIntent();
         moodsList = intent.getParcelableArrayListExtra("moodList");
 
-
-
-
     }
 
+    /**
+     * This method populates the map with all the moods that have a location assigned to them.
+     * Thi
+     * @param gmap
+     */
     public void populateLocationsData(GoogleMap gmap){
         for (int counter = 0; counter < moodsList.size(); counter++) {
             MoodEvent mood = moodsList.get(counter);
-            if(mood.getLatitude()!=null && mood.getLongitude()!=null){
-                System.out.println(mood.getLatitude());
+            if(mood.getLatitude()!=null && mood.getLongitude()!=null&&mood.getAddress()!=null){
                 Double latitude = Double.parseDouble(mood.getLatitude());
                 Double longitude = Double.parseDouble(mood.getLongitude());
-                getAddress(MoodsMapActivity.this,latitude,longitude);
                 String author = mood.getAuthor();
                 String date = mood.getDate();
                 String time = mood.getTime();
                 String reason = mood.getReason();
+                String address = mood.getAddress();
                 String situation = mood.getSocialSituation();
-                String infoWindow;
+                String infoWindow = infoWindowDetails(reason,situation,date,time,address);
                 LatLng latlng = new LatLng(latitude,longitude);
-
-                if(reason == null||reason.equals("")){
-                    if(situation == null||situation.equals("")){
-                        infoWindow=date+" "+time+"\n"+locationAddress;
-                    }
-                    else{
-                        infoWindow=situation+"\n"+date+" "+time+"\n"+locationAddress;
-                    }
-                }
-                else{
-                    if(situation == null||situation.equals("")){
-                        infoWindow=reason+"\n"+date+" "+time+"\n"+locationAddress;
-                    }
-                    else{
-                        infoWindow=reason+"\n"+situation+"\n"+date+" "+time+"\n"+locationAddress;
-                    }
-                }
 
                 if(mood.getEmotionalState().equals("HAPPY")){
                     int height = 150;
@@ -189,6 +176,27 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
         }
     }
 
+    private String infoWindowDetails(String reason, String situation, String date, String time,String address){
+        String infoWindow;
+        if(reason == null||reason.equals("")){
+            if(situation == null||situation.equals("")){
+                infoWindow=date+" "+time+"\n"+address;
+            }
+            else{
+                infoWindow=situation+"\n"+date+" "+time+"\n"+address;
+            }
+        }
+        else{
+            if(situation == null||situation.equals("")){
+                infoWindow=reason+"\n"+date+" "+time+"\n"+address;
+            }
+            else{
+                infoWindow=reason+"\n"+situation+"\n"+date+" "+time+"\n"+address;
+            }
+        }
+        return infoWindow;
+    }
+
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -253,25 +261,33 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
         });
     }
 
-    public void getAddress(Context context, double LATITUDE, double LONGITUDE) {
-
-        //Set Address
-        try {
-            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-            List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
-            if (addresses != null && addresses.size() > 0) {
-
-                String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-
-                Log.d(TAG, "getAddress:  address" + address);
-
-                locationAddress = address;
-            }
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    /**
+//     * getAddress uses a geocoder to generate an address string using latitude and longitude data.
+//     * @param context
+//     * @param LATITUDE
+//     * @param LONGITUDE
+//     */
+//    public String getAddress(Context context, double LATITUDE, double LONGITUDE) {
+//
+//        //Set Address
+//        try {
+//            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+//            List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
+//            if (addresses != null && addresses.size() > 0) {
+//
+//                String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+//
+//                Log.d(TAG, "getAddress:  address" + address);
+//
+//                return address;
+//            }
+//        }
+//        catch (IOException e) {
+//            e.printStackTrace();
+//            return "";
+//        }
+//        return "";
+//    }
 
     public ArrayList<MoodEvent> getMoodsList() {
         return moodsList;

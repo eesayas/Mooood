@@ -690,6 +690,11 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         mapView.onSaveInstanceState(mapViewBundle);
     }
 
+    /**
+     * This method generates the google map on the map view and takes us to the user's current location
+     * if gps permissions are enabled, otherwise it takes us to a default location.
+     * @param googleMap
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         gmap = googleMap;
@@ -703,63 +708,107 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         uiSettings.setCompassEnabled(true);
         uiSettings.setZoomControlsEnabled(true);
 
-        //TODO:I couldn't figure it out, but I suggest we find a way to decouple so many of these functions from this listener.
-        // Response: Yes will apply MVC before we submit - eesayas
-        //Gets the location from gps,places a marker at said location, gives it the title of the address or a default address, and moves the camera to the marker's position.
-        fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        if (location != null) {
-                            locationLatitude=location.getLatitude();
-                            locationLongitude=location.getLongitude();
+        CameraPosition.Builder camBuilder;
+        camBuilder = CameraPosition.builder();
+        camBuilder.bearing(0);
+        camBuilder.tilt(0);
+        camBuilder.zoom(11);
+        camBuilder.target(new LatLng(locationLatitude, locationLongitude));
+        CameraPosition cp = camBuilder.build();
 
-                            CameraPosition.Builder camBuilder;
-                            camBuilder = CameraPosition.builder();
-                            camBuilder.bearing(0);
-                            camBuilder.tilt(0);
-                            camBuilder.zoom(11);
-                            camBuilder.target(new LatLng(locationLatitude,locationLongitude));
-                            CameraPosition cp = camBuilder.build();
-                            gmap.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
-                            //Try to call getAddress. If it fails, the address will just be set to "current location"
-                            try{
-                                getAddress(CreateEventActivity.this,locationLatitude,locationLongitude);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                locationAddress="Current Location";
-                            }
-                            MarkerOptions markerOptions= new MarkerOptions().position(new LatLng(locationLatitude,locationLongitude)).title(locationAddress);
-                            myMarker=gmap.addMarker(markerOptions);
-                        }
-                    }
-                });
-        //Updates marker and moves the camera whenever a new marker is placed on the map by long clicking on the map.
-        gmap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                locationLatitude=latLng.latitude;
-                locationLongitude=latLng.longitude;
+        gmap.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
+        //Gets current location from gps
+        fusedLocationClient.getLastLocation().addOnSuccessListener(onSuccessListener);
 
-                //Try to call getAddress. If it fails, the address will just be set to "current location"
-                try{
-                    getAddress(CreateEventActivity.this,locationLatitude,locationLongitude);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    locationAddress="Current Location";
-                }
-
-                //Updates marker's address and position.
-                myMarker.setPosition(latLng);
-                myMarker.setTitle(locationAddress);
-
-                //Update the camera's position to the new marker's position
-                gmap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            }
-        });
+        //Updates marker and moves the camera whenever a new marker is placed by clicking on the map.
+        gmap.setOnMapClickListener(onMapClickListener);
+        //Retrieves current user location from gps when the MyLocation button is clicked on the gps
+        gmap.setOnMyLocationButtonClickListener(onMyLocationButtonClickListener);
     }
 
-    //getAddress updates the location address with a geocoded address string that contains country,state/province,city, postal code, street number, street name.
+    /**
+     * This listener calls the fusedLocationClient whenever the MyLocation button is pressed on the map view to retrieve
+     * current user location from gps
+     */
+    private GoogleMap.OnMyLocationButtonClickListener onMyLocationButtonClickListener =
+            new GoogleMap.OnMyLocationButtonClickListener() {
+                @Override
+                public boolean onMyLocationButtonClick() {
+                    fusedLocationClient.getLastLocation()
+                            .addOnSuccessListener(onSuccessListener);
+                    return false;
+                }
+            };
+
+    /**
+     * This listener generates an address and moves the camera to the current user location
+     * when it successfully retrieves a location from gps
+     */
+    private OnSuccessListener<Location> onSuccessListener =
+            new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+                        locationLatitude = location.getLatitude();
+                        locationLongitude = location.getLongitude();
+                        CameraPosition.Builder camBuilder;
+                        camBuilder = CameraPosition.builder();
+                        camBuilder.bearing(0);
+                        camBuilder.tilt(0);
+                        camBuilder.zoom(11);
+                        moodLocation = new LatLng(locationLatitude, locationLongitude);
+                        camBuilder.target(new LatLng(location.getLatitude(), location.getLongitude()));
+                        CameraPosition cp = camBuilder.build();
+                        gmap.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
+                        //Try to call getAddress. If it fails, the address will just be set to "current location"
+                        try {
+                            getAddress(CreateEventActivity.this, locationLatitude, locationLongitude);
+                            moodEvent.setAddress(locationAddress);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            locationAddress = "Current Location";
+                            moodEvent.setAddress(locationAddress);
+                        }
+                        MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(locationLatitude, locationLongitude)).title(locationAddress);
+                        myMarker = gmap.addMarker(markerOptions);
+                    }
+                }
+            };
+
+    /**
+     * This listener updates the current location whenever the user clicks anywhere on the map
+     * It places a marker on the new location, generates a new address, and updates the values on the MoodEvent
+     */
+    private GoogleMap.OnMapClickListener onMapClickListener =
+            new GoogleMap.OnMapClickListener() {
+                @Override
+                public void onMapClick(LatLng latLng) {
+                    locationLatitude = latLng.latitude;
+                    locationLongitude = latLng.longitude;
+
+                    //Try to call getAddress. If it fails, the address will just be set to "current location"
+                    try {
+                        getAddress(CreateEventActivity.this, locationLatitude, locationLongitude);
+                        moodEvent.setAddress(locationAddress);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        locationAddress = "Current Location";
+                        moodEvent.setAddress(locationAddress);
+                    }
+
+                    //Updates marker's address and position and sets new moodLocation
+                    myMarker.setPosition(latLng);
+                    myMarker.setTitle(locationAddress);
+                    moodLocation = new LatLng(locationLatitude, locationLongitude);
+
+                    //Update the camera's position to the new marker's position
+                    gmap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                }
+            };
+    /** getAddress updates the
+     * location address with a geocoded address string that contains
+     * country,state/province,city, postal code, street number, and street name.
+     */
     public void getAddress(Context context, double LATITUDE, double LONGITUDE) {
 
         //Set Address
@@ -779,6 +828,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
             e.printStackTrace();
         }
     }
+
 
 
     @Override
