@@ -117,6 +117,7 @@ public class CreateAndShowMoodEventTest {
         //input social situation
         solo.clickOnView(solo.getView(R.id.social_situation));
         solo.clickOnText("Alone");
+        solo.waitForText("Alone", 1, 2000);
 
         //turn on image upload switch
         solo.clickOnView(solo.getView(R.id.toggle_image_preview));
@@ -131,6 +132,8 @@ public class CreateAndShowMoodEventTest {
 
         //device should redirect to UserFeedActivity
         solo.waitForActivity(UserFeedActivity.class);
+
+        solo.sleep(5000);
 
         //click on first item
         onView(withId(R.id.posts_list)).perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));

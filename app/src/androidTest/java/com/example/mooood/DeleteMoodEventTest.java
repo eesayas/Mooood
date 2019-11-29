@@ -132,6 +132,7 @@ public class DeleteMoodEventTest{
         solo.waitForActivity(UserFeedActivity.class);
         solo.assertCurrentActivity("Wrong Activity", UserFeedActivity.class);
 
+        solo.sleep(5000);
         //click on first item
         onView(withId(R.id.posts_list)).perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
 

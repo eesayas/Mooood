@@ -70,7 +70,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * FILE PURPOSE: This is for create new mood event
+ * FILE PURPOSE: This is for creating a new mood event
  **/
 
 public class CreateEventActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -79,38 +79,38 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
 
     //Declare variables for later use
     private ViewPager moodRoster;
-    SwipeMoodsAdapter moodRosterAdapter;
-    List<Emoticon> moodImages;
+    private SwipeMoodsAdapter moodRosterAdapter;
+    private List<Emoticon> moodImages;
 
-    ViewFlipper viewFlipper;
-
-    ImageView chosenEmoticon;
+    //for UX
+    private ViewFlipper viewFlipper;
+    private ImageView chosenEmoticon;
 
     //Firebase setup!
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference documentReference;
 
-    TextView socialSituation, moodIndicator;
-    EditText reason;
+    private TextView socialSituation, moodIndicator, dateAndTimeMood;
+    private EditText reason;
 
     //for image upload
     private static final int REQUEST_TAKE_PHOTO = 1;
     private static final int PICK_IMAGE_REQUEST = 1;
-    String currentPhotoPath;
-    ImageView imageUpload;
-    Uri imageUri;
+    private String currentPhotoPath;
+    private ImageView imageUpload;
+    private Uri imageUri;
 
     private StorageReference storageReference;
     private DatabaseReference databaseReference;
     private StorageTask uploadTask;
 
+    //for time
     SimpleDateFormat simpleDateFormat;
-    Calendar calendar;
-    TextView dateAndTimeMood;
-    Button submitButton;
+    private Calendar calendar;
 
-    SwitchCompat toggleImagePreview, toggleGPSPreview;
-    LinearLayout gpsPreviewCont, imgReasonCont;
+    //for toggle switches
+    private SwitchCompat toggleImagePreview, toggleGPSPreview;
+    private LinearLayout gpsPreviewCont, imgReasonCont;
 
     //For location services inside the activity
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
@@ -123,11 +123,11 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     private Marker myMarker;
     private LatLng moodLocation;
 
-    Button locationButton, cancelButton, selectEmoticonBtn;
-    LinearLayout backButton;
+    private Button locationButton, cancelButton, selectEmoticonBtn, submitButton;
+    private LinearLayout backButton;
 
     //the code will populate this
-    MoodEvent moodEvent;
+    protected MoodEvent moodEvent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -214,14 +214,28 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         viewFlipper.showNext();
     }
 
+    /**
+     * This will allow user to edit their chosen emoticon
+     */
+    private void chosenEmoticonListener(){
+        chosenEmoticon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                previousView(view);
+            }
+        });
+    }
+
+    /**
+     * Redirects User to UserFeedActivity
+     */
     private void backBtnListener() {
         backButton = findViewById(R.id.back_btn);
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "Clicked");
-                previousView(view);
+                finish();
             }
         });
     }
@@ -865,6 +879,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
 
                 if (uploadTask != null && uploadTask.isInProgress()) {
                     Log.d(TAG, "Upload in Progress");
+                    Toast.makeText(CreateEventActivity.this,"Upload in progress. Please Wait.", Toast.LENGTH_SHORT).show();
 
                 } else if (uploadTask == null && imageUri == null && correctReason) {
                     Log.d(TAG, "Image Capture fail");
