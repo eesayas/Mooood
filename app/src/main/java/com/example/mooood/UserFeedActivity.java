@@ -94,6 +94,9 @@ public class UserFeedActivity extends AppCompatActivity {
         documentReference = db.collection("MoodEvents").document(accountName);
         collectionReference = db.collection("MoodEvents").document(accountName).collection("MoodActivities");
 
+        userSearchView = findViewById(R.id.userSearchView);
+        userSearchView.setIconifiedByDefault(false);
+
         createPostBtnClickListener(accountName);
 
         //recycler view setup
@@ -247,7 +250,7 @@ public class UserFeedActivity extends AppCompatActivity {
      * This is the SearchView that will filter through Database of the user for the Mood entered and display it
      */
     private void filterMood () {
-            userSearchView = findViewById(R.id.userSearchView);
+
 
             userSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
