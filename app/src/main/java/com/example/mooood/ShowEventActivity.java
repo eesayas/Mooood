@@ -41,7 +41,7 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
 
     RelativeLayout fullscreenLayout;
     String author, date ,time ,emotionalState ,socialSituation ,imageUrl ,reason ,latitude ,longitude ,locationAddress;
-    TextView authorText, dateText, timeText, socialSituationText, reasonText;
+    TextView authorText, dateText, timeText, socialSituationText, reasonText, addressTxt;
     ImageView emoticon, imageReason;
     LinearLayout backBtn, moreDetailsLayout, mapCont, socialSituationCont, reasonTxtCont, reasonImgCont;
     String edit;
@@ -63,6 +63,7 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
         socialSituationCont = findViewById(R.id.social_situation_cont);
         reasonTxtCont = findViewById(R.id.reason_txt_cont);
         reasonImgCont = findViewById(R.id.reason_img_cont);
+        addressTxt = findViewById(R.id.gps_address_txt);
 
         makeFullscreen(fullscreenLayout);
 //        setMinimumHeight(moreDetailsLayout);

@@ -6,9 +6,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.contrib.RecyclerViewActions;
+import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
+
+import android.os.Parcelable;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -137,6 +140,8 @@ public class CreateAndShowMoodEventTest {
         solo.clickOnText("Alone");
 
 
+
+
         //click on submit
         solo.clickOnView(solo.getView(R.id.submit_button));
 
@@ -153,7 +158,6 @@ public class CreateAndShowMoodEventTest {
         solo.waitForActivity(ShowEventActivity.class);
 
         //get important TextView
-
         TextView author = (TextView) solo.getView(R.id.author);
         ImageView emotion = (ImageView) solo.getView(R.id.emoticon);
         TextView date = (TextView) solo.getView(R.id.date);
