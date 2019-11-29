@@ -273,4 +273,7 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
         }
     }
 
+    public ArrayList<MoodEvent> getMoodsList() {
+        return moodsList;
+    }
 }

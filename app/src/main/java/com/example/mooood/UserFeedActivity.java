@@ -59,6 +59,7 @@ public class UserFeedActivity extends AppCompatActivity {
     private MoodEventsAdapter postAdapter;
     private RecyclerTouchListener recyclerTouchListener;
 
+
     SearchView userSearchView;
     Button feedButton;
 
@@ -412,5 +413,8 @@ public class UserFeedActivity extends AppCompatActivity {
             }
         });
 
+    }
+    public ArrayList<MoodEvent> getPostDataList() {
+        return postDataList;
     }
 }
