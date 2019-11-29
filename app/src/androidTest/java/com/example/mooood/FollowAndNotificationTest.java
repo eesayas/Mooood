@@ -114,7 +114,7 @@ public class FollowAndNotificationTest {
 
         //Clicks on signout
         solo.clickOnView(solo.getView(R.id.activity_user_profile_bt_logout));
-        solo.waitForActivity(UserProfile.class);
+        solo.waitForActivity(MainActivity.class);
 
         //Signs into Account
         solo.enterText((EditText)solo.getView(R.id.activity_main_et__username), "test2");
