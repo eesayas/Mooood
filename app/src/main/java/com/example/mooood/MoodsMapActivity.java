@@ -63,6 +63,7 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
         for (int counter = 0; counter < moodsList.size(); counter++) {
             MoodEvent mood = moodsList.get(counter);
             if(mood.getLatitude()!=null && mood.getLongitude()!=null){
+                System.out.println(mood.getLatitude());
                 Double latitude = Double.parseDouble(mood.getLatitude());
                 Double longitude = Double.parseDouble(mood.getLongitude());
                 getAddress(MoodsMapActivity.this,latitude,longitude);
@@ -74,8 +75,8 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
                 String infoWindow;
                 LatLng latlng = new LatLng(latitude,longitude);
 
-                if(reason.equals("")){
-                    if(situation == null){
+                if(reason == null||reason.equals("")){
+                    if(situation == null||situation.equals("")){
                         infoWindow=date+" "+time+"\n"+locationAddress;
                     }
                     else{
@@ -83,7 +84,7 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
                     }
                 }
                 else{
-                    if(situation == null){
+                    if(situation == null||situation.equals("")){
                         infoWindow=reason+"\n"+date+" "+time+"\n"+locationAddress;
                     }
                     else{

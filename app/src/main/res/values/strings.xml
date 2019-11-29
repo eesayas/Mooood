@@ -45,7 +45,6 @@
     <!--followerActivity-->
     <string name="follow_user">Follow</string>
     <string name="unfollow">Unfollow</string>
-    <string name="request_sent_follower">Request Sent</string>
     <string name="cancel_request">Cancel Request</string>
 
 </resources>

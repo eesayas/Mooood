@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#2f2f2f">
 
     <Button
-        android:background="@android:color/black"
+        android:background="#2f2f2f"
         android:id="@+id/backButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -15,7 +16,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="NOTIFICATIONS"
-        android:textSize="40dp"></TextView>
+        android:textSize="40dp"
+        android:textColor="@android:color/white"></TextView>
 
     <ListView
         android:id="@+id/notificationListView"
