@@ -39,8 +39,8 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
 
     private static final String TAG = "Debugging";
 
-    GoogleMap gmap;
-    ArrayList<MoodEvent> moodsList;
+    private GoogleMap gmap;
+    private ArrayList<MoodEvent> moodsList;
 
     /**
      * This method generates the activity and retrieves the mood events from the User Feed Activity
@@ -260,34 +260,6 @@ public class MoodsMapActivity extends FragmentActivity implements OnMapReadyCall
             }
         });
     }
-
-//    /**
-//     * getAddress uses a geocoder to generate an address string using latitude and longitude data.
-//     * @param context
-//     * @param LATITUDE
-//     * @param LONGITUDE
-//     */
-//    public String getAddress(Context context, double LATITUDE, double LONGITUDE) {
-//
-//        //Set Address
-//        try {
-//            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-//            List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
-//            if (addresses != null && addresses.size() > 0) {
-//
-//                String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-//
-//                Log.d(TAG, "getAddress:  address" + address);
-//
-//                return address;
-//            }
-//        }
-//        catch (IOException e) {
-//            e.printStackTrace();
-//            return "";
-//        }
-//        return "";
-//    }
 
     public ArrayList<MoodEvent> getMoodsList() {
         return moodsList;

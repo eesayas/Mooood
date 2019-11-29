@@ -1,6 +1,7 @@
 package com.example.mooood;
 
 import android.app.Activity;
+import android.graphics.ColorSpace;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.util.Log;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.robotium.solo.Solo;
 
 import org.junit.After;
@@ -37,6 +39,7 @@ public class FollowAndNotificationTest {
 
     @Rule
     public ActivityTestRule<MainActivity> rule = new ActivityTestRule<>(MainActivity.class, true, true);
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
 
     /**
@@ -46,6 +49,7 @@ public class FollowAndNotificationTest {
      */
     @Before
     public void setUp() throws Exception {
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
         solo = new Solo(InstrumentationRegistry.getInstrumentation(), rule.getActivity());
 
     }
@@ -59,7 +63,11 @@ public class FollowAndNotificationTest {
     public void start() throws Exception {
         Activity activity = rule.getActivity();
     }
-
+    /**
+     * US 05.01.01
+     * US 05.02.01
+     * US 05.03.01
+     */
     @Test
     public void followUser(){
         solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
@@ -106,7 +114,7 @@ public class FollowAndNotificationTest {
 
         //Clicks on signout
         solo.clickOnView(solo.getView(R.id.activity_user_profile_bt_logout));
-        solo.waitForActivity(UserProfile.class);
+        solo.waitForActivity(MainActivity.class);
 
         //Signs into Account
         solo.enterText((EditText)solo.getView(R.id.activity_main_et__username), "test2");
@@ -128,11 +136,44 @@ public class FollowAndNotificationTest {
         solo.clickInList(0);
         solo.clickOnView(solo.getView(R.id.confirm_button));
 
+        solo.waitForActivity(NotificationActivity.class);
+        solo.clickOnView(solo.getView(R.id.backButton1));
+
+        solo.waitForActivity(feedActivity.class);
+        solo.clickOnView(solo.getView(R.id.activity_feed_show_profile));
+
+        //Logouts
+        solo.clickOnView(solo.getView(R.id.activity_user_profile_bt_logout));
+        solo.waitForActivity(UserProfile.class);
+
+        solo.enterText((EditText)solo.getView(R.id.activity_main_et__username), "hero");
+        solo.waitForText("hero",1,2000);
+        solo.enterText((EditText)solo.getView(R.id.activity_main_et__password), "1");
+        solo.waitForText("1",1,2000);
+        solo.clickOnView(solo.getView(R.id.activity_main_btn_submit));
+        solo.waitForActivity(UserFeedActivity.class);
+
+        //Clicks on Feed Button
+        solo.clickOnView(solo.getView(R.id.feedButton));
+        solo.waitForActivity(feedActivity.class);
+
+        //
+        solo.clickOnView(solo.getView(R.id.feedListView));
+        TextView moodAuthor = (TextView)solo.getView(R.id.author);
+        assertEquals(moodAuthor.getText().toString(),"test2");
+
+
+
+
     }
 
     @After
     public void tearDown() throws Exception {
+        db.collection("MoodEvents").document("hero").collection("Following").document("test2")
+                .delete();
         solo.finishOpenedActivities();
+
+
     }
 
 }

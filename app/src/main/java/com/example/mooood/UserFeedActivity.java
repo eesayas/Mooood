@@ -53,20 +53,19 @@ public class UserFeedActivity extends AppCompatActivity {
     public static final String MOOD_EVENT = "Mood Event";
 
     //Declare the variables for reference later
-    RecyclerView postList;
-    ArrayList<MoodEvent> postDataList;
+    private RecyclerView postList;
+    private ArrayList<MoodEvent> postDataList;
 
     private MoodEventsAdapter postAdapter;
     private RecyclerTouchListener recyclerTouchListener;
 
+    private  SearchView userSearchView;
+    private Button feedButton;
 
-    SearchView userSearchView;
-    Button feedButton;
+    private Date moodTimeStamp;
+    private TextView userProfile;
 
-    Date moodTimeStamp;
-    TextView userProfile;
-
-    ImageButton mapButton;
+    private ImageButton mapButton;
 
 
     //Firebase setup!
@@ -88,12 +87,19 @@ public class UserFeedActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_feed);
 
+        //connect to xml
+        userId = findViewById(R.id.username);
+
+        //get user
         Intent intent = getIntent();
-         accountName = intent.getStringExtra("accountKey");
-        userId = findViewById(R.id.activity_user_feed_tv_id);
+        accountName = intent.getStringExtra("accountKey");
+
         userId.setText(accountName);
         documentReference = db.collection("MoodEvents").document(accountName);
         collectionReference = db.collection("MoodEvents").document(accountName).collection("MoodActivities");
+
+        userSearchView = findViewById(R.id.userSearchView);
+        userSearchView.setIconifiedByDefault(false);
 
         createPostBtnClickListener(accountName);
 
@@ -248,7 +254,7 @@ public class UserFeedActivity extends AppCompatActivity {
      * This is the SearchView that will filter through Database of the user for the Mood entered and display it
      */
     private void filterMood () {
-            userSearchView = findViewById(R.id.userSearchView);
+
 
             userSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override

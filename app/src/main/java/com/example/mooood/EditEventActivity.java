@@ -73,7 +73,7 @@ import java.util.Locale;
 import java.util.Date;
 
 /**
- * FILE PURPOSE: This is for create new mood event
+ * FILE PURPOSE: This is for editing a specific MoodEvent
  **/
 
 public class EditEventActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -82,24 +82,26 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
     public static final String MOOD_EVENT = "Mood Event";
 
     //Declare variables for later use
-    ViewPager moodRoster;
-    SwipeMoodsAdapter moodRosterAdapter;
-    List<Emoticon> moodImages;
-    ViewFlipper viewFlipper;
-    LinearLayout backButton;
+    private ViewPager moodRoster;
+    private SwipeMoodsAdapter moodRosterAdapter;
+    private List<Emoticon> moodImages;
+
+    //for UX
+    private ViewFlipper viewFlipper;
+    private LinearLayout backButton;
 
     //Firebase setup!
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference documentReference;
 
-    TextView socialSituation, imgToggleTxt, gpsToggleTxt;
-    EditText reason;
+    private TextView socialSituation, imgToggleTxt, gpsToggleTxt, dateAndTimeMood, actTitle;
+    private EditText reason;
 
     //for image upload
     private static final int REQUEST_TAKE_PHOTO = 1;
     private static final int PICK_IMAGE_REQUEST = 1;
-    String currentPhotoPath;
-    ImageView imageUpload;
+    private String currentPhotoPath;
+    private ImageView imageUpload;
     Uri imageUri;
 
     private StorageReference storageReference;
@@ -107,16 +109,13 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
     private StorageTask uploadTask;
 
     SimpleDateFormat simpleDateFormat;
-    Calendar calendar;
-    TextView dateAndTimeMood, actTitle;
-    Button submitButton;
-    Button locationButton;
-    ImageView chosenEmoticon;
+    private Calendar calendar;
+    private Button submitButton, locationButton, selectEmoticonBtn;
+    private ImageView chosenEmoticon;
 
-    SwitchCompat toggleImagePreview, toggleGPSPreview;
-    LinearLayout gpsPreviewCont, imgReasonCont;
+    private SwitchCompat toggleImagePreview, toggleGPSPreview;
+    private LinearLayout gpsPreviewCont, imgReasonCont;
 
-    Button selectEmoticonBtn;
     //For location services inside the activity
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
     private MapView mapView;
@@ -128,7 +127,7 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
     private Double locationLatitude;
     private Double locationLongitude;
 
-    MoodEvent moodEvent;
+    protected MoodEvent moodEvent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,13 +150,8 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
         imgToggleTxt = findViewById(R.id.img_toggle_txt);
         gpsToggleTxt = findViewById(R.id.gps_toggle_txt);
 
-        //Set title bar to "Edit Mood Activity"
-        String editTitle = "Edit Mood Activity";
-        actTitle.setText(editTitle);
-
         //flip to second child on ViewFlipper ie don't start with mood roster
         viewFlipper.setDisplayedChild(1);
-
 
         //Accessing the document
         Intent intent = getIntent();
@@ -165,10 +159,16 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
         documentReference = db.collection("MoodEvents").document(moodEvent.getAuthor());
 
         //Setup the EditEventActivity [VIEW]
-        createMoodRoster();
 
+        //set title of activity
+        String editTitle = "Edit Mood Activity";
+        actTitle.setText(editTitle);
+
+        createMoodRoster();
         swipeMoodAdapterSetup();
         customSwipeMoodStyling();
+
+        chosenEmoticonListener();
         backBtnListener();
 
         //Set initial values according to MoodEvent
@@ -184,11 +184,7 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
         emoticonSelectBtnListener();
         socialSituationClickListener();
 
-//        dateAndTimePickerClickListener();
-
         togglePreviews();
-
-
         //setup for image upload
         storageReference = FirebaseStorage.getInstance().getReference("reason_image");
         databaseReference = FirebaseDatabase.getInstance().getReference("reason_image");
@@ -213,9 +209,10 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
 
     } //end of onCreate
 
-
-    // VIEW FLIPPER
-    public void previousView(View view) {
+    //==============================================================================================
+    // VIEW FLIPPER implementation
+    //==============================================================================================
+    public void previousView(View view){
         viewFlipper.setInAnimation(this, android.R.anim.slide_in_left);
         viewFlipper.setOutAnimation(this, android.R.anim.slide_out_right);
         viewFlipper.showPrevious();
@@ -227,14 +224,29 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
         viewFlipper.showNext();
     }
 
-    private void backBtnListener() {
+    /**
+     * This will allow user to edit their chosen emoticon
+     */
+    private void chosenEmoticonListener(){
+        chosenEmoticon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                previousView(view);
+            }
+        });
+    }
+
+
+    /**
+     * Redirects User to UserFeedActivity
+     */
+    private void backBtnListener(){
         backButton = findViewById(R.id.back_btn);
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "Clicked");
-                previousView(view);
+                finish();
             }
         });
     }
@@ -276,6 +288,10 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
         moodRoster.setPageMargin(50);
     }
 
+
+    //==============================================================================================
+    // Setup data from MoodEvent
+    //==============================================================================================
     /**
      * This sets the proper emoticon according to MoodEvent (not empty)
      */
@@ -324,47 +340,6 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
             imageUpload.setImageResource(R.drawable.temp_image_upload);
         }
     }
-    /**
-     * This checks if reason is only 3 words or 20 characters
-     */
-
-//    private void inputChecker(){
-//        submitButton.setEnabled(false);
-//        if(moodDate != null && moodTime != null){
-//            submitButton.setEnabled(true);
-//        }
-//        final EditText reasonText = findViewById(R.id.reason);
-//        reasonText.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//            }
-//
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                if (s.length() > 0)
-//                {
-//                    int number = countWords(s.toString());
-//                    if (number < 4){
-//                        moodReason = reasonText.getText().toString();
-//                        reasonCount = true;
-//                        submitButton.setEnabled(true);
-//
-//                    }
-//                    else{
-//                        Toast.makeText(EditEventActivity.this, "reason cannot be more than 3 words!",
-//                                Toast.LENGTH_SHORT).show();
-//                        reasonCount = false;
-//                        submitButton.setEnabled(false);
-//                    }
-//                }
-//
-//            }
-//        });
-//    }
 
     /**
      * This turns on the toggles if image and gps exists in MoodEvent
@@ -540,8 +515,6 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
     };
 
 
-    //TOGGLES
-
     /**
      * This toggles (shows/hides) the previewers for gps and image upload
      */
@@ -556,8 +529,6 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
 
                 } else {
                     imageUpload.setVisibility(View.GONE);
-
-                    //RESET PREVIEW
                 }
             }
         });
@@ -574,7 +545,6 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
             }
         });
     }
-
 
     //==========================================================================================
     // UPLOAD IMAGE METHODS (Note: Use design pattern to put all this into a different file)
@@ -743,16 +713,6 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
                                     //set up progress bar on later dev
                                 }
                             }, 500);
-
-//                            Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
-//                            Uri downloadUrl = urlTask.getResult();
-
-//                            UploadImage uploadImage = new UploadImage(taskSnapshot.getStorage().getDownloadUrl().toString());
-//
-//
-//                            Log.d(TAG, "uploaded image " + uploadImage.getImageUrl());
-
-
                         }
 
                     })
@@ -770,19 +730,6 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
         }
 
     }
-
-    /**
-     * This is needed for checking word lengths on text input fields
-     **/
-    public static int countWords(String input) {
-        if (input == null || input.isEmpty()) {
-            return 0;
-        }
-
-        String[] words = input.split("\\s+");
-        return words.length;
-    }
-
 
     /**
      * This gets the url of the uploaded image
@@ -933,6 +880,7 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
                 gmap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                 }
             };
+
     //getAddress updates the location address with a geocoded address string that contains country,state/province,city, postal code, street number, street name.
     public void getAddress(Context context, double LATITUDE, double LONGITUDE) {
 
@@ -1038,19 +986,23 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
 
                 //necessary methods before MoodEvent submission
                 createTimeStamp();
-                obtainReason();
                 obtainCoordinates();
                 checkToggles();
+                boolean correctReason = obtainReason();
 
-                if(uploadTask != null && uploadTask.isInProgress()) {
+
+                if (uploadTask != null && uploadTask.isInProgress()) {
                     Log.d(TAG, "Upload in Progress");
+                    Toast.makeText(EditEventActivity.this,"Upload in progress. Please Wait.", Toast.LENGTH_SHORT).show();
 
-                } else if(uploadTask == null && imageUri == null){
+                } else if (uploadTask == null && imageUri == null && correctReason) {
                     Log.d(TAG, "Image Capture fail");
                     submitMoodEventToDB(documentReference, moodEvent);
-                }
 
-                else{
+                } else if(!correctReason){
+                    Toast.makeText(EditEventActivity.this,"Reason should be no more than 20 characters or 3 words", Toast.LENGTH_LONG).show();
+
+                } else {
                     uploadImage();
                 }
 
@@ -1059,16 +1011,41 @@ public class EditEventActivity extends AppCompatActivity implements OnMapReadyCa
     }
 
     /**
+     * This is will be used for counting words in reason (must be <= 3)
+     *
+     * @param input This is the string whose words will be counted
+     * @return int
+     * This is the total word count
+     */
+    public static int countWords(String input) {
+        if (input == null || input.isEmpty()) {
+            return 0;
+        }
+
+        String[] words = input.split("\\s+");
+        return words.length;
+    }
+
+    /**
      * This obtains the reason for MoodEvent
      **/
-    private void obtainReason(){
+    private boolean obtainReason() {
 
-        if(reason.getText().toString().equals("")){
-            moodEvent.setReason(reason.getText().toString());
+        //if reason is not empty and it violates US 02.01.01
+        if (reason.getText().toString().length() > 20 || countWords(reason.getText().toString()) > 3) {
+            return false;
 
-        } else{
-            moodEvent.setReason(null);
+        } else {
+
+            //acceptable conditions for submission
+            if (reason.getText().toString().equals("")) {
+                moodEvent.setReason(null);
+            } else {
+                moodEvent.setReason(reason.getText().toString());
+            }
         }
+
+        return true;
     }
 
     /**

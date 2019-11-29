@@ -32,8 +32,7 @@ public class ShowNotificationFragment extends DialogFragment {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference userReference;
     private CollectionReference requestReference;
-    String requestName;
-    String userName;
+    private String requestName, userName;
 
 
     @NonNull

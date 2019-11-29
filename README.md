@@ -1,7 +1,6 @@
-# Welcome to the *refactor* branch!!!
+# Welcome to the *design* branch!!!
 
-## This is branch will...
+## This branch is where we make the app pretty
 
-- collect (merge) all workable branches to itself
-- refactor the code to MVC or MVP standard (decoupling)
+next branch is *final*
 

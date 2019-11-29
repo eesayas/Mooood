@@ -70,7 +70,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * FILE PURPOSE: This is for create new mood event
+ * FILE PURPOSE: This is for creating a new mood event
  **/
 
 public class CreateEventActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -78,56 +78,56 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     private static final String TAG = "Debugging";
 
     //Declare variables for later use
-    ViewPager moodRoster;
-    SwipeMoodsAdapter moodRosterAdapter;
-    List<Emoticon> moodImages;
+    private ViewPager moodRoster;
+    private SwipeMoodsAdapter moodRosterAdapter;
+    private List<Emoticon> moodImages;
 
-    ViewFlipper viewFlipper;
-
-    ImageView chosenEmoticon;
+    //for UX
+    private ViewFlipper viewFlipper;
+    private ImageView chosenEmoticon;
 
     //Firebase setup!
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference documentReference;
 
-    TextView socialSituation, moodIndicator;
-    EditText reason;
+    private TextView socialSituation, moodIndicator, dateAndTimeMood;
+    private EditText reason;
 
     //for image upload
     private static final int REQUEST_TAKE_PHOTO = 1;
     private static final int PICK_IMAGE_REQUEST = 1;
-    String currentPhotoPath;
-    ImageView imageUpload;
-    Uri imageUri;
+    private String currentPhotoPath;
+    private ImageView imageUpload;
+    private Uri imageUri;
 
     private StorageReference storageReference;
     private DatabaseReference databaseReference;
     private StorageTask uploadTask;
 
+    //for time
     SimpleDateFormat simpleDateFormat;
-    Calendar calendar;
-    TextView dateAndTimeMood;
-    Button submitButton;
+    private Calendar calendar;
 
-    SwitchCompat toggleImagePreview, toggleGPSPreview;
-    LinearLayout gpsPreviewCont, imgReasonCont;
+    //for toggle switches
+    private SwitchCompat toggleImagePreview, toggleGPSPreview;
+    private LinearLayout gpsPreviewCont, imgReasonCont;
 
     //For location services inside the activity
-    private static final String MAP_VIEW_BUNDLE_KEY="MapViewBundleKey";
+    private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
     private MapView mapView;
     private GoogleMap gmap;
     private FusedLocationProviderClient fusedLocationClient;
     private String locationAddress;
-    private Double locationLatitude=53.5;
-    private Double locationLongitude=-113.5;
+    private Double locationLatitude = 53.5;
+    private Double locationLongitude = -113.5;
     private Marker myMarker;
     private LatLng moodLocation;
 
-    Button locationButton, cancelButton, selectEmoticonBtn;
-    LinearLayout backButton;
+    private Button cancelButton, selectEmoticonBtn, submitButton;
+    private LinearLayout backButton;
 
     //the code will populate this
-    MoodEvent moodEvent;
+    protected MoodEvent moodEvent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,6 +146,8 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         imgReasonCont = findViewById(R.id.img_reason_cont);
         toggleImagePreview = findViewById(R.id.toggle_image_preview);
         toggleGPSPreview = findViewById(R.id.toggle_gps_preview);
+        cancelButton = findViewById(R.id.cancel_button);
+        backButton = findViewById(R.id.back_btn);
 
         //Acquire the account name of the current User
         Intent intent = getIntent();
@@ -196,42 +198,52 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         mapView.onCreate(mapViewBundle);
         mapView.getMapAsync(this);
 
-
-
         //SUBMISSION
         submitBtnClickListener();
-
-//        LinearLayout ll = new LinearLayout(this);
-//
-//        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-//                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
-//        layoutParams.setMargins(30, 20, 30, 0);
-
     } //end of onCreate
 
 
     // VIEW FLIPPER
-    public void previousView(View view){
+    public void previousView(View view) {
         viewFlipper.setInAnimation(this, android.R.anim.slide_in_left);
         viewFlipper.setOutAnimation(this, android.R.anim.slide_out_right);
         viewFlipper.showPrevious();
     }
 
-    public void nextView(View view){
+    public void nextView(View view) {
         viewFlipper.setInAnimation(this, R.anim.slide_in_right);
         viewFlipper.setOutAnimation(this, R.anim.slide_out_left);
         viewFlipper.showNext();
     }
 
-    private void backBtnListener(){
-        backButton = findViewById(R.id.back_btn);
+    /**
+     * This will allow user to edit their chosen emoticon
+     */
+    private void chosenEmoticonListener(){
+        chosenEmoticon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                previousView(view);
+            }
+        });
+    }
+
+    /**
+     * Redirects User to UserFeedActivity
+     */
+    private void backBtnListener() {
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "Clicked");
-                previousView(view);
+                finish();
+            }
+        });
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
             }
         });
     }
@@ -239,10 +251,11 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     //==============================================================================================
     // Setup CreateEventActivity [VIEW]
     //==============================================================================================
+
     /**
      * This creates the actual mood roster and populates it with Emoticons
      **/
-    private void createMoodRoster(){
+    private void createMoodRoster() {
         moodImages = new ArrayList<>();
         moodImages.add(new Emoticon("HAPPY", 2));
         moodImages.add(new Emoticon("SAD", 2));
@@ -256,7 +269,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     /**
      * This is the setup for the adapter that contains all the emoticons
      **/
-    private void swipeMoodAdapterSetup(){
+    private void swipeMoodAdapterSetup() {
         moodRosterAdapter = new SwipeMoodsAdapter(moodImages, this);
         moodRoster = findViewById(R.id.mood_roster);
         moodRoster.setAdapter(moodRosterAdapter);
@@ -265,20 +278,20 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     /**
      * This just customs the mood roster so the next and previous emoticon can be seen partially
      **/
-    private void customSwipeMoodStyling(){
+    private void customSwipeMoodStyling() {
         moodRoster.setClipToPadding(false);
-        moodRoster.setPadding(150,0,150,0);
-//        moodRoster.setPageMargin(50);
+        moodRoster.setPadding(150, 0, 150, 0);
         imageUpload.setAdjustViewBounds(true);
     }
 
     //==============================================================================================
     // Methods for Selection of MoodEvent details
     //==============================================================================================
+
     /**
      * This is a listener of the selections of mood from Mood Roster
      **/
-    private void moodSelection(){
+    private void moodSelection() {
 
         moodEvent.setEmotionalState("HAPPY"); //default
 
@@ -305,7 +318,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
 
     }
 
-    private void emoticonSelectBtnListener(){
+    private void emoticonSelectBtnListener() {
         selectEmoticonBtn = findViewById(R.id.select_emoticon_btn);
 
         selectEmoticonBtn.setOnClickListener(new View.OnClickListener() {
@@ -322,7 +335,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     /**
      * This is a listener for social situation
      **/
-    private void socialSituationClickListener(){
+    private void socialSituationClickListener() {
         socialSituation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -334,7 +347,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     /**
      * This contains the options for social situation
      **/
-    private void socialSituationOptions(){
+    private void socialSituationOptions() {
         final CharSequence[] options = {
                 "Alone",
                 "With Someone",
@@ -360,13 +373,13 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     /**
      * This sets the date/time field to the current time and date
      */
-    private void setCurrentDateAndTime(){
+    private void setCurrentDateAndTime() {
         calendar = Calendar.getInstance(); //now
 
         simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a", Locale.getDefault());
 
-        moodEvent.setDate( new SimpleDateFormat("MMM dd yyyy", Locale.getDefault()).format(calendar.getTime()) );
-        moodEvent.setTime( new SimpleDateFormat("h:mm a", Locale.getDefault()).format(calendar.getTime()) );
+        moodEvent.setDate(new SimpleDateFormat("MMM dd yyyy", Locale.getDefault()).format(calendar.getTime()));
+        moodEvent.setTime(new SimpleDateFormat("h:mm a", Locale.getDefault()).format(calendar.getTime()));
 
         String displayText = moodEvent.getDate() + " at " + moodEvent.getTime();
         dateAndTimeMood.setText(displayText);
@@ -375,7 +388,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     /**
      * This is accesses the fragment that is used to obtain date and time of MoodEvent
      */
-    private void dateAndTimePickerClickListener(){
+    private void dateAndTimePickerClickListener() {
         simpleDateFormat = new SimpleDateFormat("MMM dd yyyy h:mm a", Locale.getDefault());
         dateAndTimeMood.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -395,7 +408,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
             //get Date
-            moodEvent.setDate( new SimpleDateFormat("MMM dd yyyy", Locale.getDefault()).format(calendar.getTime()) );
+            moodEvent.setDate(new SimpleDateFormat("MMM dd yyyy", Locale.getDefault()).format(calendar.getTime()));
 
             //go to TimePicker
             new TimePickerDialog(CreateEventActivity.this, TimeDataSet, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false).show();
@@ -410,7 +423,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
             calendar.set(Calendar.MINUTE, minute);
 
             //get Time
-            moodEvent.setTime( new SimpleDateFormat("h:mm a", Locale.getDefault()).format(calendar.getTime()) );
+            moodEvent.setTime(new SimpleDateFormat("h:mm a", Locale.getDefault()).format(calendar.getTime()));
 
             //set TexView to correspond with input data
             String displayText = moodEvent.getDate() + " at " + moodEvent.getTime();
@@ -423,16 +436,15 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     /**
      * This toggles (shows/hides) the previewers for gps and image upload
      */
-    private void togglePreviews(){
-
+    private void togglePreviews() {
 
         toggleImagePreview.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                if(isChecked){
+                if (isChecked) {
                     imageUpload.setVisibility(View.VISIBLE);
 
-                } else{
+                } else {
                     imageUpload.setVisibility(View.GONE);
 
                     //RESET PREVIEW
@@ -443,10 +455,10 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         toggleGPSPreview.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if(isChecked){
+                if (isChecked) {
                     gpsPreviewCont.setVisibility(View.VISIBLE);
 
-                } else{
+                } else {
                     gpsPreviewCont.setVisibility(View.GONE);
                 }
             }
@@ -456,10 +468,11 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     //==========================================================================================
     // UPLOAD IMAGE METHODS (Note: Use design pattern to put all this into a different file)
     //==========================================================================================
+
     /**
      * This opens the image gallery of the phone for image upload
-     * */
-    private void imageUploadClickListener(){
+     */
+    private void imageUploadClickListener() {
         imageUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -471,7 +484,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     /**
      * This gives a choice between camera or photo gallery
      **/
-    private void cameraOrGallery(){
+    private void cameraOrGallery() {
         final CharSequence[] options = {
                 "Take a photo",
                 "Choose from gallery"
@@ -484,9 +497,9 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         builder.setItems(options, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                if(options[i].equals("Take a photo")){
+                if (options[i].equals("Take a photo")) {
                     dispatchTakePictureIntent();
-                } else if(options[i].equals("Choose from gallery")){
+                } else if (options[i].equals("Choose from gallery")) {
                     openFileChooser();
                 }
             }
@@ -498,7 +511,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     /**
      * This is for selecting image from photo gallery
      **/
-    private void openFileChooser(){
+    private void openFileChooser() {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -553,23 +566,21 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
 
     /**
      * This is for displaying the preview for image provided by User
-     * @param requestCode
-     *      This is the request code from openFileChooser or dispatchTakePictureIntent
-     * @param resultCode
-     *      This is the result code from openFileChooser or dispatchTakePictureIntent
-     * @param data
-     *      This is the data from openFileChooser or dispatchTakePictureIntent
+     *
+     * @param requestCode This is the request code from openFileChooser or dispatchTakePictureIntent
+     * @param resultCode  This is the result code from openFileChooser or dispatchTakePictureIntent
+     * @param data        This is the data from openFileChooser or dispatchTakePictureIntent
      */
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         //if from photo gallery
-        if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null){
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             imageUri = data.getData();
             Picasso.get().load(imageUri).into(imageUpload);
 
-        } else if(requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK){ //if from camera
+        } else if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) { //if from camera
             galleryAddPic();
 
             File f = new File(currentPhotoPath);
@@ -581,10 +592,9 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
 
     /**
      * This returns a string which represents the extension of the given uri
-     * @param uri
-     *      This is the uri of the image to be uploaded
-     * @return
-     *      The String extension of the uri
+     *
+     * @param uri This is the uri of the image to be uploaded
+     * @return The String extension of the uri
      **/
     private String getFileExtension(Uri uri) {
         ContentResolver cR = getContentResolver();
@@ -606,8 +616,8 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     /**
      * This uploads the image into Firebase (note: this is async)
      **/
-    private void uploadImage(){
-        if(imageUri != null){
+    private void uploadImage() {
+        if (imageUri != null) {
             final StorageReference fileReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
 
             uploadTask = fileReference.putFile(imageUri)
@@ -634,7 +644,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
 
             getUploadedImageUrl(uploadTask, fileReference);
 
-        } else{
+        } else {
             Log.d(TAG, "IMAGE CAPTURE HAS NO URI");
         }
 
@@ -643,7 +653,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     /**
      * This gets the url of the uploaded image
      */
-    private void getUploadedImageUrl(StorageTask uploadTask, final StorageReference imageReference){
+    private void getUploadedImageUrl(StorageTask uploadTask, final StorageReference imageReference) {
         uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
             public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
@@ -707,7 +717,6 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         uiSettings.setMapToolbarEnabled(true);
         uiSettings.setCompassEnabled(true);
         uiSettings.setZoomControlsEnabled(true);
-
         CameraPosition.Builder camBuilder;
         camBuilder = CameraPosition.builder();
         camBuilder.bearing(0);
@@ -769,11 +778,10 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
                             locationAddress = "Current Location";
                             moodEvent.setAddress(locationAddress);
                         }
-                        MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(locationLatitude, locationLongitude)).title(locationAddress);
-                        myMarker = gmap.addMarker(markerOptions);
                     }
                 }
             };
+
 
     /**
      * This listener updates the current location whenever the user clicks anywhere on the map
@@ -823,8 +831,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
 
                 locationAddress = address;
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -848,16 +855,19 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
         super.onStop();
         mapView.onStop();
     }
+
     @Override
     protected void onPause() {
         mapView.onPause();
         super.onPause();
     }
+
     @Override
     protected void onDestroy() {
         mapView.onDestroy();
         super.onDestroy();
     }
+
     @Override
     public void onLowMemory() {
         super.onLowMemory();
@@ -875,7 +885,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     /**
      * This will set the longitude and latitude of MoodEvent
      */
-    private void obtainCoordinates(){
+    private void obtainCoordinates() {
         String latitudeStr = Double.toString(locationLatitude);
         String longitudeStr = Double.toString(locationLongitude);
         moodEvent.setLatitude(latitudeStr);
@@ -886,15 +896,16 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     //==========================================================================================
     // ASSEMBLING MOODEVENT AND SUBMITTING IT TO DB
     //==========================================================================================
+
     /**
      * This checks if GPS or IMAGE UPLOAD is switched on or off and deletes values accordingly
      */
-    private void checkToggles(){
-        if(!toggleImagePreview.isChecked()){
+    private void checkToggles() {
+        if (!toggleImagePreview.isChecked()) {
             moodEvent.setImageUrl(null);
         }
 
-        if(!toggleGPSPreview.isChecked()){
+        if (!toggleGPSPreview.isChecked()) {
             moodEvent.setLatitude(null);
             moodEvent.setLongitude(null);
             moodEvent.setAddress(null);
@@ -904,10 +915,11 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
 
     /**
      * This is a click listener for submit button. This actually submits the new MoodEvent ito DB
+     *
      * @params accountName
      * This is the accountName of the user that is logged in
      */
-    private void submitBtnClickListener(){
+    private void submitBtnClickListener() {
         submitButton = findViewById(R.id.submit_button);
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -917,21 +929,22 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
                 createTimeStamp();
 
                 //order is important
-                obtainReason();
                 obtainCoordinates();
                 checkToggles();
+                boolean correctReason = obtainReason();
 
-
-                if(uploadTask != null && uploadTask.isInProgress()) {
+                if (uploadTask != null && uploadTask.isInProgress()) {
                     Log.d(TAG, "Upload in Progress");
+                    Toast.makeText(CreateEventActivity.this,"Upload in progress. Please Wait.", Toast.LENGTH_SHORT).show();
 
-
-                } else if(uploadTask == null && imageUri == null){
+                } else if (uploadTask == null && imageUri == null && correctReason) {
                     Log.d(TAG, "Image Capture fail");
                     submitMoodEventToDB(documentReference, moodEvent);
-                }
 
-                else{
+                } else if(!correctReason){
+                    Toast.makeText(CreateEventActivity.this,"Reason should be no more than 20 characters or 3 words", Toast.LENGTH_LONG).show();
+
+                } else {
                     uploadImage();
                 }
 
@@ -940,18 +953,43 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
     }
 
     /**
-     * This obtains the reason for MoodEvent
-     **/
-    private void obtainReason(){
-
-        if(reason.getText().toString().equals("")){
-            moodEvent.setReason(reason.getText().toString());
-
-        } else{
-            moodEvent.setReason(null);
+     * This is will be used for counting words in reason (must be <= 3)
+     *
+     * @param input This is the string whose words will be counted
+     * @return int
+     * This is the total word count
+     */
+    public static int countWords(String input) {
+        if (input == null || input.isEmpty()) {
+            return 0;
         }
 
+        String[] words = input.split("\\s+");
+        return words.length;
     }
+
+    /**
+     * This obtains the reason for MoodEvent
+     **/
+    private boolean obtainReason() {
+
+        //if reason is not empty and it violates US 02.01.01
+        if (reason.getText().toString().length() > 20 || countWords(reason.getText().toString()) > 3) {
+            return false;
+
+        } else {
+
+            //acceptable conditions for submission
+            if (reason.getText().toString().equals("")) {
+                moodEvent.setReason(null);
+            } else {
+                moodEvent.setReason(reason.getText().toString());
+            }
+        }
+
+        return true;
+    }
+
 
     /**
      * This creates timestamp for moodEvent

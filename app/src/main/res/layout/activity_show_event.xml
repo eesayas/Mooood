@@ -218,17 +218,6 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
-                        <!--with-->
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="15dp"
-                            android:fontFamily="@font/roboto"
-                            android:text="with"
-                            android:textAlignment="center"
-                            android:textColor="#fff"
-                            android:textSize="20sp" />
-
                         <!--Social Situation-->
                         <TextView
                             android:id="@+id/social_situation"
@@ -244,9 +233,8 @@
                     </LinearLayout>
 
 
-                    <!--IMAGE REASON CONT -->
                     <LinearLayout
-                        android:id="@+id/reason_img_cont"
+                        android:id="@+id/reason_cont"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
@@ -267,21 +255,14 @@
                             android:id="@+id/image_reason"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:adjustViewBounds="true"
                             android:scaleType="centerCrop"
                             android:layout_marginRight="20dp"
                             android:layout_marginLeft="20dp" />
-
-                    </LinearLayout>
-
-                    <!--TEXT REASON CONT-->
-                    <LinearLayout
-                        android:id="@+id/reason_txt_cont"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
+                        
                         <TextView
                             android:id="@+id/reason"
+                            android:textStyle="italic"
                             android:layout_marginTop="15dp"
                             android:layout_marginBottom="15dp"
                             android:layout_width="wrap_content"
@@ -291,20 +272,7 @@
                             android:textColor="#fff">
                         </TextView>
 
-<!--                        <TextView-->
-<!--                            android:text="- eesayas"-->
-<!--                            android:layout_marginBottom="40dp"-->
-<!--                            android:layout_marginLeft="45dp"-->
-<!--                            android:layout_marginRight="45dp"-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:textSize="20sp"-->
-<!--                            android:textAlignment="textEnd"-->
-<!--                            android:textColor="#fff">-->
-<!--                        </TextView>-->
-
                     </LinearLayout>
-
 
                 <!--EDIT BUTTON-->
                 <Button
@@ -323,9 +291,10 @@
                     android:fontFamily="@font/roboto">
                 </Button>
 
-                <!--EDIT BUTTON-->
+                <!--GO BACK-->
                 <Button
-                    android:text="GO BACK TO USER"
+                    android:id="@+id/go_back_btn"
+                    android:text="GO BACK"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="20sp"

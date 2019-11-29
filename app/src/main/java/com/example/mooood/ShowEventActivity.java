@@ -4,16 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,19 +32,18 @@ import java.util.Locale;
  * This is responsible for showing all the details of a selected MoodEvent
  **/
 public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCallback {
-    private static final String TAG = "Debugging: from ShowEventActivity - ";
+    private static final String TAG = "ShowEventActivity";
     public static final String MOOD_EVENT = "Mood Event";
 
-    RelativeLayout fullscreenLayout;
-    String author, date ,time ,emotionalState ,socialSituation ,imageUrl ,reason ,latitude ,longitude ,locationAddress;
-    TextView authorText, dateText, timeText, socialSituationText, reasonText;
-    ImageView emoticon, imageReason;
-    LinearLayout backBtn, moreDetailsLayout, mapCont, socialSituationCont, reasonTxtCont, reasonImgCont;
-    String edit;
-    Button editButton;
-    Button backButton;
-    MapView mapView;
-    GoogleMap gmap;
+    private RelativeLayout fullscreenLayout;
+    private String author, date ,time ,emotionalState ,socialSituation ,imageUrl ,reason ,latitude ,longitude ,locationAddress;
+    private TextView authorText, dateText, timeText, socialSituationText, reasonText;
+    private ImageView emoticon, imageReason;
+    private LinearLayout backArrow, moreDetailsLayout, mapCont, socialSituationCont, reasonCont;
+    private String edit;
+    private Button editButton, backButton;
+    private MapView mapView;
+    private GoogleMap gmap;
 
     private static final String MAP_VIEW_BUNDLE_KEY="MapViewBundleKey";
 
@@ -57,30 +52,33 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_event);
 
+        //connect to xml
         fullscreenLayout = findViewById(R.id.fullscreen_ll);
         moreDetailsLayout = findViewById(R.id.more_detail_ll);
-
         socialSituationCont = findViewById(R.id.social_situation_cont);
-        reasonTxtCont = findViewById(R.id.reason_txt_cont);
-        reasonImgCont = findViewById(R.id.reason_img_cont);
+        reasonCont = findViewById(R.id.reason_cont);
+        backArrow = findViewById(R.id.back_btn);
+        backButton = findViewById(R.id.go_back_btn);
 
+        //make the first Linear Layout fullScreen
         makeFullscreen(fullscreenLayout);
-//        setMinimumHeight(moreDetailsLayout);
 
+        //get the object to edit
         Intent intent = getIntent();
         final MoodEvent moodEvent = intent.getParcelableExtra(MOOD_EVENT);
         edit = intent.getStringExtra("bool");
 
+        //populate ShowEvent with data
         getValuesMoodEvent(moodEvent);
-
         getTextAndImageView();
-
         setTextAndImageView();
 
         editBtnClickListener(moodEvent);
-
         goBackListener();
 
+        //================================================
+        // map retrieval functionality
+        //================================================
         Bundle mapViewBundle = null;
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
@@ -92,7 +90,6 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
 
         mapCont = findViewById(R.id.map_cont);
 
-        //remove the layouts that has no data
         removeReason();
         removeSocialSituation();
         removeMap();
@@ -103,9 +100,15 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
      * This is a listener for any element that directs User back to Feed
      */
     private void goBackListener(){
-        backBtn = findViewById(R.id.back_btn);
 
-        backBtn.setOnClickListener(new View.OnClickListener() {
+        backArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+        backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
@@ -201,7 +204,10 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
         timeText.setText(time);
         socialSituationText.setText(socialSituation);
         Picasso.get().load(imageUrl).into(imageReason);
-        reasonText.setText(reason);
+        imageReason.setTag(imageUrl);
+        String reasonQuote =  "\" "  + reason + " \"";
+        reasonText.setText(reasonQuote);
+        reasonText.setTag(reason);
     }
 
     /**
@@ -230,11 +236,15 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
      */
     private void removeReason(){
         if(reason == null){
-            reasonTxtCont.setVisibility(View.GONE);
+            reasonText.setVisibility(View.GONE);
         }
 
         if(imageUrl == null){
-            reasonImgCont.setVisibility(View.GONE);
+            imageReason.setVisibility(View.GONE);
+        }
+
+        if(imageUrl == null && reason == null){
+            reasonCont.setVisibility(View.GONE);
         }
 
     }

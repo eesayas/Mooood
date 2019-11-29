@@ -401,6 +401,7 @@ public class feedActivity extends AppCompatActivity {
 
         Intent intent = new Intent(feedActivity.this, followerActivity.class);
         Log.d("followerActivity", "creating the intent");
+        intent.putExtra("emotional", searchUser.get(i).getEmotionalState());
         intent.putExtra("accountMood", searchUser.get(i).getAuthor());
         intent.putExtra("loginName", loginName);
         intent.putExtra("moodDate", searchUser.get(i).getDate());

@@ -19,16 +19,14 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 
 public class NotificationActivity extends AppCompatActivity {
-    ListView listView;
-    ArrayAdapter<Notification> Adapter;
-    ArrayList<Notification> notificationDataList;
+    private ListView listView;
+    private ArrayAdapter<Notification> Adapter;
+    private ArrayList<Notification> notificationDataList;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    String userName;
-    String requestName;
-    String requestName2;
+    private String userName, requestName, requestName2;
     int position;
     private CollectionReference notificationCollectionReference;
-    Button backButton;
+    private Button backButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -47,7 +45,7 @@ public class NotificationActivity extends AppCompatActivity {
         arrayAdapterSetup();
         showNotification();
 
-        backButton = findViewById(R.id.backButton);
+        backButton = findViewById(R.id.backButton1);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
