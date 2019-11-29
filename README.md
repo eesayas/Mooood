@@ -1,7 +1,6 @@
-# Welcome to the *refactor* branch!!!
+# Welcome to the *test* branch!!!
 
-## This is branch will...
+## This is branch has all test cases
 
-- collect (merge) all workable branches to itself
-- refactor the code to MVC or MVP standard (decoupling)
+next branch is *design*
 
