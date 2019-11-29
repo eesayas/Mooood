@@ -49,20 +49,6 @@
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/activity_feed_show_map"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@drawable/white_border"
-                android:gravity="center"
-                android:paddingLeft="4sp"
-                android:paddingRight="4sp"
-                android:text="@string/maps"
-                android:textColor="#FFFFFF"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
         </LinearLayout>
 
         <LinearLayout
@@ -124,23 +110,23 @@
             android:theme="@android:style/Theme.Holo" />
 
 
-            <androidx.coordinatorlayout.widget.CoordinatorLayout
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/feedListView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/followListView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                >
+                android:visibility="invisible" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/feedListView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/followListView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:visibility="invisible" />
-
-            </androidx.coordinatorlayout.widget.CoordinatorLayout>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 
         <!--    this is the floating action button-->

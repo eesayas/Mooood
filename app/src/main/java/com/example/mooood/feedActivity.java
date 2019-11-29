@@ -300,8 +300,8 @@ public class feedActivity extends AppCompatActivity {
                                         });
                             } else {
 
-                                        Log.d("documentexist", "not exist");
-                                    }
+                                Log.d("documentexist", "not exist");
+                            }
                         } else {
                             Log.d("checking", "Failed with: ", task.getException());
                         }

@@ -9,102 +9,88 @@
     android:background="#2f2f2f"
     android:orientation="vertical">
 
+    <!--BACK BUTTON-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
+        <LinearLayout
+            android:id="@+id/back_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp">
 
-    <ImageButton
-        android:id="@+id/activity_user_profile_bt_back"
-        android:layout_width="10dp"
-        android:layout_height="10dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:background="#FFFFFFFF"
-        android:onClick="backToFeed"
-        android:src="?attr/actionModeCloseDrawable"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_chevron_left">
+            </ImageView>
 
-    <ImageView
-        android:id="@+id/activity_user_profile_iv_pic"
-        android:layout_width="10dp"
-        android:layout_height="10dp"
-        android:src="@drawable/ic_person_outline_24px" />
+        </LinearLayout>
 
-    <TextView
-        android:id="@+id/activity_user_profile_tv_usernam"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:textColor="#FFFFFF"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/activity_user_profile_iv_pic" />
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/activity_user_profile_tv_recent_mood"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="@string/recent_mood"
-        android:textColor="#FFFFFF"
-        android:textSize="24sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/activity_user_profile_tv_usernam" />
+    <!--img icon-->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/activity_user_profileiv_recent"
-        android:layout_width="10dp"
-        android:layout_height="10dp"
-        android:layout_marginTop="16dp"
-        android:scaleType="fitXY"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/activity_user_profile_tv_recent_mood"
-        tools:srcCompat="@tools:sample/avatars" />
+        <ImageView
+            android:id="@+id/activity_user_profile_iv_pic"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/ic_person_outline_24px"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/activity_user_profile_tv_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:textColor="#FFFFFF"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/activity_user_profileiv_recent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
-        android:id="@+id/activity_user_profile_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:textColor="#FFFFFF"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/activity_user_profile_tv_date" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
+        <TextView
+            android:id="@+id/activity_user_profile_tv_usernam"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textSize="30sp"
+            android:textColor="#FFFFFF"
+            android:fontFamily="@font/roboto"
+            android:gravity="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/activity_user_profile_bt_logout"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:background="#00FFFFFF"
-        android:onClick="logout"
-        android:text="@string/logout"
-        android:textColor="#FFFFFF"
-        android:textSize="24sp"
-        app:backgroundTint="#00FFFFFF"
-        app:layout_constraintTop_toBottomOf="@+id/activity_user_profile_time"
-        app:strokeColor="#FFFFFF"
-        app:strokeWidth="2dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/activity_user_profile_bt_logout"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="#00FFFFFF"
+            android:onClick="logout"
+            android:text="@string/logout"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
+            app:backgroundTint="#00FFFFFF"
+            app:strokeColor="#FFFFFF"
+            app:strokeWidth="2dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </LinearLayout>
 

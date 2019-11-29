@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -64,9 +65,9 @@ public class UserFeedActivity extends AppCompatActivity {
     private Button feedButton;
 
     private Date moodTimeStamp;
-    private TextView userProfile;
+    private ImageView userProfile;
 
-    private ImageButton mapButton;
+    private ImageView mapButton;
 
 
     //Firebase setup!

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -10,147 +10,173 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#2f2f2f"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
         <LinearLayout
-            android:id="@+id/header"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:layout_height="match_parent"
+            android:background="#2f2f2f"
+            android:orientation="vertical">
+
+            <!--THIS IS THE HEADER-->
+            <RelativeLayout
+                android:id="@+id/header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginLeft="30dp">
+
+                <!--logged in person-->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:text="Logged in as"
+                        android:textColor="#fff"
+                        android:fontFamily="@font/roboto"/>
+
+                    <TextView
+                        android:id="@+id/username"
+                        android:fontFamily="@font/roboto"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="4sp"
+                        android:paddingRight="4sp"
+                        android:textColor="#fff"
+                        android:textSize="15sp"/>
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_alignParentEnd="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+    <!--                <TextView-->
+    <!--                    android:id="@+id/activity_user_feed_show_profile"-->
+    <!--                    android:layout_width="wrap_content"-->
+    <!--                    android:layout_height="match_parent"-->
+    <!--                    android:layout_gravity="center"-->
+    <!--                    android:layout_weight="1"-->
+    <!--                    android:background="@drawable/white_border"-->
+    <!--                    android:gravity="center"-->
+    <!--                    android:paddingLeft="4sp"-->
+    <!--                    android:paddingRight="4sp"-->
+    <!--                    android:text="@string/profile"-->
+    <!--                    android:textColor="#FFFFFF"-->
+    <!--                    android:textSize="24sp"-->
+    <!--                    android:textStyle="bold" />-->
+
+                    <ImageView
+                        android:id="@+id/activity_user_feed_show_profile"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_person_outline_24px"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="15dp"/>
+
+                    <ImageView
+                        android:id="@+id/map_user_feed_button"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_margin="5dp"
+                        android:src="@drawable/ic_map_portal"/>
+
+                </LinearLayout>
+
+            </RelativeLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="15sp"
-                    android:text="Logged in as"
-                    android:textColor="#fff"
-                    android:fontFamily="@font/roboto"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/feedButton"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/feed"
+                    android:textColor="#FFFFFF"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="#00FFFFFF"
+                    app:cornerRadius="0dp"
+                    app:iconPadding="0dp"
+                    app:strokeColor="#FFFFFF"
+                    app:strokeWidth="2dp"
+                    android:hint="FEED" />
 
-                <TextView
-                    android:id="@+id/username"
-                    android:fontFamily="@font/roboto"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="4sp"
-                    android:paddingRight="4sp"
-                    android:textColor="#fff"
-                    android:textSize="15sp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/userButton"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/user"
+                    android:textColor="#FFFFFF"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="#00BCD4"
+                    app:cornerRadius="0dp"
+                    app:strokeColor="#FFFFFF"
+                    app:strokeWidth="2dp"
+                    android:hint="USER" />
+
+    <!--            <ImageButton-->
+    <!--                android:id="@+id/map_user_feed_button"-->
+    <!--                android:layout_width="wrap_content"-->
+    <!--                android:layout_height="74dp"-->
+    <!--                android:layout_weight="1"-->
+    <!--                android:adjustViewBounds="false"-->
+    <!--                android:cropToPadding="true"-->
+    <!--                android:scaleType="centerCrop"-->
+    <!--                app:srcCompat="@drawable/world_map" />-->
+
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
+            <SearchView
+                android:id="@+id/userSearchView"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:background="@drawable/white_border"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:queryHint="Filter Your Moooods..."
+                android:theme="@android:style/Theme.Holo" />
 
-<!--                <TextView-->
-<!--                    android:id="@+id/activity_user_feed_show_profile"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="match_parent"-->
-<!--                    android:layout_gravity="center"-->
-<!--                    android:layout_weight="1"-->
-<!--                    android:background="@drawable/white_border"-->
-<!--                    android:gravity="center"-->
-<!--                    android:paddingLeft="4sp"-->
-<!--                    android:paddingRight="4sp"-->
-<!--                    android:text="@string/profile"-->
-<!--                    android:textColor="#FFFFFF"-->
-<!--                    android:textSize="24sp"-->
-<!--                    android:textStyle="bold" />-->
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_map_portal"/>
-
-            </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/posts_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
         </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/feedButton"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="fill_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="@string/feed"
-                android:textColor="#FFFFFF"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                app:backgroundTint="#00FFFFFF"
-                app:cornerRadius="0dp"
-                app:iconPadding="0dp"
-                app:strokeColor="#FFFFFF"
-                app:strokeWidth="2dp"
-                android:hint="FEED" />
-
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/userButton"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="fill_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="@string/user"
-                android:textColor="#FFFFFF"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                app:backgroundTint="#00BCD4"
-                app:cornerRadius="0dp"
-                app:strokeColor="#FFFFFF"
-                app:strokeWidth="2dp"
-                android:hint="USER" />
-
-            <ImageButton
-                android:id="@+id/map_user_feed_button"
-                android:layout_width="wrap_content"
-                android:layout_height="74dp"
-                android:layout_weight="1"
-                android:adjustViewBounds="false"
-                android:cropToPadding="true"
-                android:scaleType="centerCrop"
-                app:srcCompat="@drawable/world_map" />
-
-        </LinearLayout>
-
-        <SearchView
-            android:id="@+id/userSearchView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/white_border"
-            android:clipChildren="false"
-            android:clipToPadding="false"
-            android:queryHint="Filter Your Moooods..."
-            android:theme="@android:style/Theme.Holo" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/posts_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 
-<!--floating action button-->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        app:srcCompat= "@android:drawable/ic_input_add"
-        app:backgroundTint="@android:color/holo_red_light"
-        android:tint="@android:color/white" />
+    <!--floating action button-->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            app:srcCompat= "@android:drawable/ic_input_add"
+            app:backgroundTint="@android:color/holo_red_light"
+            android:tint="@android:color/white" />
 
-</LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

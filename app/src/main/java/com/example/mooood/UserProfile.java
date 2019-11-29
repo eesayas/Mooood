@@ -3,7 +3,9 @@ package com.example.mooood;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class UserProfile extends AppCompatActivity {
     private ImageView profilePic, recent;
     private TextView userName, recentDate, recentTime;
+    private LinearLayout backBtn;
 
     /**
      * This sets up the view
@@ -22,9 +25,7 @@ public class UserProfile extends AppCompatActivity {
 
         profilePic = findViewById(R.id.activity_user_profile_iv_pic);
         userName = findViewById(R.id.activity_user_profile_tv_usernam);
-        recent = findViewById(R.id.activity_user_profileiv_recent);
-        recentDate = findViewById(R.id.activity_user_profile_tv_date);
-        recentTime = findViewById(R.id.activity_user_profile_time);
+        backBtn = findViewById(R.id.back_btn);
 
         Bundle bundle = getIntent().getExtras();
         String author =bundle.getString("AUTHOR");
@@ -35,17 +36,20 @@ public class UserProfile extends AppCompatActivity {
         String userImage=bundle.getString("IMAGE");
 
         userName.setText(author);
-        recentTime.setText(userTime);
-        recentDate.setText(userDate);
-        recent.setImageResource(new Emoticon(userState, 2).getImageLink());
+        backToFeed();
 
     }
 
     /**
      * takes the user back to where they came from
      */
-    public void backToFeed(View view) {
-        finish();
+    public void backToFeed() {
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 
 
