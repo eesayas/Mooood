@@ -878,6 +878,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
                 if(uploadTask != null && uploadTask.isInProgress()) {
                     Log.d(TAG, "Upload in Progress");
 
+                    
                 } else if(uploadTask == null && imageUri == null){
                     Log.d(TAG, "Image Capture fail");
                     submitMoodEventToDB(documentReference, moodEvent);
