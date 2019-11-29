@@ -37,7 +37,7 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
 
     private RelativeLayout fullscreenLayout;
     private String author, date ,time ,emotionalState ,socialSituation ,imageUrl ,reason ,latitude ,longitude ,locationAddress;
-    private TextView authorText, dateText, timeText, socialSituationText, reasonText;
+    private TextView authorText, dateText, timeText, socialSituationText, reasonText, addressTxt;
     private ImageView emoticon, imageReason;
     private LinearLayout backArrow, moreDetailsLayout, mapCont, socialSituationCont, reasonCont;
     private String edit;
@@ -59,6 +59,7 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
         reasonCont = findViewById(R.id.reason_cont);
         backArrow = findViewById(R.id.back_btn);
         backButton = findViewById(R.id.go_back_btn);
+        addressTxt = findViewById(R.id.address_txt);
 
         //make the first Linear Layout fullScreen
         makeFullscreen(fullscreenLayout);
@@ -208,6 +209,7 @@ public class ShowEventActivity extends AppCompatActivity implements OnMapReadyCa
         String reasonQuote =  "\" "  + reason + " \"";
         reasonText.setText(reasonQuote);
         reasonText.setTag(reason);
+        addressTxt.setText(locationAddress);
     }
 
     /**
