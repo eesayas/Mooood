@@ -105,34 +105,34 @@ public class followerActivity extends AppCompatActivity {
                     });
 
         }
-//        final Map<String, Object> request = new HashMap<>();
-//        collectionReference.document(toFollow).collection("Request").document(loginName)
-//                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                if (task.isSuccessful()) {
-//                    DocumentSnapshot document = task.getResult();
-//                    if (document.exists()) {
-//                        Log.d("Follow", "Already following");
-//
-//                    } else {
-//                        followButton.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View view) {
-//                                request.put("Username", loginName);
-//                                request.put("Request", "Sent");
-//                                request.put("Request Time", date);
-//                                collectionReference.document(toFollow).collection("Request").document(loginName).set(request);
-//                                followButton.setText("REQUEST SENT");
-//                                Log.d("SENT", "request sent");
-//                            }
-//                        });
-//                    }
-//                } else {
-//                    Log.d("checking", "Failed with: ", task.getException());
-//                }
-//            }
-//        });
+        final Map<String, Object> request = new HashMap<>();
+        collectionReference.document(toFollow).collection("Request").document(loginName)
+                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d("Follow", "Already following");
+
+                    } else {
+                        followButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                request.put("Username", loginName);
+                                request.put("Request", "Sent");
+                                request.put("Request Time", date);
+                                collectionReference.document(toFollow).collection("Request").document(loginName).set(request);
+                                followButton.setText("REQUEST SENT");
+                                Log.d("SENT", "request sent");
+                            }
+                        });
+                    }
+                } else {
+                    Log.d("checking", "Failed with: ", task.getException());
+                }
+            }
+        });
 
     }
 
