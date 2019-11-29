@@ -82,7 +82,7 @@ public class LocationTest {
      *  - US 06.01.01
      */
     @Test
-    public void checkAdd(){
+    public void checkFolloweeLocationInMap(){
         //go to Login
         solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
 

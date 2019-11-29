@@ -85,7 +85,7 @@ public class UserMoodMapTest {
      *  - US 06.02.01
      */
     @Test
-    public void checkAdd(){
+    public void checkUserLocationInMap(){
         //go to Login
         solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
 

@@ -85,7 +85,7 @@ public class FeedMoodMapTest {
      *  - US 06.03.01
      */
     @Test
-    public void checkAdd(){
+    public void checkLocation(){
         //go to Login
         solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
 
