@@ -5,8 +5,8 @@
     android:background="#2f2f2f">
 
     <Button
+        android:id="@+id/backButton1"
         android:background="#2f2f2f"
-        android:id="@+id/backButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:drawableLeft="@drawable/ic_keyboard_backspace" />

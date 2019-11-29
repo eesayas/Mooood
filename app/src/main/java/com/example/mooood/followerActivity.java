@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -39,6 +40,8 @@ public class followerActivity extends AppCompatActivity {
     TextView setAuthor;
     String loginName;
     String toFollow;
+    ImageView recentEmoji;
+    String userState;
 
     /**
      * This implements all methods below accordingly
@@ -53,11 +56,15 @@ public class followerActivity extends AppCompatActivity {
         setTime = findViewById(R.id.recentMoodTime);
         setAuthor = findViewById(R.id.author);
         followButton = findViewById(R.id.follow_button);
+        recentEmoji = findViewById(R.id.recentMoodEmoticon);
+
 
         collectionReference = db.collection("MoodEvents");
         Intent intent = getIntent();
         toFollow = intent.getStringExtra("accountMood");
         loginName = intent.getStringExtra("loginName");
+        userState = intent.getStringExtra("emotional");
+
         final String date = intent.getStringExtra("moodDate");
         final String time = intent.getStringExtra("moodTime");
         final String author = intent.getStringExtra("moodAuthor");
@@ -68,6 +75,7 @@ public class followerActivity extends AppCompatActivity {
         setDate.setText(date);
         setTime.setText(time);
         setAuthor.setText(author);
+        recentEmoji.setImageResource(new Emoticon(userState, 2).getImageLink());
 
 
 
