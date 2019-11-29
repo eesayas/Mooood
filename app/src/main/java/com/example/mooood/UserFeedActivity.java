@@ -88,9 +88,13 @@ public class UserFeedActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_feed);
 
+        //connect to xml
+        userId = findViewById(R.id.username);
+
+        //get user
         Intent intent = getIntent();
-         accountName = intent.getStringExtra("accountKey");
-        userId = findViewById(R.id.activity_user_feed_tv_id);
+        accountName = intent.getStringExtra("accountKey");
+
         userId.setText(accountName);
         documentReference = db.collection("MoodEvents").document(accountName);
         collectionReference = db.collection("MoodEvents").document(accountName).collection("MoodActivities");
