@@ -4,7 +4,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#707070"
+    android:paddingBottom="100dp">
 
     <ImageView
         android:id="@+id/notification_image"
@@ -26,7 +28,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/notification_image" />
+        app:layout_constraintTop_toBottomOf="@+id/notification_image"
+        android:textColor="@android:color/white"/>
 
     <Button
         android:id="@+id/confirm_button"
@@ -36,6 +39,7 @@
         android:layout_marginLeft="80dp"
         android:layout_marginTop="20dp"
         android:text="CONFIRM"
+        android:background="#00a21f"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/notification_text" />
 
@@ -49,6 +53,7 @@
         android:layout_marginEnd="80dp"
         android:layout_marginRight="80dp"
         android:text="REJECT"
+        android:background="#f80b0b"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/confirm_button"
         app:layout_constraintTop_toBottomOf="@+id/notification_text" />
