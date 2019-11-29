@@ -55,7 +55,6 @@ public class DeleteMoodEventTest{
         Activity activity = rule.getActivity();
     }
 
-
     /**
      * Swipes the selected view (i.e. content_user_feed)
      * Clicks on delete "garbage" button
@@ -63,7 +62,7 @@ public class DeleteMoodEventTest{
      */
     @Test
     public void checkDelete(){
-        //Sign in to the app first
+        //Sign in to the app
         solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
         solo.enterText((EditText)solo.getView(R.id.activity_main_et__username), "eesayas");
         solo.waitForText("eesayas",1,2000);
@@ -72,12 +71,18 @@ public class DeleteMoodEventTest{
         solo.clickOnView(solo.getView(R.id.activity_main_btn_submit));
         solo.waitForActivity(UserFeedActivity.class);
 
-        //Create a most recent MoodEvent (Assumption: This MoodEvent will be at the top)
+        //go to CreateEventActivity
         solo.clickOnView(solo.getView(R.id.fab));
         solo.waitForActivity(CreateEventActivity.class);
 
+        //choose an emoticon (default: HAPPY)
+        solo.clickOnView(solo.getView(R.id.select_emoticon_btn));
+
+        //click submit button to create minimal MoodEvent
         solo.clickOnView(solo.getView(R.id.submit_button));
 
+        //should be redirected to UserFeedActivity
+        solo.waitForActivity(UserFeedActivity.class);
         solo.assertCurrentActivity("Wrong Activity", UserFeedActivity.class);
 
         //swipe first item
@@ -85,8 +90,6 @@ public class DeleteMoodEventTest{
 
         //click on "garbage" button to delete MoodEvent
         onView(withId(R.id.posts_list)).perform(RecyclerViewActions.actionOnItemAtPosition(0, new ClickOnDeleteBtn()));
-
-        solo.sleep(1000);
     }
 
     /**
