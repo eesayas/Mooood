@@ -736,9 +736,9 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
                     }
                 });
         //Updates marker and moves the camera whenever a new marker is placed on the map by long clicking on the map.
-        gmap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+        gmap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
-            public void onMapLongClick(LatLng latLng) {
+            public void onMapClick(LatLng latLng) {
                 locationLatitude=latLng.latitude;
                 locationLongitude=latLng.longitude;
 
@@ -755,9 +755,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
                 myMarker.setTitle(locationAddress);
 
                 //Update the camera's position to the new marker's position
-                camBuilder.target(new LatLng(locationLatitude,locationLongitude));
-                CameraPosition cp = camBuilder.build();
-                gmap.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
+                gmap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
             }
         });
     }
@@ -878,7 +876,7 @@ public class CreateEventActivity extends AppCompatActivity implements OnMapReady
                 if(uploadTask != null && uploadTask.isInProgress()) {
                     Log.d(TAG, "Upload in Progress");
 
-                    
+
                 } else if(uploadTask == null && imageUri == null){
                     Log.d(TAG, "Image Capture fail");
                     submitMoodEventToDB(documentReference, moodEvent);
