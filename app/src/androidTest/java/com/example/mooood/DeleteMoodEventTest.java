@@ -147,6 +147,7 @@ public class DeleteMoodEventTest{
         solo.assertCurrentActivity("Wrong Activity", UserFeedActivity.class);
 
         //swipe first item
+        solo.scrollToTop();
         onView(withId(R.id.posts_list)).perform(RecyclerViewActions.actionOnItemAtPosition(0, swipeLeft()));
 
         //click on "garbage" button to delete MoodEvent
