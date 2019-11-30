@@ -42,15 +42,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 /**
- *This test case is for
- * US 06.02.01
- *As a participant, I want to see a map of the mood events (showing their emotional states)
- * from my mood history list (that have locations).
- * So the participant can see where the participant was feeling all the mood events.
+ * This test case is for
+ *
+ * US 06.03.01
+ * As a participant, I want to see a map of the mood events (
+ * showing their emotional states and the username) from my mood following list (that have locations).
+ * So the participant can see where the users that the participant follows were feeling each mood.
  */
 
 @RunWith(AndroidJUnit4.class)
-public class UserMoodMapTest {
+public class FeedMoodMapTest {
 
     private Solo solo;
     private Calendar calendar;
@@ -77,73 +78,47 @@ public class UserMoodMapTest {
     }
 
     /**
-     * This creates a MoodEvent with all details filled out including location
-     * Then checks if the MoodEvent contains a latitude and longitude both in the UserFeed
-     * and in the maps activity where it's called.
+     * This takes user to the feed activity and checks if a user they're following that has a mood event
+     * also contains a latitude and longitude both in the feed and in the maps activity when it's called.
      *
      * Tackles:
-     *  - US 06.02.01
+     *  - US 06.03.01
      */
     @Test
-    public void checkUserLocationInMap(){
+    public void checkLocation(){
         //go to Login
         solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
 
         //enter username and password
-        solo.enterText((EditText)solo.getView(R.id.activity_main_et__username), "eesayas");
-        solo.waitForText("eesayas",1,2000);
+        solo.enterText((EditText)solo.getView(R.id.activity_main_et__username), "maxtest");
+        solo.waitForText("maxtest",1,2000);
 
-        solo.enterText((EditText)solo.getView(R.id.activity_main_et__password), "lol");
-        solo.waitForText("lol",1,2000);
+        solo.enterText((EditText)solo.getView(R.id.activity_main_et__password), "1");
+        solo.waitForText("1",1,2000);
 
         solo.clickOnView(solo.getView(R.id.activity_main_btn_submit));
 
         //go to UserFeedActivity (MoodEvent history)
         solo.waitForActivity(UserFeedActivity.class);
 
-        //go to CreateEventActivity
-        solo.clickOnView(solo.getView(R.id.fab));
-        solo.waitForActivity(CreateEventActivity.class);
-
-        //get current date/time for comparison later
-        calendar = Calendar.getInstance();
-        SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd yyyy");
-
-        String currentTime = timeFormat.format(calendar.getTime());
-        String currentDate = dateFormat.format(calendar.getTime());
-
-        //selects the first emoticon (default: "HAPPY")
-        solo.clickOnView(solo.getView(R.id.select_emoticon_btn));
-
-        //input reason
-        solo.enterText((EditText) solo.getView(R.id.reason), "reason");
-        solo.waitForText("reason", 1, 2000);
-
-        //input social situation
-        solo.clickOnView(solo.getView(R.id.social_situation));
-        solo.clickOnText("Alone");
-
-        //get location
-        solo.clickOnView(solo.getView(R.id.toggle_gps_preview));
-
-        //click on submit
-        solo.clickOnView(solo.getView(R.id.submit_button));
-
-        //device should redirect to UserFeedActivity
-        solo.waitForActivity(UserFeedActivity.class);
+        //go to feedActivity
+        solo.clickOnView(solo.getView(R.id.feedButton));
+        solo.waitForActivity(feedActivity.class);
 
         //access the RecyclerView where the created MoodEvent should've been added
-        UserFeedActivity activity = (UserFeedActivity) solo.getCurrentActivity();
+        feedActivity activity = (feedActivity) solo.getCurrentActivity();
 
-        ArrayList<MoodEvent> userFeedMoods = activity.getPostDataList();
-        solo.clickOnView(solo.getView(R.id.map_user_feed_button));
+        //TODO: I had to hack this because the onView method was not working.
+        //click on first item
+        //onView(withId(R.id.posts_list)).perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+        ArrayList<MoodEvent> feedMoods = activity.getFeedDataList();
+        solo.clickOnView(solo.getView(R.id.map_feed_button));
         solo.clickOnImageButton(0);
         solo.waitForActivity(MoodsMapActivity.class);
         MoodsMapActivity mapActivity = (MoodsMapActivity) solo.getCurrentActivity();
         ArrayList<MoodEvent> mapMoods = mapActivity.getMoodsList();
 
-        assertEquals(mapMoods.get(0).getLatitude(),userFeedMoods.get(0).getLatitude());
+        assertEquals(mapMoods.get(0).getLatitude(),feedMoods.get(0).getLatitude());
 
         solo.sleep(2000); //for visual
     }
